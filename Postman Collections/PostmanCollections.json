@@ -1,0 +1,3055 @@
+{
+	"info": {
+		"_postman_id": "7896d9b5-ad25-4850-80ad-55f185d6432a",
+		"name": "Hotels-ng-clone",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "update user",
+					"id": "3fab7bed-101e-4832-9008-585dcd5e7ccd",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"Williams\",\n    \"last_name\": \"Shakesword\",\n    \"phone_number\": \"234707212323\",\n    \"email\": \"swillsword@email.com\",\n    \"address\": \"Weerd road, Oyo\",\n    \"type\":\"regular\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://hotels-mb5s.onrender.com/updateuser/6d908143-56aa-4ec3-8640-b41eefda28f8"
+					},
+					"response": [
+						{
+							"id": "d51334f3-4a65-4bc9-9e9e-5edcfb632e92",
+							"name": "Find all user Copy",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"first_name\": \"Williams\",\n    \"last_name\": \"Shakesword\",\n    \"phone_number\": \"0787212323\",\n    \"email\": \"swillsword@email.com\",\n    \"address\": \"Weerd road, Oyo\",\n    \"type\":\"regular\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:555/updateuser/6d908143-56aa-4ec3-8640-b41eefda28f8"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "39"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"27-s3wZRr+ej877NoWQNzmUzGk7juc\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 12 Dec 2023 01:32:39 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"Record Updated\",\n    \"data\": [\n        1\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "update user LOCAL",
+					"id": "02c88996-fe1b-40a4-8e5e-e1a28d5a8149",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"Williams\",\n    \"last_name\": \"Shakesword\",\n    \"phone_number\": \"0787212323\",\n    \"email\": \"swillsword@email.com\",\n    \"address\": \"Weerd road, Oyo\",\n    \"type\":\"regular\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:3306/updateuser/6d908143-56aa-4ec3-8640-b41eefda28f8"
+					},
+					"response": [
+						{
+							"id": "e89a95b5-7d9d-4d48-a035-ea9225141a28",
+							"name": "Find all user Copy",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"first_name\": \"Williams\",\n    \"last_name\": \"Shakesword\",\n    \"phone_number\": \"0787212323\",\n    \"email\": \"swillsword@email.com\",\n    \"address\": \"Weerd road, Oyo\",\n    \"type\":\"regular\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:555/updateuser/6d908143-56aa-4ec3-8640-b41eefda28f8"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "39"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"27-s3wZRr+ej877NoWQNzmUzGk7juc\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 12 Dec 2023 01:32:39 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"Record Updated\",\n    \"data\": [\n        1\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete User",
+					"id": "2d30f261-0acb-4ce1-8252-473be5dab878",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"Daniel\",\n    \"last_name\": \"\",\n    \"phone_number\": \"07003212323\",\n    \"email\": \"samdan@email.com\",\n    \"address\": \"\",\n    \"type\":\"regular\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://hotels-mb5s.onrender.com/deleteuser/dbdb1d77-d798-463e-a1a7-581ccb9de6c5"
+					},
+					"response": [
+						{
+							"id": "5f53a6eb-61f1-4ffe-9b72-0bae07da777b",
+							"name": "Find all user Copy",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"first_name\": \"Daniel\",\n    \"last_name\": \"\",\n    \"phone_number\": \"07003212323\",\n    \"email\": \"samdan@email.com\",\n    \"address\": \"\",\n    \"type\":\"regular\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:555/delete/df18cb8c-322c-4c67-8f47-89a2cc8a59be"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "94"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"5e-RwJH88w7ulmYrFuEBMY3y2HboGQ\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 12 Dec 2023 00:34:44 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"User with id df18cb8c-322c-4c67-8f47-89a2cc8a59be has been deleted successfully!\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete User LOCAL",
+					"id": "30ad36da-2283-4048-801b-03228d075168",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"Daniel\",\n    \"last_name\": \"\",\n    \"phone_number\": \"07003212323\",\n    \"email\": \"samdan@email.com\",\n    \"address\": \"\",\n    \"type\":\"regular\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:3306/deleteuser/f5df6d40-b16a-466a-94ed-682044e7c659"
+					},
+					"response": [
+						{
+							"id": "78db0820-7067-467c-99bb-7f1486e51767",
+							"name": "Find all user Copy",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"first_name\": \"Daniel\",\n    \"last_name\": \"\",\n    \"phone_number\": \"07003212323\",\n    \"email\": \"samdan@email.com\",\n    \"address\": \"\",\n    \"type\":\"regular\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:555/delete/df18cb8c-322c-4c67-8f47-89a2cc8a59be"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "94"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"5e-RwJH88w7ulmYrFuEBMY3y2HboGQ\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 12 Dec 2023 00:34:44 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"User with id df18cb8c-322c-4c67-8f47-89a2cc8a59be has been deleted successfully!\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Register User local",
+					"id": "85e84bd3-1e38-45a2-a4c9-98261ac04df0",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Mohammed1\",\n    \"lastName\": \"Olawale\",\n    \"phoneNumber\": \"2348031532300\",\n    \"gender\": \"Male\",\n    \"email\": \"hammed3@email.com\",\n    \"password\": \"HAMMED!SHORTman\",\n    \"confirmPassword\": \"HAMMED!SHORTman\",\n    \"type\": \"user\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:555/signup",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "555",
+							"path": [
+								"signup"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "4cfda524-e2be-464a-8cbb-1b1e57db028a",
+							"name": "New Request",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"first_name\": \"Sola\",\n    \"last_name\": \"Osfeam\",\n    \"phone_number\": \"08131532311\",\n    \"email\": \"osfeam@email.com\",\n    \"password\": \"@Fire4fire!\",\n    \"confirm_password\": \"@Fire4fire!\",\n    \"type\": \"VIP\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:555/signup"
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "386"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"182-JgGwDYMlYmvXSjcf5WX0B8QP4gQ\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 26 Dec 2023 23:06:22 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"User record for Sola has been created successfully\",\n    \"user_record\": {\n        \"id\": \"cbfcf1fc-8eda-48ec-8276-914b06add970\",\n        \"first_name\": \"Sola\",\n        \"last_name\": \"Osfeam\",\n        \"phone_number\": \"08131532311\",\n        \"email\": \"osfeam@email.com\",\n        \"password\": \"$2b$11$Nl3NFaXbjHMMuLhrzHPlPO8V6uYaZ41Ol9a5jEvtfacyFtWc9y6CO\",\n        \"type\": \"VIP\",\n        \"updatedAt\": \"2023-12-26T23:06:22.121Z\",\n        \"createdAt\": \"2023-12-26T23:06:22.121Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Register User",
+					"id": "dfbcea74-d5e0-4f80-8eeb-831236d2c777",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkY2RmMDMzLTVjMGEtNDY3NS05NDlhLWMzNjgwMmU2MzI1NCIsImVtYWlsIjoiaGFtbWVkM0BlbWFpbC5jb20iLCJ0eXBlIjoidXNlciIsImlhdCI6MTcyMTc4MTc2MCwiZXhwIjoxNzIyNjQ1NzYwfQ.JW4HmUm-e7pGUrZ73KVKuggHfjdmzQCTSxzhJqIJwY0"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Sam\",\n    \"lastName\": \"Baba\",\n    \"phoneNumber\": \"2348031532300\",\n    \"gender\": \"Male\",\n    \"email\": \"babasam1@email.com\",\n    \"password\": \"PP@$$w0rd123\",\n    \"confirmPassword\": \"PP@$$w0rd123\",\n    \"type\": \"admin\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://hotels-mb5s.onrender.com/signup"
+					},
+					"response": [
+						{
+							"id": "8993f26a-56ad-4cbb-9abb-1cf342bc6038",
+							"name": "New Request",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"first_name\": \"Sola\",\n    \"last_name\": \"Osfeam\",\n    \"phone_number\": \"08131532311\",\n    \"email\": \"osfeam@email.com\",\n    \"password\": \"@Fire4fire!\",\n    \"confirm_password\": \"@Fire4fire!\",\n    \"type\": \"VIP\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:555/signup"
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "386"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"182-JgGwDYMlYmvXSjcf5WX0B8QP4gQ\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 26 Dec 2023 23:06:22 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"User record for Sola has been created successfully\",\n    \"user_record\": {\n        \"id\": \"cbfcf1fc-8eda-48ec-8276-914b06add970\",\n        \"first_name\": \"Sola\",\n        \"last_name\": \"Osfeam\",\n        \"phone_number\": \"08131532311\",\n        \"email\": \"osfeam@email.com\",\n        \"password\": \"$2b$11$Nl3NFaXbjHMMuLhrzHPlPO8V6uYaZ41Ol9a5jEvtfacyFtWc9y6CO\",\n        \"type\": \"VIP\",\n        \"updatedAt\": \"2023-12-26T23:06:22.121Z\",\n        \"createdAt\": \"2023-12-26T23:06:22.121Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Register User LOCAL",
+					"id": "5ad1781f-5d15-45c4-bbc7-fbcc47adf4d1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkY2RmMDMzLTVjMGEtNDY3NS05NDlhLWMzNjgwMmU2MzI1NCIsImVtYWlsIjoiaGFtbWVkM0BlbWFpbC5jb20iLCJ0eXBlIjoidXNlciIsImlhdCI6MTcyMTc4MTc2MCwiZXhwIjoxNzIyNjQ1NzYwfQ.JW4HmUm-e7pGUrZ73KVKuggHfjdmzQCTSxzhJqIJwY0"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"Sam\",\n    \"lastName\": \"Baba\",\n    \"phoneNumber\": \"2348031532300\",\n    \"gender\": \"Male\",\n    \"email\": \"babasam@email.com\",\n    \"password\": \"PP@$$w0rd123\",\n    \"confirmPassword\": \"PP@$$w0rd123\",\n    \"type\": \"admin\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:444/signup"
+					},
+					"response": [
+						{
+							"id": "f4cce0d5-82ed-4033-96f5-bbda2bafefa4",
+							"name": "New Request",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"first_name\": \"Sola\",\n    \"last_name\": \"Osfeam\",\n    \"phone_number\": \"08131532311\",\n    \"email\": \"osfeam@email.com\",\n    \"password\": \"@Fire4fire!\",\n    \"confirm_password\": \"@Fire4fire!\",\n    \"type\": \"VIP\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:555/signup"
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "386"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"182-JgGwDYMlYmvXSjcf5WX0B8QP4gQ\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 26 Dec 2023 23:06:22 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"User record for Sola has been created successfully\",\n    \"user_record\": {\n        \"id\": \"cbfcf1fc-8eda-48ec-8276-914b06add970\",\n        \"first_name\": \"Sola\",\n        \"last_name\": \"Osfeam\",\n        \"phone_number\": \"08131532311\",\n        \"email\": \"osfeam@email.com\",\n        \"password\": \"$2b$11$Nl3NFaXbjHMMuLhrzHPlPO8V6uYaZ41Ol9a5jEvtfacyFtWc9y6CO\",\n        \"type\": \"VIP\",\n        \"updatedAt\": \"2023-12-26T23:06:22.121Z\",\n        \"createdAt\": \"2023-12-26T23:06:22.121Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Find all user",
+					"id": "29f10600-f213-4b38-b880-4f64945098d9",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkY2RmMDMzLTVjMGEtNDY3NS05NDlhLWMzNjgwMmU2MzI1NCIsImVtYWlsIjoiaGFtbWVkM0BlbWFpbC5jb20iLCJ0eXBlIjoidXNlciIsImlhdCI6MTcyMTgwOTI4MCwiZXhwIjoxNzIyNjczMjgwfQ.AF4lNBnXeHLw9XIITFOqkyqny659Zz-c730LP3eVt48"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{hotels}}/alluser",
+							"host": [
+								"{{hotels}}"
+							],
+							"path": [
+								"alluser"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "61e8a31b-8dd3-40b7-899c-bafd6e75e300",
+							"name": "New Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"first_name\": \"Daniel\",\n    \"last_name\": \"\",\n    \"phone_number\": \"07003212323\",\n    \"email\": \"samdan@email.com\",\n    \"address\": \"\",\n    \"type\":\"regular\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:555/findall"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1045"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"415-dvBiL1sXaCQQ3p4DMMEB3A9dUzE\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 11 Dec 2023 15:10:00 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"Reccords found\",\n    \"users\": [\n        {\n            \"id\": \"851c6f55-60f8-4887-9794-7d7c5049483e\",\n            \"first_name\": \"Daniel\",\n            \"last_name\": \"Sam\",\n            \"phone_number\": \"07003212323\",\n            \"email\": \"samdan@email.com\",\n            \"type\": \"regular\",\n            \"createdAt\": \"2023-12-06T10:31:48.000Z\",\n            \"updatedAt\": \"2023-12-06T10:31:48.000Z\",\n            \"deletedAt\": null\n        },\n        {\n            \"id\": \"278b11b5-74b7-425a-bf30-8cd167e0e7be\",\n            \"first_name\": \"Daniel\",\n            \"last_name\": \"\",\n            \"phone_number\": \"07003212323\",\n            \"email\": \"samdan@email.com\",\n            \"type\": \"regular\",\n            \"createdAt\": \"2023-12-06T12:26:20.000Z\",\n            \"updatedAt\": \"2023-12-06T12:26:20.000Z\",\n            \"deletedAt\": null\n        },\n        {\n            \"id\": \"6d908143-56aa-4ec3-8640-b41eefda28f8\",\n            \"first_name\": \"Daniel\",\n            \"last_name\": \"\",\n            \"phone_number\": \"07003212323\",\n            \"email\": \"samdan@email.com\",\n            \"type\": \"regular\",\n            \"createdAt\": \"2023-12-06T12:29:41.000Z\",\n            \"updatedAt\": \"2023-12-06T12:29:41.000Z\",\n            \"deletedAt\": null\n        },\n        {\n            \"id\": \"df18cb8c-322c-4c67-8f47-89a2cc8a59be\",\n            \"first_name\": \"Daniel\",\n            \"last_name\": \"\",\n            \"phone_number\": \"07003212323\",\n            \"email\": \"samdan@email.com\",\n            \"type\": \"regular\",\n            \"createdAt\": \"2023-12-07T00:10:51.000Z\",\n            \"updatedAt\": \"2023-12-07T00:10:51.000Z\",\n            \"deletedAt\": null\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "One user by ID",
+					"id": "d36f0ad3-c294-4bfd-a057-f23d0eaa303c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkY2RmMDMzLTVjMGEtNDY3NS05NDlhLWMzNjgwMmU2MzI1NCIsImVtYWlsIjoiaGFtbWVkM0BlbWFpbC5jb20iLCJ0eXBlIjoidXNlciIsImlhdCI6MTcyMTgwOTI4MCwiZXhwIjoxNzIyNjczMjgwfQ.AF4lNBnXeHLw9XIITFOqkyqny659Zz-c730LP3eVt48"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{hotels}}/user/0dcdf033-5c0a-4675-949a-c36802e63254",
+							"host": [
+								"{{hotels}}"
+							],
+							"path": [
+								"user",
+								"0dcdf033-5c0a-4675-949a-c36802e63254"
+							],
+							"query": [
+								{
+									"key": null,
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "95602f16-972a-47a1-9f62-8b7b83996bae",
+							"name": "New Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"first_name\": \"Daniel\",\n    \"last_name\": \"\",\n    \"phone_number\": \"07003212323\",\n    \"email\": \"samdan@email.com\",\n    \"address\": \"\",\n    \"type\":\"regular\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:555/findall"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1045"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"415-dvBiL1sXaCQQ3p4DMMEB3A9dUzE\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 11 Dec 2023 15:10:00 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"Reccords found\",\n    \"users\": [\n        {\n            \"id\": \"851c6f55-60f8-4887-9794-7d7c5049483e\",\n            \"first_name\": \"Daniel\",\n            \"last_name\": \"Sam\",\n            \"phone_number\": \"07003212323\",\n            \"email\": \"samdan@email.com\",\n            \"type\": \"regular\",\n            \"createdAt\": \"2023-12-06T10:31:48.000Z\",\n            \"updatedAt\": \"2023-12-06T10:31:48.000Z\",\n            \"deletedAt\": null\n        },\n        {\n            \"id\": \"278b11b5-74b7-425a-bf30-8cd167e0e7be\",\n            \"first_name\": \"Daniel\",\n            \"last_name\": \"\",\n            \"phone_number\": \"07003212323\",\n            \"email\": \"samdan@email.com\",\n            \"type\": \"regular\",\n            \"createdAt\": \"2023-12-06T12:26:20.000Z\",\n            \"updatedAt\": \"2023-12-06T12:26:20.000Z\",\n            \"deletedAt\": null\n        },\n        {\n            \"id\": \"6d908143-56aa-4ec3-8640-b41eefda28f8\",\n            \"first_name\": \"Daniel\",\n            \"last_name\": \"\",\n            \"phone_number\": \"07003212323\",\n            \"email\": \"samdan@email.com\",\n            \"type\": \"regular\",\n            \"createdAt\": \"2023-12-06T12:29:41.000Z\",\n            \"updatedAt\": \"2023-12-06T12:29:41.000Z\",\n            \"deletedAt\": null\n        },\n        {\n            \"id\": \"df18cb8c-322c-4c67-8f47-89a2cc8a59be\",\n            \"first_name\": \"Daniel\",\n            \"last_name\": \"\",\n            \"phone_number\": \"07003212323\",\n            \"email\": \"samdan@email.com\",\n            \"type\": \"regular\",\n            \"createdAt\": \"2023-12-07T00:10:51.000Z\",\n            \"updatedAt\": \"2023-12-07T00:10:51.000Z\",\n            \"deletedAt\": null\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "TEST",
+					"id": "3e4ce34a-f1d2-4a02-9515-a827d7bf1b6c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkY2RmMDMzLTVjMGEtNDY3NS05NDlhLWMzNjgwMmU2MzI1NCIsImVtYWlsIjoiaGFtbWVkM0BlbWFpbC5jb20iLCJ0eXBlIjoidXNlciIsImlhdCI6MTcyMTgxMTg3NiwiZXhwIjoxNzIyNjc1ODc2fQ.UMxj-ggI6ZCiNZoGRp8gb_yWr4mGOc-DVwM-gOQDDSg"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:444/test"
+					},
+					"response": []
+				}
+			],
+			"id": "d1ce9101-025b-417e-b5f0-7238343f3406"
+		},
+		{
+			"name": "Room",
+			"item": [
+				{
+					"name": "Find One room by ID",
+					"id": "1aa65acf-d229-453b-b701-b09b9daf3cec",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "https://hotels-mb5s.onrender.com/room/8e38ef75-cd5e-494f-aa79-319d5dd42a7e"
+					},
+					"response": [
+						{
+							"id": "29fdcb91-c88c-4c80-9ad8-55711253f4fc",
+							"name": "New Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": "http://localhost:555/room/8e38ef75-cd5e-494f-aa79-319d5dd42a7e"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "428"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1ac-62iOw2cMRVK0OQ13UqlyBlcZoE0\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 19 Dec 2023 14:03:53 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"Record found\",\n    \"room\": {\n        \"id\": \"8e38ef75-cd5e-494f-aa79-319d5dd42a7e\",\n        \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n        \"category\": \"Executive\",\n        \"capacity\": 2,\n        \"check_in\": \"06:00:00\",\n        \"check_out\": \"06:00:00\",\n        \"description\": \"Executive room with two baths and a dressing console \",\n        \"availability\": true,\n        \"price\": 50000,\n        \"condition\": \"Good\",\n        \"createdAt\": \"2023-12-13T15:45:44.000Z\",\n        \"updatedAt\": \"2023-12-13T15:45:44.000Z\",\n        \"deletedAt\": null\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Room",
+					"id": "249fbe48-dc21-407c-b12e-ff557371b51d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "https://hotels-mb5s.onrender.com/deleteroom/8e38ef75-cd5e-494f-aa79-319d5dd42a7e"
+					},
+					"response": [
+						{
+							"id": "b42d4b99-1c8c-4f2f-9a38-a76629b41b72",
+							"name": "New Request",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": "http://localhost:555/deleteroom/8e38ef75-cd5e-494f-aa79-319d5dd42a7e"
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "100"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"64-cl/S9A9Jate5rl7mkd93XQDExBM\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 19 Dec 2023 22:42:49 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"Room record with id 8e38ef75-cd5e-494f-aa79-319d5dd42a7e has been deleted successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Room",
+					"id": "d40cb655-44c1-4579-bb39-365bc622132d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "category",
+									"value": "Regular",
+									"type": "text"
+								},
+								{
+									"key": "capacity",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "checkIn",
+									"value": "06:00:00",
+									"type": "text"
+								},
+								{
+									"key": "checkOut",
+									"value": "04:00:00",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Decent room with a dressing console",
+									"type": "text"
+								},
+								{
+									"key": "availability",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "50000",
+									"type": "text"
+								},
+								{
+									"key": "condition",
+									"value": "Good",
+									"type": "text"
+								},
+								{
+									"key": "hotelEmail",
+									"value": "abcstar@email.com",
+									"type": "text"
+								},
+								{
+									"key": "deals",
+									"value": "10.5",
+									"type": "text"
+								},
+								{
+									"key": "discountCode",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": "https://hotels-mb5s.onrender.com/room"
+					},
+					"response": [
+						{
+							"id": "d7bcbfdf-0cdc-4db0-9b2b-e2d8a5bdfac4",
+							"name": "Create room sample",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "hotel_id",
+											"value": "f66a3ca9-df3c-4af1-8e72-bc13e0b1b111",
+											"type": "text"
+										},
+										{
+											"key": "category",
+											"value": "Regular",
+											"type": "text"
+										},
+										{
+											"key": "capacity",
+											"value": "1",
+											"type": "text"
+										},
+										{
+											"key": "check_in",
+											"value": "06:00:00",
+											"type": "text"
+										},
+										{
+											"key": "check_out",
+											"value": "04:00:00",
+											"type": "text"
+										},
+										{
+											"key": "description",
+											"value": "Decent room with a dressing console",
+											"type": "text"
+										},
+										{
+											"key": "availability",
+											"value": "true",
+											"type": "text"
+										},
+										{
+											"key": "price",
+											"value": "25000",
+											"type": "text"
+										},
+										{
+											"key": "condition",
+											"value": "Good",
+											"type": "text"
+										},
+										{
+											"key": "email",
+											"value": "starndardh@email.com",
+											"type": "text"
+										}
+									]
+								},
+								"url": "http://localhost:555/room"
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "408"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"198-ZTpAGY7z1a/hZImD6UkuS8KjkF4\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 13 Dec 2023 15:51:35 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"Room created successfully\",\n    \"room\": {\n        \"id\": \"b2f394a1-328f-4dd8-9157-d01583b2cb9d\",\n        \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n        \"category\": \"Regular\",\n        \"capacity\": \"1\",\n        \"check_in\": \"06:00:00\",\n        \"check_out\": \"04:00:00\",\n        \"description\": \"Decent room with a dressing console\",\n        \"availability\": true,\n        \"price\": \"25000\",\n        \"condition\": \"Good\",\n        \"updatedAt\": \"2023-12-13T15:51:35.494Z\",\n        \"createdAt\": \"2023-12-13T15:51:35.494Z\"\n    }\n}"
+						}
+					]
+				}
+			],
+			"id": "396c93b3-b763-48c2-a17d-4e65548788c0"
+		},
+		{
+			"name": "Hotel",
+			"item": [
+				{
+					"name": "Create hotel",
+					"id": "1107df91-dab5-46a4-8e0d-fbbb4a0c36e4",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Spicery Hotel\",\n    \"address\": \"4, Mabogunje road, Oniru Estate, V.I, Lagos\",\n    \"city\": \"Lagos\",\n    \"state\": \"Lagos\", \n    \"description\": \"Luxury Hotel in V.I.\", \n    \"hotelType\": \"hotel\",\n    \"numberOfRooms\": 50, \n    \"contactEmail\": \"decagonh@email.com\",\n    \"contactPhone\": \"09013421215\", \n    \"termsAndCondition\": \"Children under age 10 are not allowed around the pool area.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:555/createhotel"
+					},
+					"response": [
+						{
+							"id": "63feae93-d6b5-42ef-a587-b70c848d51c4",
+							"name": "Create hotel sample",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Standard hotel\",\n    \"address\": \"15, Bolanle street, GRA Ikeja\",\n    \"city\": \"Lagos\",\n    \"state\": \"Lagos\", \n    \"description\": \"5 start Hotel in the heart of GRA Ikeja with good ambience and condusive environment\", \n    \"hotel_type\": \"Hotel\",\n    \"number_of_rooms\": 40, \n    \"contact_email\": \"starndardh@email.com\",\n    \"contact_phone\": \"09012121212\", \n    \"terms_and_condition\": \"There is zero tolerance for smoking in the room or anywhere in the environment outside the bar enclosure.\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:555/createhotel"
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "599"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"257-CxdZSp1s52UpABu3bZ9u5c9iLDI\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 13 Dec 2023 02:39:48 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"Record created.\",\n    \"data\": {\n        \"id\": \"ef526901-ec4f-4227-a9b7-deaf856f0616\",\n        \"name\": \"Standard hotel\",\n        \"address\": \"15, Bolanle street, GRA Ikeja\",\n        \"city\": \"Lagos\",\n        \"state\": \"Lagos\",\n        \"description\": \"5 start Hotel in the heart of GRA Ikeja with good ambience and condusive environment\",\n        \"hotel_type\": \"Hotel\",\n        \"number_of_rooms\": 40,\n        \"contact_email\": \"starndardh@email.com\",\n        \"contact_phone\": \"09012121212\",\n        \"terms_and_condition\": \"There is zero tolerance for smoking in the room or anywhere in the environment outside the bar enclosure.\",\n        \"updatedAt\": \"2023-12-13T02:39:48.069Z\",\n        \"createdAt\": \"2023-12-13T02:39:48.069Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Find all Hotel",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "04e20289-c0b0-4cf4-9e15-cac43754e042",
+								"exec": [
+									"",
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Contact email is in a valid email format\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    responseData.data.forEach(function(hotel) {",
+									"        pm.expect(hotel.contact_email).to.be.a('string').and.to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Contact phone is in a valid phone number format\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    responseData.data.forEach((hotel) => {",
+									"        pm.expect(hotel.contact_phone.toString()).to.match(/^\\d{10}$/, \"Contact phone should be a 10-digit number\");",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Data array is present and contains the expected number of elements\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.data).to.be.an('array').and.to.have.lengthOf(1);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "83ab919d-674f-4293-98ac-45eb598a894a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:555/findall",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "555",
+							"path": [
+								"findall"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "Osun",
+									"disabled": true
+								},
+								{
+									"key": "minPrice",
+									"value": "5000",
+									"disabled": true
+								},
+								{
+									"key": "maxPrice",
+									"value": "50000",
+									"disabled": true
+								},
+								{
+									"key": "hotel_type",
+									"value": "hotel",
+									"disabled": true
+								},
+								{
+									"key": "restaurant",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "bar_launge",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "gym",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "room_service",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "wifi_internet",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "dstv",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "security",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "swimming_pool",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "front_desk24h",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "room_service",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "cctv",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "car_hire",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "dateIn",
+									"value": "2023-12-23",
+									"disabled": true
+								},
+								{
+									"key": "dateOut",
+									"value": "2023-12-24",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "e990cf18-95f1-4a33-a398-593afef71625",
+							"name": "Find all user Copy",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:555/findall"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "619"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"26b-8rji3TV+It8A/bx/A/Ktsxf+dTI\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 13 Dec 2023 02:41:47 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"Hotel record found.\",\n    \"data\": [\n        {\n            \"id\": \"ef526901-ec4f-4227-a9b7-deaf856f0616\",\n            \"name\": \"Standard hotel\",\n            \"address\": \"15, Bolanle street, GRA Ikeja\",\n            \"city\": \"Lagos\",\n            \"state\": \"Lagos\",\n            \"description\": \"5 start Hotel in the heart of GRA Ikeja with good ambience and condusive environment\",\n            \"hotel_type\": \"Hotel\",\n            \"number_of_rooms\": 40,\n            \"contact_email\": \"starndardh@email.com\",\n            \"contact_phone\": 9012121212,\n            \"terms_and_condition\": \"There is zero tolerance for smoking in the room or anywhere in the environment outside the bar enclosure.\",\n            \"createdAt\": \"2023-12-13T02:39:48.000Z\",\n            \"updatedAt\": \"2023-12-13T02:39:48.000Z\",\n            \"deletedAt\": null\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Find Top deals",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "04e20289-c0b0-4cf4-9e15-cac43754e042",
+								"exec": [
+									"",
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Contact email is in a valid email format\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    responseData.data.forEach(function(hotel) {",
+									"        pm.expect(hotel.contact_email).to.be.a('string').and.to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Contact phone is in a valid phone number format\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    responseData.data.forEach((hotel) => {",
+									"        pm.expect(hotel.contact_phone.toString()).to.match(/^\\d{10}$/, \"Contact phone should be a 10-digit number\");",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Data array is present and contains the expected number of elements\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.data).to.be.an('array').and.to.have.lengthOf(1);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "5deacdf7-2a46-4e5d-9e52-c9abdf037b4c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://hotels-mb5s.onrender.com/",
+							"protocol": "https",
+							"host": [
+								"hotels-mb5s",
+								"onrender",
+								"com"
+							],
+							"path": [
+								""
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "Osun",
+									"disabled": true
+								},
+								{
+									"key": "minPrice",
+									"value": "5000",
+									"disabled": true
+								},
+								{
+									"key": "maxPrice",
+									"value": "50000",
+									"disabled": true
+								},
+								{
+									"key": "hotel_type",
+									"value": "hotel",
+									"disabled": true
+								},
+								{
+									"key": "restaurant",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "bar_launge",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "gym",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "room_service",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "wifi_internet",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "dstv",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "security",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "swimming_pool",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "front_desk24h",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "room_service",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "cctv",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "car_hire",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "dateIn",
+									"value": "2023-12-23",
+									"disabled": true
+								},
+								{
+									"key": "dateOut",
+									"value": "2023-12-24",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "6798741f-2776-4e52-8393-09a76f6f258a",
+							"name": "Find all user Copy",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:555/findall"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "619"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"26b-8rji3TV+It8A/bx/A/Ktsxf+dTI\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 13 Dec 2023 02:41:47 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"Hotel record found.\",\n    \"data\": [\n        {\n            \"id\": \"ef526901-ec4f-4227-a9b7-deaf856f0616\",\n            \"name\": \"Standard hotel\",\n            \"address\": \"15, Bolanle street, GRA Ikeja\",\n            \"city\": \"Lagos\",\n            \"state\": \"Lagos\",\n            \"description\": \"5 start Hotel in the heart of GRA Ikeja with good ambience and condusive environment\",\n            \"hotel_type\": \"Hotel\",\n            \"number_of_rooms\": 40,\n            \"contact_email\": \"starndardh@email.com\",\n            \"contact_phone\": 9012121212,\n            \"terms_and_condition\": \"There is zero tolerance for smoking in the room or anywhere in the environment outside the bar enclosure.\",\n            \"createdAt\": \"2023-12-13T02:39:48.000Z\",\n            \"updatedAt\": \"2023-12-13T02:39:48.000Z\",\n            \"deletedAt\": null\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Find Top destinations",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "04e20289-c0b0-4cf4-9e15-cac43754e042",
+								"exec": [
+									"",
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Contact email is in a valid email format\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    responseData.data.forEach(function(hotel) {",
+									"        pm.expect(hotel.contact_email).to.be.a('string').and.to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Contact phone is in a valid phone number format\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    responseData.data.forEach((hotel) => {",
+									"        pm.expect(hotel.contact_phone.toString()).to.match(/^\\d{10}$/, \"Contact phone should be a 10-digit number\");",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Data array is present and contains the expected number of elements\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.data).to.be.an('array').and.to.have.lengthOf(1);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "3c435c47-8558-42d5-b787-dd7a710899a7",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://hotels-mb5s.onrender.com/topdestinations",
+							"protocol": "https",
+							"host": [
+								"hotels-mb5s",
+								"onrender",
+								"com"
+							],
+							"path": [
+								"topdestinations"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "Osun",
+									"disabled": true
+								},
+								{
+									"key": "minPrice",
+									"value": "5000",
+									"disabled": true
+								},
+								{
+									"key": "maxPrice",
+									"value": "50000",
+									"disabled": true
+								},
+								{
+									"key": "hotel_type",
+									"value": "hotel",
+									"disabled": true
+								},
+								{
+									"key": "restaurant",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "bar_launge",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "gym",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "room_service",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "wifi_internet",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "dstv",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "security",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "swimming_pool",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "front_desk24h",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "room_service",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "cctv",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "car_hire",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "dateIn",
+									"value": "2023-12-23",
+									"disabled": true
+								},
+								{
+									"key": "dateOut",
+									"value": "2023-12-24",
+									"disabled": true
+								},
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "96f4a94d-fd83-4285-9b28-7ccaef212729",
+							"name": "Find all user Copy",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:555/findall"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "619"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"26b-8rji3TV+It8A/bx/A/Ktsxf+dTI\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 13 Dec 2023 02:41:47 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"Hotel record found.\",\n    \"data\": [\n        {\n            \"id\": \"ef526901-ec4f-4227-a9b7-deaf856f0616\",\n            \"name\": \"Standard hotel\",\n            \"address\": \"15, Bolanle street, GRA Ikeja\",\n            \"city\": \"Lagos\",\n            \"state\": \"Lagos\",\n            \"description\": \"5 start Hotel in the heart of GRA Ikeja with good ambience and condusive environment\",\n            \"hotel_type\": \"Hotel\",\n            \"number_of_rooms\": 40,\n            \"contact_email\": \"starndardh@email.com\",\n            \"contact_phone\": 9012121212,\n            \"terms_and_condition\": \"There is zero tolerance for smoking in the room or anywhere in the environment outside the bar enclosure.\",\n            \"createdAt\": \"2023-12-13T02:39:48.000Z\",\n            \"updatedAt\": \"2023-12-13T02:39:48.000Z\",\n            \"deletedAt\": null\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Find Top destinations Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "04e20289-c0b0-4cf4-9e15-cac43754e042",
+								"exec": [
+									"",
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Contact email is in a valid email format\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    responseData.data.forEach(function(hotel) {",
+									"        pm.expect(hotel.contact_email).to.be.a('string').and.to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Contact phone is in a valid phone number format\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    responseData.data.forEach((hotel) => {",
+									"        pm.expect(hotel.contact_phone.toString()).to.match(/^\\d{10}$/, \"Contact phone should be a 10-digit number\");",
+									"    });",
+									"});",
+									"",
+									"",
+									"pm.test(\"Data array is present and contains the expected number of elements\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData.data).to.be.an('array').and.to.have.lengthOf(1);",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "08809418-325c-434d-be13-270a46c89670",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:555"
+					},
+					"response": [
+						{
+							"id": "c9209c65-af89-4293-a62a-40c75eeadc88",
+							"name": "Find all user Copy",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:555/findall"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "619"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"26b-8rji3TV+It8A/bx/A/Ktsxf+dTI\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 13 Dec 2023 02:41:47 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"Hotel record found.\",\n    \"data\": [\n        {\n            \"id\": \"ef526901-ec4f-4227-a9b7-deaf856f0616\",\n            \"name\": \"Standard hotel\",\n            \"address\": \"15, Bolanle street, GRA Ikeja\",\n            \"city\": \"Lagos\",\n            \"state\": \"Lagos\",\n            \"description\": \"5 start Hotel in the heart of GRA Ikeja with good ambience and condusive environment\",\n            \"hotel_type\": \"Hotel\",\n            \"number_of_rooms\": 40,\n            \"contact_email\": \"starndardh@email.com\",\n            \"contact_phone\": 9012121212,\n            \"terms_and_condition\": \"There is zero tolerance for smoking in the room or anywhere in the environment outside the bar enclosure.\",\n            \"createdAt\": \"2023-12-13T02:39:48.000Z\",\n            \"updatedAt\": \"2023-12-13T02:39:48.000Z\",\n            \"deletedAt\": null\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Find One Hotel",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b72567db-a0f8-464b-8200-758a6156cac6",
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "d531bc59-85b2-49da-8c57-1c91d14c9759",
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Content-Type header is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"pm.test(\"Validate the facilities object\", function () {",
+									"    const responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData.facilities).to.be.an('array').that.is.not.empty;",
+									"",
+									"    responseData.facilities.forEach(function(facility) {",
+									"        pm.expect(facility).to.have.property('hotel_id').that.is.a('string');",
+									"        pm.expect(facility).to.have.property('restaurant').that.is.a('boolean');",
+									"        pm.expect(facility).to.have.property('bar_launge').that.is.a('boolean');",
+									"    });",
+									"});var template = `",
+									"<style type=\"text/css\">",
+									"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+									"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+									"    .tftable tr {background-color:#ffffff;}",
+									"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+									"    .tftable tr:hover {background-color:#e0ffff;}",
+									"</style>",
+									"",
+									"<table class=\"tftable\" border=\"1\">",
+									"    <tr>",
+									"        <th>ID</th>",
+									"        <th>Name</th>",
+									"        <th>Address</th>",
+									"        <th>City</th>",
+									"        <th>State</th>",
+									"        <th>Number of Rooms</th>",
+									"    </tr>",
+									"    <tr>",
+									"        <td>{{response.data.id}}</td>",
+									"        <td>{{response.data.name}}</td>",
+									"        <td>{{response.data.address}}</td>",
+									"        <td>{{response.data.city}}</td>",
+									"        <td>{{response.data.state}}</td>",
+									"        <td>{{response.data.number_of_rooms}}</td>",
+									"    </tr>",
+									"</table>",
+									"`;",
+									"",
+									"function constructVisualizerPayload() {",
+									"    return { response: pm.response.json() }",
+									"}",
+									"",
+									"pm.visualizer.set(template, constructVisualizerPayload());"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"id": "eac20e69-b2c4-4a5c-8280-60b27ce3d5e1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkY2RmMDMzLTVjMGEtNDY3NS05NDlhLWMzNjgwMmU2MzI1NCIsImVtYWlsIjoiaGFtbWVkM0BlbWFpbC5jb20iLCJ0eXBlIjoidXNlciIsImlhdCI6MTcxNzI0NDY2NSwiZXhwIjoxNzE3MjQ0Nzg1fQ.lOAbFENTp-XXW0JwbL2G51K8HOYmqqS9Kx1W1TAPb6I"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:555/findone/968db226-9fa3-4af6-9e39-23a123c455cf",
+						"description": "\nThis endpoint makes an HTTP GET request to retrieve details of a specific hotel by providing the hotel's unique identifier in the URL path. The response will include comprehensive information about the hotel, including its name, address, contact details, facilities, rooms, and ratings and reviews.\n\nThe response will have a status code of 200 upon successful retrieval of the hotel details. The response body will contain a JSON object with various properties such as id, name, address, city, state, description, hotel_type, number_of_rooms, contact_email, contact_phone, terms_and_condition, createdAt, updatedAt, deletedAt, rooms, facilities, and ratingAndReview. Each of these properties will provide detailed information about the corresponding aspect of the hotel.\n\nThe 'rooms' property will include an array of objects, each representing a room in the hotel with properties like id, category, capacity, check_in, check_out, description, availability, price, condition, createdAt, updatedAt, and deletedAt.\n\nThe 'facilities' property will include an object with various boolean properties indicating the availability of different facilities such as restaurant, bar_launge, security, wifi_internet, swimming_pool, dstv, gym, cctv, car_hire, room_service, front_desk_24h, electricity_24h, and car_park.\n\nThe 'ratingAndReview' property will include an array of objects, each representing a user's review with properties like id, review_title, date, first_name, last_name, review, like, overallRating, cleanliness, comfort, service, security, location, createdAt, updatedAt, and deletedAt.\n\n"
+					},
+					"response": [
+						{
+							"id": "7827d082-d04d-4f93-b7e9-0270d7d45b39",
+							"name": "Find all user Copy",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:555/findall"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "619"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"26b-8rji3TV+It8A/bx/A/Ktsxf+dTI\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 13 Dec 2023 02:41:47 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"Hotel record found.\",\n    \"data\": [\n        {\n            \"id\": \"ef526901-ec4f-4227-a9b7-deaf856f0616\",\n            \"name\": \"Standard hotel\",\n            \"address\": \"15, Bolanle street, GRA Ikeja\",\n            \"city\": \"Lagos\",\n            \"state\": \"Lagos\",\n            \"description\": \"5 start Hotel in the heart of GRA Ikeja with good ambience and condusive environment\",\n            \"hotel_type\": \"Hotel\",\n            \"number_of_rooms\": 40,\n            \"contact_email\": \"starndardh@email.com\",\n            \"contact_phone\": 9012121212,\n            \"terms_and_condition\": \"There is zero tolerance for smoking in the room or anywhere in the environment outside the bar enclosure.\",\n            \"createdAt\": \"2023-12-13T02:39:48.000Z\",\n            \"updatedAt\": \"2023-12-13T02:39:48.000Z\",\n            \"deletedAt\": null\n        }\n    ]\n}"
+						},
+						{
+							"id": "9087516b-5693-4411-a01d-8ebda8463287",
+							"name": "Find all Hotel Copy",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:555/findone/f66a3ca9-df3c-4af1-8e72-bc13e0b1b111"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1426"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"592-gT+qpMRVYvjeC0fq5LB6pWJVV3o\""
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 21 Dec 2023 19:58:18 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"Hotel record found.\",\n    \"data\": {\n        \"id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n        \"name\": \"City Pride hotel\",\n        \"address\": \"23, Akeju street, Acme road, Ikeja\",\n        \"city\": \"Lagos\",\n        \"state\": \"Lagos\",\n        \"description\": \"5 star Hotel in Ikeja with good ambience and condusive environment\",\n        \"hotel_type\": \"Hotel\",\n        \"number_of_rooms\": 30,\n        \"contact_email\": \"citypride@email.com\",\n        \"contact_phone\": 9012121214,\n        \"terms_and_condition\": \"There is zero tolerance for smoking in the room or anywhere in the environment outside the bar enclosure.\",\n        \"createdAt\": \"2023-12-13T08:15:22.000Z\",\n        \"updatedAt\": \"2023-12-13T08:15:22.000Z\",\n        \"deletedAt\": null,\n        \"rooms\": [\n            {\n                \"id\": \"b2f394a1-328f-4dd8-9157-d01583b2cb9d\",\n                \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n                \"category\": \"Regular\",\n                \"capacity\": 1,\n                \"check_in\": \"06:00:00\",\n                \"check_out\": \"04:00:00\",\n                \"description\": \"Decent room with a dressing console\",\n                \"availability\": true,\n                \"price\": 25000,\n                \"condition\": \"Good\",\n                \"createdAt\": \"2023-12-13T15:51:35.000Z\",\n                \"updatedAt\": \"2023-12-13T15:51:35.000Z\",\n                \"deletedAt\": null\n            }\n        ],\n        \"facilities\": [\n            {\n                \"id\": \"fd47dd4c-4337-4e08-a767-f659419fd7fc\",\n                \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n                \"restaurant\": \"true\",\n                \"bar_launge\": true,\n                \"security\": true,\n                \"wifi_internet\": true,\n                \"swimming_pool\": false,\n                \"dstv\": true,\n                \"gym\": true,\n                \"cctv\": true,\n                \"car_hire\": false,\n                \"room_service\": true,\n                \"front_desk_24h\": true,\n                \"electricity_24h\": true,\n                \"car_park\": true,\n                \"createdAt\": \"2023-12-21T18:32:28.000Z\",\n                \"updatedAt\": \"2023-12-21T19:39:16.000Z\",\n                \"deletedAt\": null\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get ratings",
+					"id": "8c62df5b-ef6b-417d-90e6-034b0af01d32",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "https://hotels-mb5s.onrender.com/getrating/5c170c61-4e1d-4b02-b668-6d0f9b714684"
+					},
+					"response": [
+						{
+							"id": "49614724-a240-42fd-afca-267c0c73422d",
+							"name": "New Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": "http://localhost:555/getratings"
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "603"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"25b-ywnQ73mRGJqPPD2g4bBnmU2vV3M\""
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 22 Dec 2023 14:48:53 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"Records retrieved\",\n    \"Record\": [\n        {\n            \"id\": \"5c170c61-4e1d-4b02-b668-6d0f9b714684\",\n            \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n            \"user_id\": \"6d908143-56aa-4ec3-8640-b41eefda28f8\",\n            \"like\": null,\n            \"review_title\": \"Excellent service\",\n            \"date\": \"2023-12-22T02:43:04.000Z\",\n            \"first_name\": \"Williams\",\n            \"last_name\": \"Shakesword\",\n            \"review\": \"I enjoyed their clean and quiet environment\",\n            \"overallRating\": null,\n            \"cleanliness\": 9,\n            \"comfort\": 9,\n            \"service\": 8,\n            \"security\": 8,\n            \"location\": 7,\n            \"createdAt\": \"2023-12-22T14:43:04.000Z\",\n            \"updatedAt\": \"2023-12-22T14:43:04.000Z\",\n            \"deletedAt\": null,\n            \"User_id\": \"6d908143-56aa-4ec3-8640-b41eefda28f8\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Get all hotels by date range",
+					"id": "1443aa77-e292-40c4-900c-b692a2bc320c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://hotels-mb5s.onrender.com/bydate?dateIn=2023-12-23&dateOut=2023-12-26",
+							"protocol": "https",
+							"host": [
+								"hotels-mb5s",
+								"onrender",
+								"com"
+							],
+							"path": [
+								"bydate"
+							],
+							"query": [
+								{
+									"key": "dateIn",
+									"value": "2023-12-23"
+								},
+								{
+									"key": "dateOut",
+									"value": "2023-12-26"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "e1ab2173-8ea4-4c83-ad3e-d4b776ff5a2c",
+							"name": "Get all reservations",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": "http://localhost:555/getall"
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "4499"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1193-ITUoD7oSMnRK1K2Gi2ZAoVMINGs\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 30 Dec 2023 00:26:07 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"Reservation records found\",\n    \"Reservation\": [\n        {\n            \"id\": \"e19186cc-c3e6-4be1-84a9-3880dc3dbae5\",\n            \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n            \"user_id\": \"6d908143-56aa-4ec3-8640-b41eefda28f8\",\n            \"room_id\": \"8e38ef75-cd5e-494f-aa79-319d5dd42a7e\",\n            \"date_in\": \"2023-12-23\",\n            \"date_out\": \"2023-12-24\",\n            \"status\": \"active\",\n            \"payment_status\": true,\n            \"User\": {\n                \"first_name\": \"Williams\",\n                \"last_name\": \"Shakesword\",\n                \"phone_number\": \"0787212323\",\n                \"email\": \"swillsword@email.com\",\n                \"password\": null,\n                \"type\": \"regular\"\n            },\n            \"Hotel\": {\n                \"name\": \"City Pride hotel\",\n                \"address\": \"23, Akeju street, Acme road, Ikeja\",\n                \"city\": \"Lagos\",\n                \"state\": \"Lagos\",\n                \"hotel_type\": \"Hotel\",\n                \"number_of_rooms\": 30,\n                \"contact_email\": \"citypride@email.com\",\n                \"contact_phone\": 9012121214,\n                \"facilities\": [\n                    {\n                        \"restaurant\": \"true\",\n                        \"bar_launge\": true,\n                        \"security\": true,\n                        \"wifi_internet\": true,\n                        \"swimming_pool\": false,\n                        \"dstv\": true,\n                        \"gym\": true,\n                        \"cctv\": true,\n                        \"car_hire\": false,\n                        \"room_service\": true,\n                        \"front_desk_24h\": true,\n                        \"electricity_24h\": true,\n                        \"car_park\": true\n                    }\n                ]\n            },\n            \"Room\": {\n                \"category\": \"Executive\",\n                \"capacity\": 2,\n                \"check_in\": \"06:00:00\",\n                \"check_out\": \"06:00:00\",\n                \"description\": \"Executive room with two baths and a dressing console \",\n                \"availability\": true,\n                \"price\": 50000,\n                \"condition\": \"Good\"\n            }\n        },\n        {\n            \"id\": \"650b9f84-c2c1-45a5-823a-865b69dce66c\",\n            \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n            \"user_id\": \"6d908143-56aa-4ec3-8640-b41eefda28f8\",\n            \"room_id\": \"8e38ef75-cd5e-494f-aa79-319d5dd42a7e\",\n            \"date_in\": \"2023-12-27\",\n            \"date_out\": \"2023-12-28\",\n            \"status\": \"used\",\n            \"payment_status\": true,\n            \"User\": {\n                \"first_name\": \"Williams\",\n                \"last_name\": \"Shakesword\",\n                \"phone_number\": \"0787212323\",\n                \"email\": \"swillsword@email.com\",\n                \"password\": null,\n                \"type\": \"regular\"\n            },\n            \"Hotel\": {\n                \"name\": \"City Pride hotel\",\n                \"address\": \"23, Akeju street, Acme road, Ikeja\",\n                \"city\": \"Lagos\",\n                \"state\": \"Lagos\",\n                \"hotel_type\": \"Hotel\",\n                \"number_of_rooms\": 30,\n                \"contact_email\": \"citypride@email.com\",\n                \"contact_phone\": 9012121214,\n                \"facilities\": [\n                    {\n                        \"restaurant\": \"true\",\n                        \"bar_launge\": true,\n                        \"security\": true,\n                        \"wifi_internet\": true,\n                        \"swimming_pool\": false,\n                        \"dstv\": true,\n                        \"gym\": true,\n                        \"cctv\": true,\n                        \"car_hire\": false,\n                        \"room_service\": true,\n                        \"front_desk_24h\": true,\n                        \"electricity_24h\": true,\n                        \"car_park\": true\n                    }\n                ]\n            },\n            \"Room\": {\n                \"category\": \"Executive\",\n                \"capacity\": 2,\n                \"check_in\": \"06:00:00\",\n                \"check_out\": \"06:00:00\",\n                \"description\": \"Executive room with two baths and a dressing console \",\n                \"availability\": true,\n                \"price\": 50000,\n                \"condition\": \"Good\"\n            }\n        },\n        {\n            \"id\": \"db8c30df-7c0c-4a61-b8fe-57827c99289e\",\n            \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n            \"user_id\": \"6d908143-56aa-4ec3-8640-b41eefda28f8\",\n            \"room_id\": \"8e38ef75-cd5e-494f-aa79-319d5dd42a7e\",\n            \"date_in\": \"2023-12-30\",\n            \"date_out\": \"2023-12-31\",\n            \"status\": \"active\",\n            \"payment_status\": true,\n            \"User\": {\n                \"first_name\": \"Williams\",\n                \"last_name\": \"Shakesword\",\n                \"phone_number\": \"0787212323\",\n                \"email\": \"swillsword@email.com\",\n                \"password\": null,\n                \"type\": \"regular\"\n            },\n            \"Hotel\": {\n                \"name\": \"City Pride hotel\",\n                \"address\": \"23, Akeju street, Acme road, Ikeja\",\n                \"city\": \"Lagos\",\n                \"state\": \"Lagos\",\n                \"hotel_type\": \"Hotel\",\n                \"number_of_rooms\": 30,\n                \"contact_email\": \"citypride@email.com\",\n                \"contact_phone\": 9012121214,\n                \"facilities\": [\n                    {\n                        \"restaurant\": \"true\",\n                        \"bar_launge\": true,\n                        \"security\": true,\n                        \"wifi_internet\": true,\n                        \"swimming_pool\": false,\n                        \"dstv\": true,\n                        \"gym\": true,\n                        \"cctv\": true,\n                        \"car_hire\": false,\n                        \"room_service\": true,\n                        \"front_desk_24h\": true,\n                        \"electricity_24h\": true,\n                        \"car_park\": true\n                    }\n                ]\n            },\n            \"Room\": {\n                \"category\": \"Executive\",\n                \"capacity\": 2,\n                \"check_in\": \"06:00:00\",\n                \"check_out\": \"06:00:00\",\n                \"description\": \"Executive room with two baths and a dressing console \",\n                \"availability\": true,\n                \"price\": 50000,\n                \"condition\": \"Good\"\n            }\n        },\n        {\n            \"id\": \"2a80d0f6-6ebc-40b4-8b60-1e715ee08c91\",\n            \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n            \"user_id\": \"6d908143-56aa-4ec3-8640-b41eefda28f8\",\n            \"room_id\": \"8e38ef75-cd5e-494f-aa79-319d5dd42a7e\",\n            \"date_in\": \"2023-12-30\",\n            \"date_out\": \"2023-12-31\",\n            \"status\": \"used\",\n            \"payment_status\": true,\n            \"User\": {\n                \"first_name\": \"Williams\",\n                \"last_name\": \"Shakesword\",\n                \"phone_number\": \"0787212323\",\n                \"email\": \"swillsword@email.com\",\n                \"password\": null,\n                \"type\": \"regular\"\n            },\n            \"Hotel\": {\n                \"name\": \"City Pride hotel\",\n                \"address\": \"23, Akeju street, Acme road, Ikeja\",\n                \"city\": \"Lagos\",\n                \"state\": \"Lagos\",\n                \"hotel_type\": \"Hotel\",\n                \"number_of_rooms\": 30,\n                \"contact_email\": \"citypride@email.com\",\n                \"contact_phone\": 9012121214,\n                \"facilities\": [\n                    {\n                        \"restaurant\": \"true\",\n                        \"bar_launge\": true,\n                        \"security\": true,\n                        \"wifi_internet\": true,\n                        \"swimming_pool\": false,\n                        \"dstv\": true,\n                        \"gym\": true,\n                        \"cctv\": true,\n                        \"car_hire\": false,\n                        \"room_service\": true,\n                        \"front_desk_24h\": true,\n                        \"electricity_24h\": true,\n                        \"car_park\": true\n                    }\n                ]\n            },\n            \"Room\": {\n                \"category\": \"Executive\",\n                \"capacity\": 2,\n                \"check_in\": \"06:00:00\",\n                \"check_out\": \"06:00:00\",\n                \"description\": \"Executive room with two baths and a dressing console \",\n                \"availability\": true,\n                \"price\": 50000,\n                \"condition\": \"Good\"\n            }\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Hotels",
+					"id": "65d60280-01aa-4b24-8391-37c7daed6ba6",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "http://localhost:555/17bb1cfb-eda0-42b7-8eaa-b8f611982841"
+					},
+					"response": [
+						{
+							"id": "8299c338-64fd-451d-b121-4e72d8a0558b",
+							"name": "Get all reservations",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": "http://localhost:555/getall"
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "4499"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1193-ITUoD7oSMnRK1K2Gi2ZAoVMINGs\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 30 Dec 2023 00:26:07 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"Reservation records found\",\n    \"Reservation\": [\n        {\n            \"id\": \"e19186cc-c3e6-4be1-84a9-3880dc3dbae5\",\n            \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n            \"user_id\": \"6d908143-56aa-4ec3-8640-b41eefda28f8\",\n            \"room_id\": \"8e38ef75-cd5e-494f-aa79-319d5dd42a7e\",\n            \"date_in\": \"2023-12-23\",\n            \"date_out\": \"2023-12-24\",\n            \"status\": \"active\",\n            \"payment_status\": true,\n            \"User\": {\n                \"first_name\": \"Williams\",\n                \"last_name\": \"Shakesword\",\n                \"phone_number\": \"0787212323\",\n                \"email\": \"swillsword@email.com\",\n                \"password\": null,\n                \"type\": \"regular\"\n            },\n            \"Hotel\": {\n                \"name\": \"City Pride hotel\",\n                \"address\": \"23, Akeju street, Acme road, Ikeja\",\n                \"city\": \"Lagos\",\n                \"state\": \"Lagos\",\n                \"hotel_type\": \"Hotel\",\n                \"number_of_rooms\": 30,\n                \"contact_email\": \"citypride@email.com\",\n                \"contact_phone\": 9012121214,\n                \"facilities\": [\n                    {\n                        \"restaurant\": \"true\",\n                        \"bar_launge\": true,\n                        \"security\": true,\n                        \"wifi_internet\": true,\n                        \"swimming_pool\": false,\n                        \"dstv\": true,\n                        \"gym\": true,\n                        \"cctv\": true,\n                        \"car_hire\": false,\n                        \"room_service\": true,\n                        \"front_desk_24h\": true,\n                        \"electricity_24h\": true,\n                        \"car_park\": true\n                    }\n                ]\n            },\n            \"Room\": {\n                \"category\": \"Executive\",\n                \"capacity\": 2,\n                \"check_in\": \"06:00:00\",\n                \"check_out\": \"06:00:00\",\n                \"description\": \"Executive room with two baths and a dressing console \",\n                \"availability\": true,\n                \"price\": 50000,\n                \"condition\": \"Good\"\n            }\n        },\n        {\n            \"id\": \"650b9f84-c2c1-45a5-823a-865b69dce66c\",\n            \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n            \"user_id\": \"6d908143-56aa-4ec3-8640-b41eefda28f8\",\n            \"room_id\": \"8e38ef75-cd5e-494f-aa79-319d5dd42a7e\",\n            \"date_in\": \"2023-12-27\",\n            \"date_out\": \"2023-12-28\",\n            \"status\": \"used\",\n            \"payment_status\": true,\n            \"User\": {\n                \"first_name\": \"Williams\",\n                \"last_name\": \"Shakesword\",\n                \"phone_number\": \"0787212323\",\n                \"email\": \"swillsword@email.com\",\n                \"password\": null,\n                \"type\": \"regular\"\n            },\n            \"Hotel\": {\n                \"name\": \"City Pride hotel\",\n                \"address\": \"23, Akeju street, Acme road, Ikeja\",\n                \"city\": \"Lagos\",\n                \"state\": \"Lagos\",\n                \"hotel_type\": \"Hotel\",\n                \"number_of_rooms\": 30,\n                \"contact_email\": \"citypride@email.com\",\n                \"contact_phone\": 9012121214,\n                \"facilities\": [\n                    {\n                        \"restaurant\": \"true\",\n                        \"bar_launge\": true,\n                        \"security\": true,\n                        \"wifi_internet\": true,\n                        \"swimming_pool\": false,\n                        \"dstv\": true,\n                        \"gym\": true,\n                        \"cctv\": true,\n                        \"car_hire\": false,\n                        \"room_service\": true,\n                        \"front_desk_24h\": true,\n                        \"electricity_24h\": true,\n                        \"car_park\": true\n                    }\n                ]\n            },\n            \"Room\": {\n                \"category\": \"Executive\",\n                \"capacity\": 2,\n                \"check_in\": \"06:00:00\",\n                \"check_out\": \"06:00:00\",\n                \"description\": \"Executive room with two baths and a dressing console \",\n                \"availability\": true,\n                \"price\": 50000,\n                \"condition\": \"Good\"\n            }\n        },\n        {\n            \"id\": \"db8c30df-7c0c-4a61-b8fe-57827c99289e\",\n            \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n            \"user_id\": \"6d908143-56aa-4ec3-8640-b41eefda28f8\",\n            \"room_id\": \"8e38ef75-cd5e-494f-aa79-319d5dd42a7e\",\n            \"date_in\": \"2023-12-30\",\n            \"date_out\": \"2023-12-31\",\n            \"status\": \"active\",\n            \"payment_status\": true,\n            \"User\": {\n                \"first_name\": \"Williams\",\n                \"last_name\": \"Shakesword\",\n                \"phone_number\": \"0787212323\",\n                \"email\": \"swillsword@email.com\",\n                \"password\": null,\n                \"type\": \"regular\"\n            },\n            \"Hotel\": {\n                \"name\": \"City Pride hotel\",\n                \"address\": \"23, Akeju street, Acme road, Ikeja\",\n                \"city\": \"Lagos\",\n                \"state\": \"Lagos\",\n                \"hotel_type\": \"Hotel\",\n                \"number_of_rooms\": 30,\n                \"contact_email\": \"citypride@email.com\",\n                \"contact_phone\": 9012121214,\n                \"facilities\": [\n                    {\n                        \"restaurant\": \"true\",\n                        \"bar_launge\": true,\n                        \"security\": true,\n                        \"wifi_internet\": true,\n                        \"swimming_pool\": false,\n                        \"dstv\": true,\n                        \"gym\": true,\n                        \"cctv\": true,\n                        \"car_hire\": false,\n                        \"room_service\": true,\n                        \"front_desk_24h\": true,\n                        \"electricity_24h\": true,\n                        \"car_park\": true\n                    }\n                ]\n            },\n            \"Room\": {\n                \"category\": \"Executive\",\n                \"capacity\": 2,\n                \"check_in\": \"06:00:00\",\n                \"check_out\": \"06:00:00\",\n                \"description\": \"Executive room with two baths and a dressing console \",\n                \"availability\": true,\n                \"price\": 50000,\n                \"condition\": \"Good\"\n            }\n        },\n        {\n            \"id\": \"2a80d0f6-6ebc-40b4-8b60-1e715ee08c91\",\n            \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n            \"user_id\": \"6d908143-56aa-4ec3-8640-b41eefda28f8\",\n            \"room_id\": \"8e38ef75-cd5e-494f-aa79-319d5dd42a7e\",\n            \"date_in\": \"2023-12-30\",\n            \"date_out\": \"2023-12-31\",\n            \"status\": \"used\",\n            \"payment_status\": true,\n            \"User\": {\n                \"first_name\": \"Williams\",\n                \"last_name\": \"Shakesword\",\n                \"phone_number\": \"0787212323\",\n                \"email\": \"swillsword@email.com\",\n                \"password\": null,\n                \"type\": \"regular\"\n            },\n            \"Hotel\": {\n                \"name\": \"City Pride hotel\",\n                \"address\": \"23, Akeju street, Acme road, Ikeja\",\n                \"city\": \"Lagos\",\n                \"state\": \"Lagos\",\n                \"hotel_type\": \"Hotel\",\n                \"number_of_rooms\": 30,\n                \"contact_email\": \"citypride@email.com\",\n                \"contact_phone\": 9012121214,\n                \"facilities\": [\n                    {\n                        \"restaurant\": \"true\",\n                        \"bar_launge\": true,\n                        \"security\": true,\n                        \"wifi_internet\": true,\n                        \"swimming_pool\": false,\n                        \"dstv\": true,\n                        \"gym\": true,\n                        \"cctv\": true,\n                        \"car_hire\": false,\n                        \"room_service\": true,\n                        \"front_desk_24h\": true,\n                        \"electricity_24h\": true,\n                        \"car_park\": true\n                    }\n                ]\n            },\n            \"Room\": {\n                \"category\": \"Executive\",\n                \"capacity\": 2,\n                \"check_in\": \"06:00:00\",\n                \"check_out\": \"06:00:00\",\n                \"description\": \"Executive room with two baths and a dressing console \",\n                \"availability\": true,\n                \"price\": 50000,\n                \"condition\": \"Good\"\n            }\n        }\n    ]\n}"
+						}
+					]
+				}
+			],
+			"id": "7c788874-660c-4ed3-9a48-e493dd22b111"
+		},
+		{
+			"name": "Reservation",
+			"item": [
+				{
+					"name": "Remove used reservations",
+					"id": "062aa903-15a5-4f9e-bbb7-e602a50dfdeb",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "https://hotels-mb5s.onrender.com/removereservations"
+					},
+					"response": []
+				},
+				{
+					"name": "Remove used reservation",
+					"id": "6e8c6112-ea3a-4fd4-b7bc-4987bc74c8b9",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "https://hotels-mb5s.onrender.com/deletereservation/e19186cc-c3e6-4be1-84a9-3880dc3dbae5"
+					},
+					"response": []
+				},
+				{
+					"name": "update reservation",
+					"id": "f348fe34-be54-4b25-a67b-0106d4256732",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": "https://hotels-mb5s.onrender.com/updatereservation/650b9f84-c2c1-45a5-823a-865b69dce66c"
+					},
+					"response": []
+				},
+				{
+					"name": "Create reservation",
+					"id": "11216ec3-bd39-4c77-87b7-ceaba3b26d43",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n    \"room_id\": \"8e38ef75-cd5e-494f-aa79-319d5dd42a7e\",\n    \"user_id\": \"6d908143-56aa-4ec3-8640-b41eefda28f8\",\n    \"date_in\": \"2023-12-30\",\n    \"date_out\": \"2023-12-31\",\n    \"payment_status\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://hotels-mb5s.onrender.com/reservation"
+					},
+					"response": [
+						{
+							"id": "17ca348c-a5c5-4bc4-8bf0-97761bd1858e",
+							"name": "New Request",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n    \"room_id\": \"8e38ef75-cd5e-494f-aa79-319d5dd42a7e\",\n    \"user_id\": \"6d908143-56aa-4ec3-8640-b41eefda28f8\",\n    \"payment_status\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "http://localhost:555/reservation"
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "415"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"19f-U4EKNpY+wMf2pK1adIq4k7audc4\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 23 Dec 2023 15:34:19 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"Reservation creatd with id: e19186cc-c3e6-4be1-84a9-3880dc3dbae5\",\n    \"Record\": {\n        \"id\": \"e19186cc-c3e6-4be1-84a9-3880dc3dbae5\",\n        \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n        \"room_id\": \"8e38ef75-cd5e-494f-aa79-319d5dd42a7e\",\n        \"user_id\": \"6d908143-56aa-4ec3-8640-b41eefda28f8\",\n        \"date\": \"2023-12-23T03:34:19.000Z\",\n        \"payment_status\": true,\n        \"updatedAt\": \"2023-12-23T15:34:19.278Z\",\n        \"createdAt\": \"2023-12-23T15:34:19.278Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get reservation",
+					"id": "5cebc01a-7d73-454f-a5bc-d03253eef54e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkY2RmMDMzLTVjMGEtNDY3NS05NDlhLWMzNjgwMmU2MzI1NCIsImVtYWlsIjoiaGFtbWVkM0BlbWFpbC5jb20iLCJ0eXBlIjoidXNlciIsImlhdCI6MTcxNzAyMjIwN30.YvIZr0QAOzLceoERQuJZZdJuiLKBvIvMUgCSoAzf4yU"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:555/getone/650b9f84-c2c1-45a5-823a-865b69dce66c",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "555",
+							"path": [
+								"getone",
+								"650b9f84-c2c1-45a5-823a-865b69dce66c"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "557106ef-b4e0-4b03-97d3-bc53be39994d",
+							"name": "Get reservation",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": "http://localhost:555/getone/650b9f84-c2c1-45a5-823a-865b69dce66c"
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1162"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"48a-JFoiBKqWVUbXgqrqiBr6YSzxZdU\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 30 Dec 2023 00:27:14 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"Reservation record found\",\n    \"Reservation\": {\n        \"id\": \"650b9f84-c2c1-45a5-823a-865b69dce66c\",\n        \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n        \"user_id\": \"6d908143-56aa-4ec3-8640-b41eefda28f8\",\n        \"room_id\": \"8e38ef75-cd5e-494f-aa79-319d5dd42a7e\",\n        \"date_in\": \"2023-12-27\",\n        \"date_out\": \"2023-12-28\",\n        \"status\": \"used\",\n        \"payment_status\": true,\n        \"User\": {\n            \"first_name\": \"Williams\",\n            \"last_name\": \"Shakesword\",\n            \"phone_number\": \"0787212323\",\n            \"email\": \"swillsword@email.com\",\n            \"password\": null,\n            \"type\": \"regular\"\n        },\n        \"Hotel\": {\n            \"name\": \"City Pride hotel\",\n            \"address\": \"23, Akeju street, Acme road, Ikeja\",\n            \"city\": \"Lagos\",\n            \"state\": \"Lagos\",\n            \"hotel_type\": \"Hotel\",\n            \"number_of_rooms\": 30,\n            \"contact_email\": \"citypride@email.com\",\n            \"contact_phone\": 9012121214,\n            \"facilities\": [\n                {\n                    \"restaurant\": \"true\",\n                    \"bar_launge\": true,\n                    \"security\": true,\n                    \"wifi_internet\": true,\n                    \"swimming_pool\": false,\n                    \"dstv\": true,\n                    \"gym\": true,\n                    \"cctv\": true,\n                    \"car_hire\": false,\n                    \"room_service\": true,\n                    \"front_desk_24h\": true,\n                    \"electricity_24h\": true,\n                    \"car_park\": true\n                }\n            ]\n        },\n        \"Room\": {\n            \"category\": \"Executive\",\n            \"capacity\": 2,\n            \"check_in\": \"06:00:00\",\n            \"check_out\": \"06:00:00\",\n            \"description\": \"Executive room with two baths and a dressing console \",\n            \"availability\": true,\n            \"price\": 50000,\n            \"condition\": \"Good\"\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get all reservations",
+					"id": "e11974c5-339d-4532-9993-5ea332c42ed1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "https://hotels-mb5s.onrender.com/getall"
+					},
+					"response": [
+						{
+							"id": "4d736b9b-6395-4451-9e5b-b63f34524b28",
+							"name": "Get all reservations",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": "http://localhost:555/getall"
+							},
+							"status": "Internal Server Error",
+							"code": 500,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "4499"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1193-ITUoD7oSMnRK1K2Gi2ZAoVMINGs\""
+								},
+								{
+									"key": "Date",
+									"value": "Sat, 30 Dec 2023 00:26:07 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n    \"message\": \"Reservation records found\",\n    \"Reservation\": [\n        {\n            \"id\": \"e19186cc-c3e6-4be1-84a9-3880dc3dbae5\",\n            \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n            \"user_id\": \"6d908143-56aa-4ec3-8640-b41eefda28f8\",\n            \"room_id\": \"8e38ef75-cd5e-494f-aa79-319d5dd42a7e\",\n            \"date_in\": \"2023-12-23\",\n            \"date_out\": \"2023-12-24\",\n            \"status\": \"active\",\n            \"payment_status\": true,\n            \"User\": {\n                \"first_name\": \"Williams\",\n                \"last_name\": \"Shakesword\",\n                \"phone_number\": \"0787212323\",\n                \"email\": \"swillsword@email.com\",\n                \"password\": null,\n                \"type\": \"regular\"\n            },\n            \"Hotel\": {\n                \"name\": \"City Pride hotel\",\n                \"address\": \"23, Akeju street, Acme road, Ikeja\",\n                \"city\": \"Lagos\",\n                \"state\": \"Lagos\",\n                \"hotel_type\": \"Hotel\",\n                \"number_of_rooms\": 30,\n                \"contact_email\": \"citypride@email.com\",\n                \"contact_phone\": 9012121214,\n                \"facilities\": [\n                    {\n                        \"restaurant\": \"true\",\n                        \"bar_launge\": true,\n                        \"security\": true,\n                        \"wifi_internet\": true,\n                        \"swimming_pool\": false,\n                        \"dstv\": true,\n                        \"gym\": true,\n                        \"cctv\": true,\n                        \"car_hire\": false,\n                        \"room_service\": true,\n                        \"front_desk_24h\": true,\n                        \"electricity_24h\": true,\n                        \"car_park\": true\n                    }\n                ]\n            },\n            \"Room\": {\n                \"category\": \"Executive\",\n                \"capacity\": 2,\n                \"check_in\": \"06:00:00\",\n                \"check_out\": \"06:00:00\",\n                \"description\": \"Executive room with two baths and a dressing console \",\n                \"availability\": true,\n                \"price\": 50000,\n                \"condition\": \"Good\"\n            }\n        },\n        {\n            \"id\": \"650b9f84-c2c1-45a5-823a-865b69dce66c\",\n            \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n            \"user_id\": \"6d908143-56aa-4ec3-8640-b41eefda28f8\",\n            \"room_id\": \"8e38ef75-cd5e-494f-aa79-319d5dd42a7e\",\n            \"date_in\": \"2023-12-27\",\n            \"date_out\": \"2023-12-28\",\n            \"status\": \"used\",\n            \"payment_status\": true,\n            \"User\": {\n                \"first_name\": \"Williams\",\n                \"last_name\": \"Shakesword\",\n                \"phone_number\": \"0787212323\",\n                \"email\": \"swillsword@email.com\",\n                \"password\": null,\n                \"type\": \"regular\"\n            },\n            \"Hotel\": {\n                \"name\": \"City Pride hotel\",\n                \"address\": \"23, Akeju street, Acme road, Ikeja\",\n                \"city\": \"Lagos\",\n                \"state\": \"Lagos\",\n                \"hotel_type\": \"Hotel\",\n                \"number_of_rooms\": 30,\n                \"contact_email\": \"citypride@email.com\",\n                \"contact_phone\": 9012121214,\n                \"facilities\": [\n                    {\n                        \"restaurant\": \"true\",\n                        \"bar_launge\": true,\n                        \"security\": true,\n                        \"wifi_internet\": true,\n                        \"swimming_pool\": false,\n                        \"dstv\": true,\n                        \"gym\": true,\n                        \"cctv\": true,\n                        \"car_hire\": false,\n                        \"room_service\": true,\n                        \"front_desk_24h\": true,\n                        \"electricity_24h\": true,\n                        \"car_park\": true\n                    }\n                ]\n            },\n            \"Room\": {\n                \"category\": \"Executive\",\n                \"capacity\": 2,\n                \"check_in\": \"06:00:00\",\n                \"check_out\": \"06:00:00\",\n                \"description\": \"Executive room with two baths and a dressing console \",\n                \"availability\": true,\n                \"price\": 50000,\n                \"condition\": \"Good\"\n            }\n        },\n        {\n            \"id\": \"db8c30df-7c0c-4a61-b8fe-57827c99289e\",\n            \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n            \"user_id\": \"6d908143-56aa-4ec3-8640-b41eefda28f8\",\n            \"room_id\": \"8e38ef75-cd5e-494f-aa79-319d5dd42a7e\",\n            \"date_in\": \"2023-12-30\",\n            \"date_out\": \"2023-12-31\",\n            \"status\": \"active\",\n            \"payment_status\": true,\n            \"User\": {\n                \"first_name\": \"Williams\",\n                \"last_name\": \"Shakesword\",\n                \"phone_number\": \"0787212323\",\n                \"email\": \"swillsword@email.com\",\n                \"password\": null,\n                \"type\": \"regular\"\n            },\n            \"Hotel\": {\n                \"name\": \"City Pride hotel\",\n                \"address\": \"23, Akeju street, Acme road, Ikeja\",\n                \"city\": \"Lagos\",\n                \"state\": \"Lagos\",\n                \"hotel_type\": \"Hotel\",\n                \"number_of_rooms\": 30,\n                \"contact_email\": \"citypride@email.com\",\n                \"contact_phone\": 9012121214,\n                \"facilities\": [\n                    {\n                        \"restaurant\": \"true\",\n                        \"bar_launge\": true,\n                        \"security\": true,\n                        \"wifi_internet\": true,\n                        \"swimming_pool\": false,\n                        \"dstv\": true,\n                        \"gym\": true,\n                        \"cctv\": true,\n                        \"car_hire\": false,\n                        \"room_service\": true,\n                        \"front_desk_24h\": true,\n                        \"electricity_24h\": true,\n                        \"car_park\": true\n                    }\n                ]\n            },\n            \"Room\": {\n                \"category\": \"Executive\",\n                \"capacity\": 2,\n                \"check_in\": \"06:00:00\",\n                \"check_out\": \"06:00:00\",\n                \"description\": \"Executive room with two baths and a dressing console \",\n                \"availability\": true,\n                \"price\": 50000,\n                \"condition\": \"Good\"\n            }\n        },\n        {\n            \"id\": \"2a80d0f6-6ebc-40b4-8b60-1e715ee08c91\",\n            \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n            \"user_id\": \"6d908143-56aa-4ec3-8640-b41eefda28f8\",\n            \"room_id\": \"8e38ef75-cd5e-494f-aa79-319d5dd42a7e\",\n            \"date_in\": \"2023-12-30\",\n            \"date_out\": \"2023-12-31\",\n            \"status\": \"used\",\n            \"payment_status\": true,\n            \"User\": {\n                \"first_name\": \"Williams\",\n                \"last_name\": \"Shakesword\",\n                \"phone_number\": \"0787212323\",\n                \"email\": \"swillsword@email.com\",\n                \"password\": null,\n                \"type\": \"regular\"\n            },\n            \"Hotel\": {\n                \"name\": \"City Pride hotel\",\n                \"address\": \"23, Akeju street, Acme road, Ikeja\",\n                \"city\": \"Lagos\",\n                \"state\": \"Lagos\",\n                \"hotel_type\": \"Hotel\",\n                \"number_of_rooms\": 30,\n                \"contact_email\": \"citypride@email.com\",\n                \"contact_phone\": 9012121214,\n                \"facilities\": [\n                    {\n                        \"restaurant\": \"true\",\n                        \"bar_launge\": true,\n                        \"security\": true,\n                        \"wifi_internet\": true,\n                        \"swimming_pool\": false,\n                        \"dstv\": true,\n                        \"gym\": true,\n                        \"cctv\": true,\n                        \"car_hire\": false,\n                        \"room_service\": true,\n                        \"front_desk_24h\": true,\n                        \"electricity_24h\": true,\n                        \"car_park\": true\n                    }\n                ]\n            },\n            \"Room\": {\n                \"category\": \"Executive\",\n                \"capacity\": 2,\n                \"check_in\": \"06:00:00\",\n                \"check_out\": \"06:00:00\",\n                \"description\": \"Executive room with two baths and a dressing console \",\n                \"availability\": true,\n                \"price\": 50000,\n                \"condition\": \"Good\"\n            }\n        }\n    ]\n}"
+						}
+					]
+				}
+			],
+			"id": "5e8c1850-b27d-4ca4-86d2-0453b8318343"
+		},
+		{
+			"name": "Facility",
+			"item": [
+				{
+					"name": "Create facility record",
+					"id": "374dfbb3-5ee6-40c4-833c-6a4f00ee95dc",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n    \"restaurant\": 1,\n    \"bar_launge\": 0,\n    \"security\": 1,\n    \"wifi_internet\": 1,\n    \"swimming_pool\": 1,\n    \"dstv\" : 1,\n    \"gym\": 1,\n    \"cctv\" : 1,\n    \"car_hire\" : 0,\n    \"room_service\": 1,\n    \"front_desk_24h\": 1,\n    \"electricity_24h\": 1,\n    \"car_park\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://hotels-mb5s.onrender.com/createfacility"
+					},
+					"response": []
+				},
+				{
+					"name": "Update facility record",
+					"id": "52c9c306-2af8-4f81-80eb-c1d64ec1f713",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"restaurant\": \"true\",\n    \"bar_launge\": \"true\",\n    \"security\": \"true\",\n    \"wifi_internet\": \"true\",\n    \"swimming_pool\": \"false\",\n    \"dstv\" : \"true\",\n    \"gym\": \"true\",\n    \"cctv\" : \"true\",\n    \"car_hire\" : \"false\",\n    \"room_service\": \"true\",\n    \"front_desk_24h\": \"true\",\n    \"electricity_24h\": \"true\",\n    \"car_park\": \"true\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://hotels-mb5s.onrender.com/facility/fd47dd4c-4337-4e08-a767-f659419fd7fc"
+					},
+					"response": []
+				},
+				{
+					"name": "Get facility",
+					"id": "1fe98c91-8270-40c9-8118-7811b66103f6",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "https://hotels-mb5s.onrender.com/findfacility"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All facilities",
+					"id": "f962fea8-2aae-456b-9d29-9d553b177587",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "https://hotels-mb5s.onrender.com/findfacilities"
+					},
+					"response": []
+				}
+			],
+			"id": "77858946-60a0-4bc1-9619-95dcdadb7d36"
+		},
+		{
+			"name": "Media upload",
+			"id": "28c2753b-02f6-4aca-abab-c86a487b5299",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "image",
+							"type": "file",
+							"fileNotInWorkingDirectoryWarning": "This file isn't in your working directory. Teammates you share this request with won't be able to use this file. To make collaboration easier you can setup your working directory in Settings.",
+							"src": "/Users/stephenoyeyemi/Downloads/home.jpeg"
+						},
+						{
+							"key": "image",
+							"type": "file",
+							"value": null,
+							"disabled": true
+						}
+					]
+				},
+				"url": "https://hotels-mb5s.onrender.com/upload"
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"id": "de1a61f4-c31e-427d-a8f4-4454016a68bb",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": ""
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"hammed3@email.com\",\n    \"password\": \"HAMMED!SHORTman\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:444/login"
+			},
+			"response": [
+				{
+					"id": "960bb8d7-1292-4113-91c8-0707f00d0ffa",
+					"name": "Login",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"osfeam@email.com\",\n    \"password\": \"@Fire4fire!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:555/login"
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "362"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"16a-jLNWu09+kPXVlB5DEroZTjMOESY\""
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 28 Dec 2023 00:07:46 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"responseTime": null,
+					"body": "{\n    \"statusCode\": 200,\n    \"id\": \"cbfcf1fc-8eda-48ec-8276-914b06add970\",\n    \"first_name\": \"Sola\",\n    \"last_name\": \"Osfeam\",\n    \"type\": \"VIP\",\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySW5mbyI6eyJpZCI6ImNiZmNmMWZjLThlZGEtNDhlYy04Mjc2LTkxNGIwNmFkZDk3MCIsImVtYWlsIjoib3NmZWFtQGVtYWlsLmNvbSIsInR5cGUiOiJWSVAifSwiaWF0IjoxNzAzNzIyMDY2fQ.Rm9ATukswNuo6pFwUGoLhA9zkDvfWGcsXI10zyHQ4zM\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Login LOCAL",
+			"id": "ad975872-a220-4854-96bb-fa3bd4605bc1",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": ""
+					}
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"babasam@email.com\",\n    \"password\": \"PP@$$w0rd123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:444/login"
+			},
+			"response": [
+				{
+					"id": "598ee7dd-4a4c-4d2b-8f0b-be279a3eebb3",
+					"name": "Login",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"osfeam@email.com\",\n    \"password\": \"@Fire4fire!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:555/login"
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "362"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"16a-jLNWu09+kPXVlB5DEroZTjMOESY\""
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 28 Dec 2023 00:07:46 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"responseTime": null,
+					"body": "{\n    \"statusCode\": 200,\n    \"id\": \"cbfcf1fc-8eda-48ec-8276-914b06add970\",\n    \"first_name\": \"Sola\",\n    \"last_name\": \"Osfeam\",\n    \"type\": \"VIP\",\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySW5mbyI6eyJpZCI6ImNiZmNmMWZjLThlZGEtNDhlYy04Mjc2LTkxNGIwNmFkZDk3MCIsImVtYWlsIjoib3NmZWFtQGVtYWlsLmNvbSIsInR5cGUiOiJWSVAifSwiaWF0IjoxNzAzNzIyMDY2fQ.Rm9ATukswNuo6pFwUGoLhA9zkDvfWGcsXI10zyHQ4zM\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Rating and Review",
+			"id": "f9ea4f40-90f2-4f93-bbf3-dc11aeb2d8d5",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n    \"review_title\": \"Excellent service\",\n    \"review\": \"I enjoyed their clean and quiet environment\",\n    \"like\": true,\n    \"cleanliness\": 9,\n    \"comfort\": 9,\n    \"service\": 8,\n    \"security\": 8,\n    \"location\": 7\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "https://hotels-mb5s.onrender.com/createrating/6d908143-56aa-4ec3-8640-b41eefda28f8"
+			},
+			"response": [
+				{
+					"id": "8b743b6b-7952-4838-bdd1-a0afcaee6c67",
+					"name": "New Request",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n    \"review_title\": \"Excellent service\",\n    \"review\": \"I enjoyed their clean and quiet environment\",\n    \"cleanliness\": 9,\n    \"comfort\": 9,\n    \"service\": 8,\n    \"security\": 8,\n    \"location\": 7\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:555/createrating/6d908143-56aa-4ec3-8640-b41eefda28f8"
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "X-Powered-By",
+							"value": "Express"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "500"
+						},
+						{
+							"key": "ETag",
+							"value": "W/\"1f4-pAJwISC81kt0TnBlQ+4ptBLLOB0\""
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 22 Dec 2023 14:43:04 GMT"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5"
+						}
+					],
+					"cookie": [],
+					"responseTime": null,
+					"body": "{\n    \"message\": \"Ratings created\",\n    \"Record\": {\n        \"id\": \"5c170c61-4e1d-4b02-b668-6d0f9b714684\",\n        \"hotel_id\": \"f66a3ca9-df3c-4af1-8e72-bc13e0b1b111\",\n        \"user_id\": \"6d908143-56aa-4ec3-8640-b41eefda28f8\",\n        \"review_title\": \"Excellent service\",\n        \"date\": \"2023-12-22T02:43:04.000Z\",\n        \"first_name\": \"Williams\",\n        \"last_name\": \"Shakesword\",\n        \"review\": \"I enjoyed their clean and quiet environment\",\n        \"cleanliness\": 9,\n        \"comfort\": 9,\n        \"service\": 8,\n        \"security\": 8,\n        \"location\": 7,\n        \"updatedAt\": \"2023-12-22T14:43:04.108Z\",\n        \"createdAt\": \"2023-12-22T14:43:04.108Z\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "New Request",
+			"id": "571693b9-cb2c-433b-91bc-9ad2173748bf",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "https://hotels-mb5s.onrender.com/alluser"
+			},
+			"response": []
+		},
+		{
+			"name": "New Request Copy",
+			"id": "deb4b6e7-bc77-413c-8007-dd3dba974541",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "https://hotels-mb5s.onrender.com/"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "hotels",
+			"value": "https://hotels-mb5s.onrender.com"
+		}
+	]
+}
