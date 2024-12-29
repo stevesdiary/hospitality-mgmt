@@ -19,7 +19,7 @@ const path = require("path");
 const multer = require("multer");
 const fileUpload = require('express-fileupload');
 const bodyParser = require('body-parser');
-const port = process.env.LOCAL_PORT || 3306 ;
+const port = process.env.LOCAL_PORT || 3000 ;
 require('dotenv').config();
 // const routes = require("./routes");
 cloudinary.config({
