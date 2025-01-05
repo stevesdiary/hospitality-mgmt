@@ -1,6 +1,5 @@
 const  express = require ("express");
 const cloudinary = require("cloudinary").v2;
-const env = require("dotenv").config();
 const fs = require('fs/promises');
 const cors = require ("cors");
 const helmet = require('helmet');
@@ -98,7 +97,7 @@ app.post('/upload', upload.single('image', { folder: "hotels-ng" },), async(req,
 });
 
 app.listen(port, async() => {
-   console.log(`App running on port ${port} ✅`)
+   console.log(`App running on port ${port}`)
 })
 
 module.exports = app
