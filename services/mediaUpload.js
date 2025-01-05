@@ -4,19 +4,14 @@
 const express = require("express");
 const { Sequelize } = require("sequelize");
 const cloudinary = require("cloudinary").v2;
-const mysql = require("mysql2");
 const env = require("dotenv").config();
 const fs = require("fs/promises");
-const cors = require("cors");
-const helmet = require("helmet");
-const db = require("./config/dbConfig");
 const app = express();
 const user_route = require("./routes/user");
 const path = require("path");
 const multer = require("multer");
 const bodyParser = require("body-parser");
 require("dotenv").config();
-// const routes = require("./routes");
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
