@@ -1,6 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const { Facility, Hotel, Room } = require('../models');
-const verifyUserType = require('../middleware/verifyUserType').default;
+const verifyUserType = require('../middleware/verifyUserType');
 const facilityController = {
   createFacility: async (req, res) => {
     try{
