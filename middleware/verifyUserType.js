@@ -1,6 +1,4 @@
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const SECRET = process.env.JWT_SECRET || "";
+const SECRET = process.env.JWT_SECRET || "secret";
 
 const authorise = (...allowedRoles) => (req, res, next) => {
   try {
@@ -14,11 +12,10 @@ const authorise = (...allowedRoles) => (req, res, next) => {
       return res.status(401).send({ message: "No token provided" });
     }
 
-    const decoded = jwt.verify(token, SECRET);
-    // console.log(token)
-    const userRole = decoded.type;
+    const decoded = verify(token, SECRET);
+    const userRole = decoded.role;
 
-    if (typeof decoded !== "object" || !allowedRoles.includes(userRole)) {
+    if (decoded !== "object" || !allowedRoles.includes(userRole)) {
       return res.status(403).send({ message: 'Forbidden! You are NOT authorised to access this page!' });
     }
     return next();
