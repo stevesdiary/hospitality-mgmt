@@ -1,12 +1,19 @@
 require("dotenv").config();
 module.exports = {
   "development": {
-    "username": process.env.USERNAME,
-    "password": process.env.PASSWORD,
-    "database": process.env.DATABASE,
-    "port": process.env.PORT,
-    "host": process.env.HOST,
-    "dialect": process.env.DIALECT || 'mysql'
+    "username": process.env.DB_USER,
+    "password": process.env.DB_PASSWORD,
+    "database": process.env.DB_NAME,
+    "port": process.env.DB_PORT,
+    "host": process.env.DB_HOST,
+    "dialect": process.env.DB_DIALECT || 'postgres',
+    dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorised: true
+    },
+
+    }
   },
   "test": {
     "username": "root",
@@ -21,7 +28,7 @@ module.exports = {
     "database": process.env.DATABASE,
     "port": process.env.PORT || 3306,
     "host": process.env.HOST,
-    "dialect": "mysql"
+    "dialect": "postgres"
   }
 }
 

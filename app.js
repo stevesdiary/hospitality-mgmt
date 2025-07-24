@@ -18,6 +18,7 @@ const path = require("path");
 const multer = require("multer");
 const fileUpload = require('express-fileupload');
 const bodyParser = require('body-parser');
+const sequelize = require("./config/dbConfig");
 const port = process.env.LOCAL_PORT || 3000 ;
 require('dotenv').config();
 // const routes = require("./routes");
@@ -97,7 +98,8 @@ app.post('/upload', upload.single('image', { folder: "hotels-ng" },), async(req,
 });
 
 app.listen(port, async() => {
+   sequelize.authenticate();
    console.log(`App running on port ${port}`)
 })
 
-module.exports = app
+module.exports = app;
