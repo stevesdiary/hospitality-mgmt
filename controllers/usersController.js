@@ -1,7 +1,48 @@
-const { v4: uuidv4 } = require("uuid");
-const { User } = require('../models');
-const user = require("../models/user");
+const UserService = require('../services/user.service');
 
+exports.findAllUser = async (req, res) => {
+  try {
+    const users = await UserService.findAllUsers();
+    return res.status(200).send({ message: 'Records found', users });
+  } catch (err) {
+    console.error('Error occurred:', err);
+    return res.status(500).send({ message: 'Error occurred', err });
+  }
+};
+
+exports.findOne = async (req, res) => {
+  try {
+    const user = await UserService.findUserById(req.params.id);
+    return res.status(200).send({ message: 'User found', user });
+  } catch (err) {
+    console.error('Error occurred:', err);
+    return res.status(500).send({ message: 'Error occurred', err });
+  }
+};
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const deleted = await UserService.deleteUserById(req.params.id);
+    const message = deleted
+      ? `User with id ${req.params.id} has been deleted successfully!`
+      : `User ${req.params.id} does not exist or was already deleted.`;
+    return res.status(200).send({ message });
+  } catch (err) {
+    console.error('Error occurred:', err);
+    return res.status(500).send({ message: 'Error occurred', err });
+  }
+};
+
+exports.updateUser = async (req, res) => {
+  try {
+    const updated = await UserService.updateUserById(req.params.id, req.body);
+    const message = updated[0] === 1 ? 'Record Updated' : 'User not found or no changes made';
+    return res.status(200).send({ message });
+  } catch (err) {
+    console.error('Error occurred:', err);
+    return res.status(500).send({ message: 'Error occurred', err });
+  }
+};
 
 exports.findAllUser = async (req, res) => {
   try{
