@@ -1,63 +1,84 @@
-const { User } = require("../models");
-const jwt = require("jsonwebtoken");
-const bcrypt = require('bcrypt');
-const { v4: uuidv4 } = require('uuid');
-const tokenExpiry = process.env.TOKEN_EXPIRY || '5hours';
+const authService = require('../services/authService');
+
 const loginController = {
   login: async (req, res) => {
-    try{
-      const sessions = {}
-      const session_id = uuidv4();
+    try {
       const { email, password } = req.body;
-      const userData = await User.findOne({ where: { email: email } });
-      if (!userData) {
-        return res.status(404).send({ Message: "Email is not registered or profile not found!" });
+      
+      // Validate input
+      if (!email || !password) {
+        return res.status(400).json({ 
+          message: "Email and password are required" 
+        });
       }
-      const passwordMatch = await bcrypt.compare(password, userData.password);
-      if (!passwordMatch) {
-        return res.status(401).send({ Message: "Password is not correct, please provide the correct password." });
-      } 
-      const user = await User.findOne({ where: { email }});
-      const id = user.id;
-      const first_name = user.first_name;
-      const last_name = user.last_name;
-      const type = user.type;
-      const UserInfo = {
-        id: id,
-        email: userData.email,
-        type: user.type
-      }
-      const accessToken = jwt.sign(UserInfo, process.env.JWT_SECRET, {expiresIn: tokenExpiry});
-      sessions[session_id] = { email, user_id: id }
-      res.set('Set-Cookie', `session=${session_id}`);
+
+      // Call auth service
+      const authResult = await authService.login({ email, password });
+      
+      // Set session cookie
+      res.cookie('session', authResult.sessionId, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: authService.parseTokenExpiry(process.env.TOKEN_EXPIRY || '5hours') * 1000,
+        sameSite: 'strict'
+      });
+
+      // Return response
       return res.status(200).json({
         statusCode: 200,
-        id,
-        email: sessions.email,
-        first_name,
-        last_name,
-        type,
-        token: accessToken,
+        id: authResult.user.id,
+        email: authResult.user.email,
+        first_name: authResult.user.first_name,
+        last_name: authResult.user.last_name,
+        type: authResult.user.type,
+        token: authResult.accessToken,
       });
-    }
-    catch(err){
-      console.log('error occured' , err);
-      return res.status(500).send({Message: `User ${email}unable to login`, Error: err})
+    } catch (error) {
+      console.error('Login error:', error);
+      
+      // Handle specific errors
+      if (error.message.includes("Email is not registered")) {
+        return res.status(404).json({ Message: error.message });
+      } else if (error.message.includes("Password is not correct")) {
+        return res.status(401).json({ Message: error.message });
+      }
+      
+      return res.status(500).json({ 
+        Message: `Login failed`, 
+        Error: error.message 
+      });
     }
   },
 
   logout: async (req, res) => {
     try {
-      const session_id = req.headers.cookie;
-      if (session_id) {
-        await redisClient.del(session_id);
-        res.clearCookie('session');
+      const sessionId = req.cookies?.session;
+      if (!sessionId) {
+        return res.status(400).json({ 
+          message: "No active session found" 
+        });
       }
-      return res.status(200).send('Bye 👋, you have successfully logged out')
+      await authService.logout(sessionId);
+      res.clearCookie('session');
+      
+      return res.status(200).json({ 
+        message: "Bye 👋, you have successfully logged out" 
+      });
     } catch (error) {
-      return res.status(500).send({ message: 'An error occoured', error })
+      console.error('Logout error:', error);
+      
+      if (error.message.includes("Session not found")) {
+        return res.status(404).json({ 
+          message: "Session not found or already expired" 
+        });
+      }
+      
+      return res.status(500).json({ 
+        message: "Logout failed", 
+        error: error.message 
+      });
     }
   }
-}
+};
 
 module.exports = loginController;
