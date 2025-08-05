@@ -26,6 +26,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.18.2",
     "express-fileupload": "^1.4.3",
+    "express-rate-limit": "^8.0.1",
     "fs.promises": "^0.1.2",
     "googleapis": "^128.0.0",
     "helmet": "^7.1.0",
