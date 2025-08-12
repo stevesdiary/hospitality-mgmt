@@ -20,22 +20,23 @@ const ratingsAdnReviewController = {
     }
   },
 
-  // like: async (req, res) => {
-  //   try{
-  //     const {id, hotelId, userId} =  req.body;
-  //     const likeExists = await RatingAndReview.findOne({ where: { hotelId, userId }});
-  //     if(likeExists){
-  //       return res.status(403).send({message: 'User already liked the hotel'})
-  //     }
-  //     if(!likeExists){
-  //       const like = await RatingAndReview.updateRating({ like: true }, { where: { userId, hotelId } });
-  //     }
+  like: async (req, res) => {
+    try{
+      const {id, hotelId, userId} =  req.body;
+      const likeExists = await RatingAndReview.findOne({ where: { hotelId, userId }});
+      if(likeExists){
+        return res.status(403).send({message: 'User already liked the hotel'})
+      }
+      if(!likeExists){
+        const like = await RatingAndReview.updateRating({ like: true }, { where: { userId, hotelId } });
+      }
       
-  //   }
-  //   catch(err){
-  //     return res.status(500).send({ message: 'Error occoured', Error: err })
-  //   }
-  // },
+    }
+    catch(err){
+      return res.status(500).send({ message: 'Error occoured', Error: err })
+    }
+  },
+
   getRating: async (req, res) => {
     try{
       const id = req.params.id;
