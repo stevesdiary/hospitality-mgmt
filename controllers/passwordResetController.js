@@ -1,72 +1,69 @@
-const express = require("express");
-const bcrypt = require("bcryptjs");
-const saltRounds = 11;
-const jwt = require("jsonwebtoken");
-const {User} = require("../models");
+const authService = require('../services/authService');
+
 const passwordResetController = {
   resetPassword: async (req, res) => {
     try {
       const { token } = req.params;
       const { password: newPassword, confirmPassword, email } = req.body;
-
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      console.log({ tokenDecoded: decoded });
-
-      const decodedEmail = decoded?.email;
-      console.log(
-        "Here are the decoded details ",
-        decodedEmail,
-        decoded,
-        token
-      );
-
-      if (!decodedEmail) {
-        return res.status(400).send({
+      
+      // Validate required fields
+      if (!token || !newPassword || !confirmPassword || !email) {
+        return res.status(400).json({
           statusCode: 400,
-          message:
-            "Oops!, email not found for the specified token, Invalid or expired token.",
+          message: "Missing required fields: token, password, confirmPassword, and email are required"
         });
       }
-
-      if (email !== decodedEmail) {
-        return res.status(401).send("Invalid email");
-      }
-
-      if (!newPassword) {
-        return res.status(401).send("Password is required");
-      }
-      if (newPassword !== confirmPassword) {
-        res.status(409).send({message: 'Password do not match, check and try again.'});
+      
+      // Call service to reset password
+      const result = await authService.resetPassword(token, {
+        newPassword,
+        confirmPassword,
+        email
+      });
+      
+      return res.status(200).json({
+        statusCode: 200,
+        Message: result.message
+      });
+    } catch (error) {
+      console.error("Password reset error:", error);
+      
+      // Handle specific error cases
+      if (error.message.includes("Invalid or expired token")) {
+        return res.status(400).json({
+          statusCode: 400,
+          message: error.message
+        });
+      } else if (error.message.includes("Invalid email")) {
+        return res.status(401).json({
+          statusCode: 401,
+          message: error.message
+        });
+      } else if (error.message.includes("Passwords do not match")) {
+        return res.status(409).json({
+          statusCode: 409,
+          message: error.message
+        });
+      } else if (error.message.includes("User not found")) {
+        return res.status(404).json({
+          statusCode: 404,
+          message: error.message
+        });
+      } else if (error.message.includes("Invalid token") || error.message.includes("Token expired")) {
+        return res.status(401).json({
+          statusCode: 401,
+          message: error.message
+        });
       }
       
-      const hashed = await bcrypt.hash(newPassword, saltRounds);
-      User.password = hashed;
-
-      try {
-        const user = await User.findOne({ where: { email: decodedEmail } });
-        console.log({ user});
-        if (!user) {
-          return res.status(404).send(`User not found with ${decodedEmail}. You need to register first.`);
-        }
-        if (user) {
-          (user.email = email), (user.password = hashed);
-          const saveResult = await user.save();
-          console.log({ saveResult });
-
-          console.log("Password updated successfully");
-          return res.status(200).send({Message: "Password updated successfully, you can now login with your new password."});
-        }
-
-        return res.send({Message: `User not found with ${decodedEmail}`});
-      } catch (err) {
-        console.error(err);
-        return res.send(err.message);
-      }
-    } catch (err) {
-      console.log({ resetPasswordError: err });
-      const errorMessage = err?.message;
-      return res.send(errorMessage || "Something went wrong", err );
+      // Generic server error
+      return res.status(500).json({
+        statusCode: 500,
+        message: "Something went wrong while resetting password",
+        error: error.message
+      });
     }
-  },
+  }
 };
+
 module.exports = passwordResetController;
