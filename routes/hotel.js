@@ -3,8 +3,10 @@ const router = express.Router();
 const verifyUserType = require('../middleware/verifyUserType');
 const {authentication} = require("../middleware/authentication");
 const hotelController = require('../controllers/hotelController');
+const { validateBody, validateQuery, validateUuidParam } = require('../middleware/validation');
+const { hotelValidation, queryValidation } = require('../utils/validationSchemas');
 
-router.post('/createhotel', authentication, verifyUserType('admin'), hotelController.createHotel);
+router.post('/createhotel', authentication, verifyUserType('admin'), validateBody(hotelValidation.create), hotelController.createHotel);
 
 router.get('/findall', authentication, verifyUserType('admin', 'user', 'guest'), hotelController.findAllHotel);
 
