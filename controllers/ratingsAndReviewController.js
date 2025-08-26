@@ -3,20 +3,25 @@ const { User, RatingAndReview } = require('../models');
 const moment = require('moment');
 const { where } = require('sequelize');
 
-const ratingsAdnReviewController = {
+const ratingsAndReviewController = {
   createRating: async (req, res) => {
     try{
       const date = moment().format('YYYY-MM-DD hh:mm:ss');
       const userId = req.params.userId;
-      const userData =  await User.findOne({where: {id: userId }});
-      firstName = userData.firstName;
-      lastName = userData.lastName;
+      const userData = await User.findOne({where: {id: userId }});
+      
+      if (!userData) {
+        return res.status(404).json({message: 'User not found'});
+      }
+      
+      const firstName = userData.firstName;
+      const lastName = userData.lastName;
       const id = uuidv4();
       const { hotelId, reviewTitle, review, like, cleanliness, comfort, service, security, location } = req.body;
       const ratings = await RatingAndReview.create({id, hotelId, userId, reviewTitle, date, firstName, lastName, review, like, cleanliness, comfort, service, security, location});
-      return res.status(201).send({message: 'Ratings created', Record: ratings});
+      return res.status(201).json({message: 'Rating created successfully', record: ratings});
     }catch(err){
-      return res.status(500).send({message: 'Error occoured', Error: err})
+      return res.status(500).json({message: 'Error occurred while creating rating', error: err.message});
     }
   },
 
@@ -76,16 +81,16 @@ const ratingsAdnReviewController = {
       const id = req.params.id;
       const deleteRating = await RatingAndReview.destroy({where: { id }});
       if (deleteRating == 1) {
-        return res.status(500).send({ message: `Room record with id ${id} has been deleted successfully`});
+        return res.status(200).json({ message: `Rating record with id ${id} has been deleted successfully`});
       }
       if(deleteRating == 0) {
-        return res.send({ message: `Room with id ${id} does not exist or is deleted in the database` });
+        return res.status(404).json({ message: `Rating with id ${id} does not exist or is already deleted` });
       }
     }
     catch(err) {
-      return res.status(500).send({ message: 'AN error occoured', Error: err });
+      return res.status(500).json({ message: 'An error occurred while deleting rating', error: err.message });
     }
   }
 }
 
-module.exports = ratingsAdnReviewController;
+module.exports = ratingsAndReviewController;
