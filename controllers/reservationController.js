@@ -63,10 +63,10 @@ const reservationController = {
       });
       console.log(reservation.dataValues.User.dataValues.first_name)
       if (reservation) {
-        return res.status(500).send({message: `Reservation record found`, Reservation: reservation});
+        return res.status(200).json({message: `Reservation record found`, data: reservation});
       }
       if(!reservation){
-        return res.send({message: `Reservation with id ${id} does not exist or is deleted in the database`});
+        return res.status(404).json({message: `Reservation with id ${id} does not exist or is deleted`});
       }
     }
     catch(err){
@@ -118,11 +118,10 @@ const reservationController = {
         ]
       });
     
-      if (reservations) {
-        return res.status(500).send({message: `Reservation records found`, Reservation: reservations});
-      }
-      if(reservations.count == 0){
-        return res.send({message: `Reservation with id ${id} does not exist or is deleted in the database`});
+      if (reservations && reservations.length > 0) {
+        return res.status(200).json({message: `Reservation records found`, data: reservations});
+      } else {
+        return res.status(404).json({message: `No reservations found`});
       }
     }
     catch(err){
