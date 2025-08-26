@@ -18,25 +18,9 @@ const path = require("path");
 const multer = require("multer");
 const fileUpload = require("express-fileupload");
 const bodyParser = require("body-parser");
-const sequelize = require("./config/dbConfig");
+const errorHandler = require('./middleware/errorHandler');
 const port = process.env.LOCAL_PORT || 3000;
-
-// In your route setup
-const rateLimit = require("express-rate-limit");
-
-const passwordResetLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 requests per windowMs
-  message: "Too many password reset attempts, please try again later",
-});
-
-// Apply to your route
-router.post(
-  "/reset-password/:token",
-  passwordResetLimiter,
-  passwordResetController.resetPassword
-);
-require("dotenv").config();
+require('dotenv').config();
 // const routes = require("./routes");
 cloudinary.config({
   cloudName: process.env.CLOUD_NAME,
@@ -121,9 +105,17 @@ app.post(
   }
 );
 
+// Global error handler (must be last)
+app.use(errorHandler);
+
 app.listen(port, async () => {
-  sequelize.authenticate();
-  console.log(`App running on port ${port}`);
+  try {
+    await require('./config/dbConfig').authenticate();
+    console.log('Database connected successfully');
+    console.log(`App running on port ${port}`);
+  } catch (error) {
+    console.error('Database connection failed:', error);
+  }
 });
 
 module.exports = app;
