@@ -1,7 +1,21 @@
-const stripe = require('stripe')('sk_test_...');
+require('dotenv').config();
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-stripe.customers.create({
-  email: 'customer@example.com',
-})
-  .then(customer => console.log(customer.id))
-  .catch(error => console.error(error));
+// Example usage - should be moved to proper controller
+const createCustomer = async (email) => {
+  try {
+    const customer = await stripe.customers.create({
+      email: email,
+    });
+    console.log('Customer created:', customer.id);
+    return customer;
+  } catch (error) {
+    console.error('Error creating customer:', error);
+    throw error;
+  }
+};
+
+module.exports = {
+  createCustomer,
+  stripe
+};
