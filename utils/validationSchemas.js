@@ -484,6 +484,95 @@ const queryValidation = {
   })
 };
 
+// Image upload validation schemas
+const imageValidation = {
+  singleUpload: Joi.object({
+    entityType: Joi.string()
+      .valid('room', 'hotel', 'facility', 'user', 'general')
+      .required()
+      .messages({
+        'any.only': 'Entity type must be room, hotel, facility, user, or general',
+        'any.required': 'Entity type is required'
+      }),
+    
+    entityId: Joi.string()
+      .uuid()
+      .optional()
+      .messages({
+        'string.uuid': 'Entity ID must be a valid UUID'
+      }),
+    
+    folder: Joi.string()
+      .optional()
+      .default('hospitality-mgmt')
+      .messages({
+        'string.base': 'Folder must be a string'
+      }),
+      
+    description: Joi.string()
+      .min(5)
+      .max(200)
+      .optional()
+      .messages({
+        'string.min': 'Description must be at least 5 characters',
+        'string.max': 'Description cannot exceed 200 characters'
+      })
+  }),
+
+  multipleUpload: Joi.object({
+    entityType: Joi.string()
+      .valid('room', 'hotel', 'facility', 'user', 'general')
+      .required(),
+    
+    entityId: Joi.string()
+      .uuid()
+      .optional(),
+    
+    folder: Joi.string()
+      .optional()
+      .default('hospitality-mgmt'),
+      
+    maxFiles: Joi.number()
+      .integer()
+      .min(1)
+      .max(10)
+      .optional()
+      .default(5)
+      .messages({
+        'number.min': 'Must upload at least 1 file',
+        'number.max': 'Cannot upload more than 10 files at once'
+      }),
+      
+    descriptions: Joi.array()
+      .items(Joi.string().min(5).max(200))
+      .optional()
+      .messages({
+        'array.base': 'Descriptions must be an array of strings'
+      })
+  }),
+
+  deleteImage: Joi.object({
+    publicId: Joi.string()
+      .required()
+      .messages({
+        'any.required': 'Public ID is required for image deletion'
+      })
+  }),
+
+  deleteMultiple: Joi.object({
+    publicIds: Joi.array()
+      .items(Joi.string().required())
+      .min(1)
+      .max(50)
+      .required()
+      .messages({
+        'array.min': 'At least one public ID is required',
+        'array.max': 'Cannot delete more than 50 images at once',
+        'any.required': 'Public IDs array is required'
+      })
+  })
+};
+
 module.exports = {
   userValidation,
   hotelValidation,
@@ -492,5 +581,6 @@ module.exports = {
   ratingValidation,
   facilityValidation,
   passwordResetValidation,
-  queryValidation
+  queryValidation,
+  imageValidation
 };

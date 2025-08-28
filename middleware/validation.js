@@ -175,19 +175,103 @@ const customValidations = {
    * Validate file upload constraints
    */
   validateFileUpload: (req, res, next) => {
-    if (req.files && req.files.length > 0) {
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-      const maxSize = 5 * 1024 * 1024; // 5MB
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxFiles = 10;
+    
+    // Handle both single file and multiple files
+    let files = [];
+    
+    if (req.files) {
+      // express-fileupload format
+      if (Array.isArray(req.files.images)) {
+        files = req.files.images;
+      } else if (req.files.image) {
+        files = [req.files.image];
+      } else if (req.files.images) {
+        files = [req.files.images];
+      }
+    } else if (req.file) {
+      // multer single file
+      files = [req.file];
+    } else if (req.files && Array.isArray(req.files)) {
+      // multer multiple files
+      files = req.files;
+    }
+    
+    if (files.length === 0) {
+      return sendValidationError(res, 'No files uploaded');
+    }
+    
+    if (files.length > maxFiles) {
+      return sendValidationError(res, `Cannot upload more than ${maxFiles} files at once`);
+    }
+    
+    for (let file of files) {
+      // Check file type
+      if (!allowedTypes.includes(file.mimetype)) {
+        return sendValidationError(res, `Invalid file type: ${file.mimetype}. Only JPEG, PNG, JPG, and WebP files are allowed`);
+      }
       
-      for (let file of req.files) {
-        if (!allowedTypes.includes(file.mimetype)) {
-          return sendValidationError(res, 'Only JPEG, PNG, and JPG files are allowed');
+      // Check file size
+      if (file.size > maxSize) {
+        return sendValidationError(res, `File ${file.name || file.originalname} exceeds 5MB size limit`);
+      }
+      
+      // Check if file has content
+      if (file.size === 0) {
+        return sendValidationError(res, `File ${file.name || file.originalname} is empty`);
+      }
+    }
+    
+    // Attach validated files to request
+    req.validatedFiles = files;
+    next();
+  },
+
+  /**
+   * Validate image upload for specific entity types
+   */
+  validateImageUpload: (entityType) => {
+    return (req, res, next) => {
+      // Validate entity type
+      const allowedEntityTypes = ['room', 'hotel', 'facility', 'user', 'general'];
+      if (!allowedEntityTypes.includes(entityType)) {
+        return sendValidationError(res, `Invalid entity type: ${entityType}`);
+      }
+      
+      // Add entity type to request
+      req.entityType = entityType;
+      
+      // If entityId is provided in params, validate it
+      if (req.params.id || req.params.entityId) {
+        const entityId = req.params.id || req.params.entityId;
+        const Joi = require('joi');
+        const { error } = Joi.string().uuid().validate(entityId);
+        
+        if (error) {
+          return sendValidationError(res, 'Invalid entity ID format');
         }
         
-        if (file.size > maxSize) {
-          return sendValidationError(res, 'File size cannot exceed 5MB');
-        }
+        req.entityId = entityId;
       }
+      
+      next();
+    };
+  },
+
+  /**
+   * Validate image deletion request
+   */
+  validateImageDeletion: (req, res, next) => {
+    const { publicId } = req.body;
+    
+    if (!publicId) {
+      return sendValidationError(res, 'Public ID is required for image deletion');
+    }
+    
+    if (typeof publicId !== 'string' || publicId.trim().length === 0) {
+      return sendValidationError(res, 'Public ID must be a non-empty string');
     }
     
     next();
