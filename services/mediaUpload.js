@@ -51,7 +51,6 @@ app.post(
     try {
       let imagePath = "./uploads/" + req.file.filename;
 
-      // console.log('Upload status', imagePath)
       const result = await cloudinary.uploader.upload(imagePath, options);
       console.log(
         "Upload successful! Here's the image url: ",
@@ -68,6 +67,7 @@ app.post(
         .send({ message: "Upload Successful", result: result.secure_url });
     } catch (err) {
       console.log(err);
+      throw err;
     }
   }
 );
