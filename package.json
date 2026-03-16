@@ -2,11 +2,13 @@
   "name": "express",
   "version": "1.0.0",
   "description": "Express server to run description",
-  "main": "index.js",
+  "main": "src/app.ts",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js",
-    "migrate": "npx sequelize-cli db:migrate"
+    "start": "node dist/src/app.js",
+    "dev": "nodemon --exec ts-node src/app.ts",
+    "build": "tsc",
+    "migrate": "npx sequelize-cli db:migrate",
+    "type-check": "tsc --noEmit"
   },
   "keywords": [
     "Express",
@@ -17,10 +19,11 @@
   "author": "Stephen Oyeyemi",
   "license": "ISC",
   "dependencies": {
+    "@upstash/qstash": "^2.9.0",
+    "backblaze-b2": "^1.7.1",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
-    "cloudinary": "^1.41.0",
     "cookie": "^1.0.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -47,5 +50,22 @@
     "sequelize-cli": "^6.6.2",
     "stripe": "^17.5.0",
     "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/backblaze-b2": "^1.5.6",
+    "@types/bcrypt": "^5.0.2",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cookie": "^0.6.0",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/express-fileupload": "^1.4.4",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/multer": "^1.4.11",
+    "@types/node": "^20.19.37",
+    "@types/node-cron": "^3.0.11",
+    "@types/nodemailer": "^6.4.14",
+    "@types/uuid": "^9.0.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
   }
 }
