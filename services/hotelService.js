@@ -28,7 +28,7 @@ class HotelService {
       hotelType,
       search,
       restaurant,
-      barLaunge,
+      barLounge,
       gym,
       roomService,
       wifiInternet,
@@ -45,7 +45,7 @@ class HotelService {
 
     const facilities = {
       restaurant,
-      barLaunge,
+      barLounge,
       gym,
       roomService,
       wifiInternet,
@@ -87,7 +87,7 @@ class HotelService {
 
     if (facilities) {
       const facilityConditions = [
-        "restaurant", "barLaunge", "gym", "roomService", "wifiInternet",
+        "restaurant", "barLounge", "gym", "roomService", "wifiInternet",
         "dstv", "security", "swimmingPool", "cctv", "frontDesk24h",
         "carHire", "electricity24h"
       ];

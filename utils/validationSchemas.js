@@ -430,7 +430,7 @@ const facilityValidation = {
       }),
     
     restaurant: Joi.boolean().default(false),
-    barLaunge: Joi.boolean().default(false),
+    barLounge: Joi.boolean().default(false),
     gym: Joi.boolean().default(false),
     roomService: Joi.boolean().default(false),
     wifiInternet: Joi.boolean().default(false),

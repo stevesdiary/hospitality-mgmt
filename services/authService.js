@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const redisClient = require('../config/redis');
+const { auditService } = require('./auditService');
 const saltRounds = 11;
 
 const tokenExpiry = process.env.TOKEN_EXPIRY || '5hours';
@@ -25,7 +26,7 @@ class AuthService {
         email: user.email,
         type: user.type
       };
-      const accessToken = jwt.sign(userInfo, process.env.JWT_SECRET, { expiresIn: tokenExpiry });
+      const accessToken = jwt.sign(userInfo, process.env.JWT_SECRET, { expiresIn: tokenExpiry, algorithm: 'HS256' });
 
       const sessionId = uuidv4();
       const sessionData = {
@@ -90,7 +91,7 @@ class AuthService {
     try {
       const { newPassword, confirmPassword, email } = passwordData;
       
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
       const decodedEmail = decoded?.email;
       
       if (!decodedEmail) {

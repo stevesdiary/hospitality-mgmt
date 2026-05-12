@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     hotelId: DataTypes.UUID,
     restaurant: DataTypes.STRING,
-    barLaunge: DataTypes.BOOLEAN,
+    barLounge: DataTypes.BOOLEAN,
     security: DataTypes.BOOLEAN,
     wifiInternet: DataTypes.BOOLEAN,
     swimmingPool: DataTypes.BOOLEAN,

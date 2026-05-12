@@ -19,6 +19,7 @@ const multer = require("multer");
 const fileUpload = require("express-fileupload");
 const bodyParser = require("body-parser");
 const errorHandler = require('./middleware/errorHandler');
+const { auditMutations } = require('./middleware/auditMiddleware');
 const port = process.env.LOCAL_PORT || 3000;
 require('dotenv').config();
 // const routes = require("./routes");
@@ -35,6 +36,7 @@ const options = {
 };
 app.use(express.json());
 app.use(bodyParser.json());
+app.use(auditMutations);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(fileUpload({ useTempFiles: true, tempFileDir: "/tmp/" }));

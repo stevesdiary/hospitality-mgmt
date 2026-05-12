@@ -1,13 +1,13 @@
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { auditService } = require('./auditService');
 
-// Example usage - should be moved to proper controller
-const createCustomer = async (email) => {
+const createCustomer = async (email, req = null) => {
   try {
-    const customer = await stripe.customers.create({
-      email: email,
-    });
-    console.log('Customer created:', customer.id);
+    const customer = await stripe.customers.create({ email });
+    if (req) {
+      auditService.logPayment(req, 'create_stripe_customer', 'User', null, { stripeCustomerId: customer.id });
+    }
     return customer;
   } catch (error) {
     console.error('Error creating customer:', error);
