@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Facility.belongsTo(models.Hotel, { foreignKey: 'hotelId' });
+      Facility.belongsTo(models.Company, { foreignKey: 'companyId', as: 'company' });
     }
   }
   Facility.init({
@@ -32,7 +33,12 @@ module.exports = (sequelize, DataTypes) => {
     roomService: DataTypes.BOOLEAN,
     frontDesk24h: DataTypes.BOOLEAN,
     electricity24h: DataTypes.BOOLEAN,
-    carPark: DataTypes.BOOLEAN
+    carPark: DataTypes.BOOLEAN,
+    companyId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: { model: 'Companies', key: 'id' }
+    }
   }, {
     sequelize,
     tableName: 'Facilities',

@@ -8,12 +8,11 @@ const { Model, DataTypes } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Hotel extends Model {
     static associate(models) {
-      // define association here
       Hotel.hasMany(models.Room, { foreignKey: 'hotelId', type: DataTypes.UUID, as: 'rooms' });
       Hotel.hasMany(models.Facility, { foreignKey: 'hotelId', type: DataTypes.UUID, as: 'facilities' });
-      // Hotel.hasMany(models.Media_file, { foreignKey: 'hotelId', type: DataTypes.UUID });
       Hotel.hasMany(models.RatingAndReview, { foreignKey: 'hotelId', type: DataTypes.UUID, as: 'ratingAndReview' });
       Hotel.hasMany(models.Reservation, { foreignKey: 'hotelId', type: DataTypes.UUID, as: 'reservation' });
+      Hotel.belongsTo(models.Company, { foreignKey: 'companyId', as: 'company' });
     }
   }
 
@@ -63,6 +62,11 @@ module.exports = (sequelize, DataTypes) => {
       termsAndConditions: {
         type: DataTypes.STRING,
         allowNull: true,
+      },
+      companyId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: { model: 'Companies', key: 'id' }
       },
     },
     {

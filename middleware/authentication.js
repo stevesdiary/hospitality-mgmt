@@ -18,7 +18,8 @@ const authentication = async (req, res, next) => {
     req.user = {
       id: decoded.id,
       email: decoded.email,
-      type: decoded.type
+      type: decoded.type,
+      companyId: decoded.companyId || null
     };
     // backward-compat aliases used by existing controllers
     req.userId = decoded.id;

@@ -10,20 +10,17 @@ const {
 const Op = Sequelize.Op;
 
 class HotelService {
-  async createHotel(hotelData) {
+  async createHotel(hotelData, companyId) {
     try {
       const id = uuidv4();
-      const hotel = await Hotel.create({
-        id,
-        ...hotelData
-      });
+      const hotel = await Hotel.create({ id, companyId, ...hotelData });
       return hotel;
     } catch (error) {
       throw new Error(`Error creating hotel: ${error.message}`);
     }
   }
 
-  async buildHotelQuery(queryParams) {
+  async buildHotelQuery(queryParams, companyId = null) {
     const {
       hotelType,
       search,
@@ -59,6 +56,7 @@ class HotelService {
     };
 
     const whereConditions = {};
+    if (companyId) whereConditions.companyId = companyId;
     const nameCitySearch = [];
 
     if (search) {
@@ -104,9 +102,9 @@ class HotelService {
     return whereConditions;
   }
 
-  async findAllHotels(queryParams) {
+  async findAllHotels(queryParams, companyId = null) {
     try {
-      const whereConditions = await this.buildHotelQuery(queryParams);
+      const whereConditions = await this.buildHotelQuery(queryParams, companyId);
       
       const { count, rows: hotels } = await Hotel.findAndCountAll({
         distinct: true,
@@ -152,14 +150,12 @@ class HotelService {
     }
   }
 
-  async findTopDeals(queryParams) {
+  async findTopDeals(queryParams, companyId = null) {
     try {
       const { state } = queryParams;
       const whereConditions = {};
-      
-      if (state !== undefined) {
-        whereConditions.state = state;
-      }
+      if (companyId) whereConditions.companyId = companyId;
+      if (state !== undefined) whereConditions.state = state;
 
       const { count, rows: hotels } = await Hotel.findAndCountAll({
         distinct: true,
@@ -213,14 +209,12 @@ class HotelService {
     }
   }
 
-  async getTopDestinations(queryParams) {
+  async getTopDestinations(queryParams, companyId = null) {
     try {
       const { city } = queryParams;
       const whereConditions = {};
-      
-      if (city !== undefined) {
-        whereConditions.city = city;
-      }
+      if (companyId) whereConditions.companyId = companyId;
+      if (city !== undefined) whereConditions.city = city;
 
       const { count, rows: hotels } = await Hotel.findAndCountAll({
         distinct: true,
@@ -267,10 +261,13 @@ class HotelService {
     }
   }
 
-  async getHotelsByCity() {
+  async getHotelsByCity(companyId = null) {
     try {
+      const whereConditions = {};
+      if (companyId) whereConditions.companyId = companyId;
       const { count, rows: hotels } = await Hotel.findAndCountAll({
         distinct: true,
+        where: whereConditions,
         attributes: {
           exclude: ["createdAt", "updatedAt", "deletedAt"],
           include: [
@@ -321,10 +318,11 @@ class HotelService {
     }
   }
 
-  async findHotelsByDate(queryParams) {
+  async findHotelsByDate(queryParams, companyId = null) {
     try {
       const { dateIn, dateOut } = queryParams;
       const whereConditions = {};
+      if (companyId) whereConditions.companyId = companyId;
       
       if (dateIn !== undefined && dateOut !== undefined) {
         whereConditions["$reservation.dateIn$"] = {
@@ -376,14 +374,12 @@ class HotelService {
     }
   }
 
-  async getTopHotelsByState(queryParams) {
+  async getTopHotelsByState(queryParams, companyId = null) {
     try {
       const { state } = queryParams;
       const whereConditions = {};
-      
-      if (state !== undefined) {
-        whereConditions.state = state;
-      }
+      if (companyId) whereConditions.companyId = companyId;
+      if (state !== undefined) whereConditions.state = state;
 
       const { count, rows: hotels } = await Hotel.findAndCountAll({
         distinct: true,

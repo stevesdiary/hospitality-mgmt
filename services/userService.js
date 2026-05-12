@@ -1,19 +1,17 @@
 const { User } = require('../models');
 
-exports.findAllUsers = async () => {
+exports.findAllUsers = async (companyId = null) => {
+  const where = companyId ? { companyId } : {};
   return await User.findAndCountAll({
-    attributes: {
-      exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt'],
-    },
+    where,
+    attributes: { exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt'] }
   });
 };
 
 exports.findUserById = async (id) => {
   return await User.findOne({
     where: { id },
-    attributes: {
-      exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt'],
-    },
+    attributes: { exclude: ['password', 'createdAt', 'updatedAt', 'deletedAt'] }
   });
 };
 
