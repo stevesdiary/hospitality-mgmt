@@ -9,19 +9,29 @@ module.exports = {
         type: Sequelize.UUID
       },
       hotelId: {
-        type: Sequelize.STRING
+        type: Sequelize.UUID,
+        allowNull: false
       },
       roomId: {
-        type: Sequelize.STRING
+        type: Sequelize.UUID,
+        allowNull: false
+      },
+      userId: {
+        type: Sequelize.UUID,
+        allowNull: false
       },
       dateIn: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false
       },
       dateOut: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false
       },
       status: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
+        defaultValue: 'active'
       },
       paymentStatus: {
         type: Sequelize.BOOLEAN

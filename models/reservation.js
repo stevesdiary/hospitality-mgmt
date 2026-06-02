@@ -10,10 +10,10 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
-      Reservation.belongsTo(models.Hotel, {foreignKey: 'hotelId', type: DataTypes.UUID });
-      Reservation.belongsTo(models.User, {foreignKey: 'userId', type: DataTypes.UUID });
-      Reservation.belongsTo(models.Room, {foreignKey: 'roomId', type: DataTypes.UUID });
+      Reservation.belongsTo(models.Hotel, { foreignKey: 'hotelId', type: DataTypes.UUID });
+      Reservation.belongsTo(models.User, { foreignKey: 'userId', type: DataTypes.UUID });
+      Reservation.belongsTo(models.Room, { foreignKey: 'roomId', type: DataTypes.UUID });
+      Reservation.belongsTo(models.Company, { foreignKey: 'companyId', as: 'company' });
     }
   }
   Reservation.init({
@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: UUIDV4,
     },
     hotelId: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       allowNull: false,
       validate: {
         notNull: {
@@ -32,11 +32,11 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     userId: {
-      type: DataTypes.UUIDV4,
+      type: DataTypes.UUID,
       allowNull: false,
     },
     roomId: {
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       allowNull: false,
       validate: {
         notNull: {
@@ -57,7 +57,12 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: "active"
     },
-    paymentStatus: DataTypes.BOOLEAN
+    paymentStatus: DataTypes.BOOLEAN,
+    companyId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: { model: 'Companies', key: 'id' }
+    }
   }, {
     sequelize,
     tableName: "Reservations",

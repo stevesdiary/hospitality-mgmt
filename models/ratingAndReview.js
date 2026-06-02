@@ -10,8 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
-      
+      RatingAndReview.belongsTo(models.Company, { foreignKey: 'companyId', as: 'company' });
     }
   }
   RatingAndReview.init(
@@ -73,6 +72,11 @@ module.exports = (sequelize, DataTypes) => {
       location: {
         type: DataTypes.INTEGER,
         allowNull: false,
+      },
+      companyId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: { model: 'Companies', key: 'id' }
       },
     },
     {

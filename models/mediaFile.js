@@ -10,7 +10,8 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      MediaFile.belongsTo(models.Room, { foreignKey: 'room_id' });
+      MediaFile.belongsTo(models.Room, { foreignKey: 'roomId' });
+      MediaFile.belongsTo(models.Company, { foreignKey: 'companyId', as: 'company' });
     }
   }
   MediaFile.init(
@@ -28,8 +29,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.UUID,
         allowNull: false,
       },
-      fileUrl: DataTypes.STRING,
-      allowNull: false,
+      fileUrl: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      companyId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: { model: 'Companies', key: 'id' }
+      },
     },
     {
       sequelize,

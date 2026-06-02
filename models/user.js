@@ -9,11 +9,8 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
-      User.hasMany(models.Reservation, {
-        foreignKey: "userId",
-        type: DataTypes.UUID,
-      });
+      User.hasMany(models.Reservation, { foreignKey: 'userId', type: DataTypes.UUID });
+      User.belongsTo(models.Company, { foreignKey: 'companyId', as: 'company' });
     }
   }
   User.init(
@@ -78,9 +75,14 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       type: {
-        type: DataTypes.ENUM("guest", "regular", "premium", "admin"),
+        type: DataTypes.ENUM("guest", "regular", "premium", "admin", "org_admin"),
         allowNull: true,
         defaultValue: "regular",
+      },
+      companyId: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: { model: 'Companies', key: 'id' }
       },
     },
     {

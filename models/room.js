@@ -10,9 +10,9 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
       Room.hasMany(models.Reservation, { foreignKey: 'roomId', as: 'rooms' });
       Room.belongsTo(models.Hotel, { foreignKey: 'hotelId' });
+      Room.belongsTo(models.Company, { foreignKey: 'companyId', as: 'company' });
     }
   }
   Room.init(
@@ -75,6 +75,11 @@ module.exports = (sequelize, DataTypes) => {
       additionalRequest: {
         type: DataTypes.STRING,
         allowNull: true,
+      },
+      companyId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: { model: 'Companies', key: 'id' }
       },
     },
     {

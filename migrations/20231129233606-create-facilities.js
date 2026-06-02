@@ -14,7 +14,7 @@ module.exports = {
       restaurant: {
         type: Sequelize.STRING
       },
-      barLaunge: {
+      barLounge: {
         type: Sequelize.BOOLEAN
       },
       security: {

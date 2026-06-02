@@ -2,14 +2,10 @@ const { v4: uuidv4 } = require('uuid');
 const { Facility } = require('../models');
 
 class FacilityService {
-  async createFacility(facilityData) {
+  async createFacility(facilityData, companyId) {
     try {
       const id = uuidv4();
-      const facility = await Facility.create({
-        id,
-        ...facilityData
-      });
-      
+      const facility = await Facility.create({ id, companyId, ...facilityData });
       return facility;
     } catch (error) {
       throw new Error(`Error creating facility: ${error.message}`);
@@ -49,12 +45,12 @@ class FacilityService {
     }
   }
 
-  async getAllFacilities() {
+  async getAllFacilities(companyId = null) {
     try {
+      const where = companyId ? { companyId } : {};
       return await Facility.findAll({
-        attributes: {
-          exclude: ['createdAt', 'updatedAt', 'deletedAt']
-        }
+        where,
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] }
       });
     } catch (error) {
       throw new Error(`Error fetching facilities: ${error.message}`);
