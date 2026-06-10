@@ -4,7 +4,8 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
-  userType: 'guest' | 'regular' | 'premium' | 'admin';
+  userType: 'guest' | 'regular' | 'premium' | 'admin' | 'org_admin';
+  companyId?: string;
   phone?: string;
   address?: string;
   city?: string;
