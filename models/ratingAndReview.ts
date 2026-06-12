@@ -9,6 +9,7 @@ export interface RatingAndReviewInstance extends Model {
   id: string;
   hotelId: string;
   userId: string;
+  companyId?: string;
   reviewTitle: string;
   date?: Date;
   firstName: string;
@@ -35,6 +36,7 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): ModelCtor<Ra
     id!: string;
     hotelId!: string;
     userId!: string;
+    companyId?: string;
     reviewTitle!: string;
     date?: Date;
     firstName!: string;
@@ -66,6 +68,11 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): ModelCtor<Ra
       userId: {
         type: dataTypes.UUID,
         allowNull: false,
+      },
+      companyId: {
+        type: dataTypes.UUID,
+        allowNull: true,
+        references: { model: 'Companies', key: 'id' },
       },
       reviewTitle: {
         type: dataTypes.STRING,
