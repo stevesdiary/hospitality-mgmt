@@ -45,6 +45,19 @@ class ReservationService {
       params: { roomId, checkIn, checkOut },
     });
   }
+
+  /** Front-desk: look up a booking by ID */
+  async lookupReservation(id: string) {
+    return apiService.get<Reservation>(`/lookup/${id}`);
+  }
+
+  async checkIn(id: string) {
+    return apiService.put<Reservation>(`/checkin/${id}`, {});
+  }
+
+  async checkOut(id: string) {
+    return apiService.put<Reservation>(`/checkout/${id}`, {});
+  }
 }
 
 export const reservationService = new ReservationService();
