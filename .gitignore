@@ -3,3 +3,4 @@ node_modules
 uploads
 config.json
 /config/config.json
+.qoder
