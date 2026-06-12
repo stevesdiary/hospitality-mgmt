@@ -4,7 +4,7 @@
  */
 
 // User Types
-export type UserType = 'guest' | 'regular' | 'premium' | 'admin';
+export type UserType = 'guest' | 'regular' | 'premium' | 'admin' | 'org_admin';
 export type Gender = 'male' | 'female' | 'other';
 
 // Hotel Types
@@ -20,7 +20,7 @@ export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
 // Facility Amenities
 export interface FacilityAmenities {
   restaurant: boolean;
-  barLaunge: boolean;
+  barLounge: boolean;
   gym: boolean;
   roomService: boolean;
   wifiInternet: boolean;
@@ -77,7 +77,7 @@ export interface HotelSearchQuery {
   dateIn?: string;
   dateOut?: string;
   restaurant?: boolean;
-  barLaunge?: boolean;
+  barLounge?: boolean;
   gym?: boolean;
   roomService?: boolean;
   wifiInternet?: boolean;
@@ -109,6 +109,7 @@ export interface JwtPayload {
   id: string;
   email: string;
   type: UserType;
+  companyId?: string;
   iat?: number;
   exp?: number;
 }

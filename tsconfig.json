@@ -11,6 +11,7 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "moduleResolution": "node",
+    "ignoreDeprecations": "5.0",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
@@ -23,8 +24,7 @@
     "noFallthroughCasesInSwitch": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "types": ["node", "express", "sequelize"]
+    "emitDecoratorMetadata": true
   },
   "include": [
     "src/**/*",
@@ -32,7 +32,10 @@
     "middleware/**/*.ts",
     "types/**/*.ts",
     "config/**/*.ts",
-    "services/**/*.ts"
+    "services/**/*.ts",
+    "controllers/**/*.ts",
+    "routes/**/*.ts",
+    "app.ts"
   ],
   "exclude": [
     "node_modules",

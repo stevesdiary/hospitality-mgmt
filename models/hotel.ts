@@ -18,6 +18,7 @@ export interface HotelInstance extends Model {
   contactEmail: string;
   contactPhone: string;
   termsAndConditions?: string;
+  companyId?: string;
   readonly createdAt: Date;
   readonly updatedAt: Date;
   readonly deletedAt: Date;
@@ -44,6 +45,7 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): ModelCtor<Ho
     contactEmail!: string;
     contactPhone!: string;
     termsAndConditions?: string;
+    companyId?: string;
     readonly createdAt!: Date;
     readonly updatedAt!: Date;
     readonly deletedAt!: Date;
@@ -95,6 +97,11 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): ModelCtor<Ho
       termsAndConditions: {
         type: DataTypes.STRING,
         allowNull: true,
+      },
+      companyId: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: { model: 'Companies', key: 'id' },
       },
     },
     {

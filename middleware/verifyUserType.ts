@@ -5,16 +5,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { UserType } from '../types';
 
-interface AuthRequest extends Request {
-  type?: UserType;
-}
-
 export default (allowedTypes: UserType[]) => {
-  return (req: AuthRequest, res: Response, next: NextFunction): void => {
-    const userType = req.type;
+  return (req: Request, res: Response, next: NextFunction): void => {
+    const userType = req.user?.type;
 
     if (!userType) {
-      res.status(401).json({ message: 'Unauthorized - user type not found' });
+      res.status(401).json({ message: 'Unauthorized - user not authenticated' });
       return;
     }
 

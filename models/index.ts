@@ -8,7 +8,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Initialize Sequelize connection
 const sequelize = new Sequelize({
   database: process.env.DB_NAME,
   username: process.env.DB_USER,
@@ -24,7 +23,6 @@ const sequelize = new Sequelize({
   },
 });
 
-// Import and initialize model factories
 import UserFactory from './user';
 import HotelFactory from './hotel';
 import RoomFactory from './room';
@@ -33,7 +31,12 @@ import RatingAndReviewFactory from './ratingAndReview';
 import MediaFileFactory from './mediaFile';
 import ReservationFactory from './reservation';
 
-// Initialize all models with sequelize instance
+// JS models (company and auditLog are still .js)
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const CompanyFactory = require('./company');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const AuditLogFactory = require('./auditLog');
+
 export const User = UserFactory(sequelize, DataTypes);
 export const Hotel = HotelFactory(sequelize, DataTypes);
 export const Room = RoomFactory(sequelize, DataTypes);
@@ -41,8 +44,9 @@ export const Facility = FacilityFactory(sequelize, DataTypes);
 export const RatingAndReview = RatingAndReviewFactory(sequelize, DataTypes);
 export const MediaFile = MediaFileFactory(sequelize, DataTypes);
 export const Reservation = ReservationFactory(sequelize, DataTypes);
+export const Company = CompanyFactory(sequelize, DataTypes);
+export const AuditLog = AuditLogFactory(sequelize, DataTypes);
 
-// Initialize model associations
 const models = {
   User,
   Hotel,
@@ -51,6 +55,8 @@ const models = {
   RatingAndReview,
   MediaFile,
   Reservation,
+  Company,
+  AuditLog,
 };
 
 Object.keys(models).forEach((modelName) => {
