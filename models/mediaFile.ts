@@ -1,4 +1,4 @@
-/** 
+/**
  * Media File Model - TypeScript Version
  */
 
@@ -9,6 +9,7 @@ export interface MediaFileInstance extends Model {
   id: string;
   hotelId: string;
   roomId: string;
+  companyId?: string;
   fileUrl: string;
   readonly createdAt: Date;
   readonly updatedAt: Date;
@@ -18,12 +19,13 @@ export interface MediaFileInstance extends Model {
 export default (sequelize: Sequelize, dataTypes: typeof DataTypes): ModelCtor<MediaFileInstance> => {
   class MediaFile extends Model implements MediaFileInstance {
     static associate(models: any) {
-      MediaFile.belongsTo(models.Room, { foreignKey: 'room_id' });
+      MediaFile.belongsTo(models.Room, { foreignKey: 'roomId' });
     }
 
     id!: string;
     hotelId!: string;
     roomId!: string;
+    companyId?: string;
     fileUrl!: string;
     readonly createdAt!: Date;
     readonly updatedAt!: Date;
@@ -45,11 +47,16 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): ModelCtor<Me
         type: DataTypes.UUID,
         allowNull: false,
       },
+      companyId: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: { model: 'Companies', key: 'id' },
+      },
       fileUrl: DataTypes.STRING,
     },
     {
       sequelize,
-      tableName: 'MediaFile',
+      tableName: 'MediaFiles',
       modelName: 'MediaFile',
       paranoid: false,
     }

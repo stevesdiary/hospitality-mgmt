@@ -1,4 +1,4 @@
-/** 
+/**
  * Facility Model - TypeScript Version
  */
 
@@ -8,8 +8,9 @@ import type { ModelCtor } from 'sequelize';
 export interface FacilityInstance extends Model {
   id: string;
   hotelId: string;
+  companyId?: string;
   restaurant?: string;
-  barLaunge?: boolean;
+  barLounge?: boolean;
   security?: boolean;
   wifiInternet?: boolean;
   swimmingPool?: boolean;
@@ -34,8 +35,9 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): ModelCtor<Fa
 
     id!: string;
     hotelId!: string;
+    companyId?: string;
     restaurant?: string;
-    barLaunge?: boolean;
+    barLounge?: boolean;
     security?: boolean;
     wifiInternet?: boolean;
     swimmingPool?: boolean;
@@ -63,11 +65,16 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): ModelCtor<Fa
         type: dataTypes.UUID,
         allowNull: false,
       },
+      companyId: {
+        type: dataTypes.UUID,
+        allowNull: true,
+        references: { model: 'Companies', key: 'id' },
+      },
       restaurant: {
         type: dataTypes.STRING,
         allowNull: true,
       },
-      barLaunge: {
+      barLounge: {
         type: dataTypes.BOOLEAN,
         allowNull: true,
       },

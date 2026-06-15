@@ -11,6 +11,7 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "moduleResolution": "node",
+    "ignoreDeprecations": "5.0",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
@@ -32,7 +33,10 @@
     "middleware/**/*.ts",
     "types/**/*.ts",
     "config/**/*.ts",
-    "services/**/*.ts"
+    "services/**/*.ts",
+    "controllers/**/*.ts",
+    "routes/**/*.ts",
+    "app.ts"
   ],
   "exclude": [
     "node_modules",

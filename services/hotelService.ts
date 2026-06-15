@@ -135,7 +135,7 @@ class HotelService {
         attributes: {
           exclude: ['createdAt', 'updatedAt', 'deletedAt'],
           include: [
-            [Sequelize.literal('(SELECT COUNT(*) FROM `Rooms` WHERE `Rooms`.`hotelId` = `Hotel`.`id` AND `Rooms`.`deals` = true)'), 'dealsCount'] as any,
+            [Sequelize.literal('(SELECT COUNT(*) FROM "Rooms" WHERE "Rooms"."hotelId" = "Hotel"."id" AND "Rooms"."deals" = true)'), 'dealsCount'] as any,
           ],
         },
         where: whereConditions,
@@ -192,7 +192,7 @@ class HotelService {
         attributes: {
           exclude: ['createdAt', 'updatedAt', 'deletedAt'],
           include: [
-            [Sequelize.literal('(SELECT COUNT(*) FROM `Hotels` WHERE `Hotels`.`city` = `Hotel`.`city`)'), 'citiesCount'] as any,
+            [Sequelize.literal('(SELECT COUNT(*) FROM "Hotels" WHERE "Hotels"."city" = "Hotel"."city")'), 'citiesCount'] as any,
           ],
         },
         include: [
