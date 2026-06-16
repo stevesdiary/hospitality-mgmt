@@ -1,5 +1,5 @@
 import apiService from './api';
-import type { LoginCredentials, RegisterData, User, PasswordResetData } from '@/types';
+import type { LoginCredentials, RegisterData, User } from '@/types';
 
 class AuthService {
   private baseUrl = '/auth';
@@ -20,8 +20,8 @@ class AuthService {
     return apiService.post(`${this.baseUrl}/forgot-password`, { email });
   }
 
-  async resetPassword(data: PasswordResetData) {
-    return apiService.post(`${this.baseUrl}/reset-password`, data);
+  async resetPassword(token: string, password: string) {
+    return apiService.post(`${this.baseUrl}/reset-password`, { token, password });
   }
 
   async verifyEmail(token: string) {

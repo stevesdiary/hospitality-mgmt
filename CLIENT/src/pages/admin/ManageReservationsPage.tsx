@@ -2,20 +2,23 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, CheckCircle, X, Clock, ChevronDown } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { DUMMY_RESERVATIONS, DUMMY_HOTELS, DUMMY_ROOMS, DUMMY_USERS } from '@/data/dummy';
 
-const RESERVATIONS = [
-  { id: 'R092', guest: 'Amaka Nwosu', email: 'amaka@email.com', hotel: 'Eko Hotel & Suites', room: 'Deluxe Suite', checkIn: '2026-04-10', checkOut: '2026-04-13', total: 243000, status: 'confirmed' },
-  { id: 'R091', guest: 'Tunde Adeyemi', email: 'tunde@email.com', hotel: 'Transcorp Hilton', room: 'Executive Suite', checkIn: '2026-04-08', checkOut: '2026-04-10', total: 220000, status: 'pending' },
-  { id: 'R090', guest: 'Chioma Okafor', email: 'chioma@email.com', hotel: 'Hotel Presidential', room: 'Standard Room', checkIn: '2026-04-06', checkOut: '2026-04-08', total: 86900, status: 'completed' },
-  { id: 'R089', guest: 'Emeka Eze', email: 'emeka@email.com', hotel: 'Nicon Luxury Hotel', room: 'Deluxe Suite', checkIn: '2026-04-05', checkOut: '2026-04-06', total: 45100, status: 'cancelled' },
-  { id: 'R088', guest: 'Fatima Bello', email: 'fatima@email.com', hotel: 'Wheatbaker Hotel', room: 'Deluxe Room', checkIn: '2026-04-03', checkOut: '2026-04-05', total: 107800, status: 'confirmed' },
-];
+const INIT_RESERVATIONS = DUMMY_RESERVATIONS.map((r) => ({
+  id: r.id,
+  guest: r.guestName, email: r.guestEmail,
+  hotel: DUMMY_HOTELS.find((h) => h.id === r.hotelId)?.name ?? '',
+  room: DUMMY_ROOMS.find((rm) => rm.id === r.roomId)?.category ?? '',
+  checkIn: r.checkInDate, checkOut: r.checkOutDate,
+  total: r.totalPrice,
+  status: r.status === 'checked-out' ? 'completed' : r.status,
+}));
 
 const STATUS_TABS = ['All', 'Confirmed', 'Pending', 'Completed', 'Cancelled'];
 const statusStyle: Record<string, string> = { confirmed: 'bg-emerald-100 text-emerald-700', pending: 'bg-amber-100 text-amber-700', completed: 'bg-blue-100 text-blue-700', cancelled: 'bg-red-100 text-red-600' };
 
 const ManageReservationsPage: React.FC = () => {
-  const [reservations, setReservations] = useState(RESERVATIONS);
+  const [reservations, setReservations] = useState(INIT_RESERVATIONS);
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState('All');
 

@@ -2,6 +2,21 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Star, Heart, Wifi, Dumbbell, Filter, ChevronDown, SlidersHorizontal, Tag } from 'lucide-react';
+import { DUMMY_HOTELS } from '@/data/dummy';
+
+// Gradient map keyed by hotel id
+const GRAD: Record<string, string> = {
+  'h-001': 'from-indigo-500 to-purple-700',
+  'h-002': 'from-cyan-500 to-blue-700',
+  'h-003': 'from-emerald-500 to-teal-700',
+  'h-004': 'from-amber-500 to-orange-700',
+  'h-005': 'from-rose-500 to-pink-700',
+  'h-006': 'from-violet-500 to-indigo-700',
+};
+
+// Map hotel star rating to display category label
+const categoryLabel = (stars: number) =>
+  stars === 5 ? 'Luxury' : stars === 4 ? 'Standard' : 'Budget';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -19,18 +34,20 @@ function Stars({ rating }: { rating: number }) {
   );
 }
 
-const HOTELS = [
-  { id: '1', name: 'Eko Hotel & Suites', city: 'Lagos', state: 'Lagos State', rating: 4.8, reviews: 1240, price: 52500, category: 'Luxury', grad: 'from-indigo-500 to-purple-700', amenities: ['Wifi', 'Pool', 'Gym', 'Spa'] },
-  { id: '2', name: 'Transcorp Hilton Abuja', city: 'Abuja', state: 'FCT', rating: 4.9, reviews: 2100, price: 66500, category: 'Luxury', grad: 'from-cyan-500 to-blue-700', amenities: ['Wifi', 'Pool', 'Spa', 'Bar'] },
-  { id: '3', name: 'Hotel Presidential', city: 'Port Harcourt', state: 'Rivers', rating: 4.6, reviews: 890, price: 38500, category: 'Standard', grad: 'from-emerald-500 to-teal-700', amenities: ['Wifi', 'Pool', 'Restaurant'] },
-  { id: '4', name: 'Hamdala Hotel', city: 'Kano', state: 'Kano', rating: 4.4, reviews: 567, price: 24500, category: 'Budget', grad: 'from-amber-500 to-orange-700', amenities: ['Wifi', 'Restaurant', 'Security'] },
-  { id: '5', name: 'Wheatbaker Hotel', city: 'Lagos', state: 'Lagos State', rating: 4.7, reviews: 980, price: 48000, category: 'Boutique', grad: 'from-rose-500 to-pink-700', amenities: ['Wifi', 'Bar', 'Gym', 'Spa'] },
-  { id: '6', name: 'Nicon Luxury Hotel', city: 'Abuja', state: 'FCT', rating: 4.5, reviews: 740, price: 42000, category: 'Luxury', grad: 'from-violet-500 to-indigo-700', amenities: ['Wifi', 'Pool', 'Gym'] },
-  { id: '7', name: 'Southern Sun Ikoyi', city: 'Lagos', state: 'Lagos State', rating: 4.3, reviews: 620, price: 35000, category: 'Standard', grad: 'from-teal-500 to-cyan-700', amenities: ['Wifi', 'Restaurant', 'Bar'] },
-  { id: '8', name: 'Moorhouse Ikoyi', city: 'Lagos', state: 'Lagos State', rating: 4.6, reviews: 820, price: 45000, category: 'Boutique', grad: 'from-orange-400 to-red-600', amenities: ['Wifi', 'Pool', 'Restaurant', 'Gym'] },
-];
+const HOTELS = DUMMY_HOTELS.map((h) => ({
+  id: h.id,
+  name: h.name,
+  city: h.city,
+  state: h.state,
+  rating: h.rating ?? 0,
+  reviews: h.reviewCount ?? 0,
+  price: h.priceRange.min,
+  category: categoryLabel(h.starRating),
+  grad: GRAD[h.id] ?? 'from-gray-400 to-gray-600',
+  amenities: h.amenities.slice(0, 4),
+}));
 
-const CATEGORIES = ['All', 'Luxury', 'Standard', 'Budget', 'Boutique'];
+const CATEGORIES = ['All', 'Luxury', 'Standard', 'Budget'];
 const SORT_OPTIONS = ['Recommended', 'Price: Low to High', 'Price: High to Low', 'Top Rated'];
 const AMENITY_FILTERS = ['Wifi', 'Pool', 'Gym', 'Restaurant', 'Spa', 'Bar'];
 

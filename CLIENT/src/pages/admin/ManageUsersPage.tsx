@@ -2,22 +2,23 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Edit2, Trash2, X, UserCheck, UserX, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { DUMMY_USERS, DUMMY_RESERVATIONS } from '@/data/dummy';
 
-const USERS = [
-  { id: 'u1', firstName: 'Amaka', lastName: 'Nwosu', email: 'amaka@email.com', phone: '08012345678', userType: 'guest', status: 'active', joined: '2026-01-15', bookings: 4 },
-  { id: 'u2', firstName: 'Tunde', lastName: 'Adeyemi', email: 'tunde@email.com', phone: '08023456789', userType: 'guest', status: 'active', joined: '2026-02-10', bookings: 7 },
-  { id: 'u3', firstName: 'Chioma', lastName: 'Okafor', email: 'chioma@email.com', phone: '07034567890', userType: 'admin', status: 'active', joined: '2025-11-05', bookings: 1 },
-  { id: 'u4', firstName: 'Emeka', lastName: 'Eze', email: 'emeka@email.com', phone: '09045678901', userType: 'guest', status: 'suspended', joined: '2026-03-01', bookings: 2 },
-  { id: 'u5', firstName: 'Fatima', lastName: 'Bello', email: 'fatima@email.com', phone: '08156789012', userType: 'guest', status: 'active', joined: '2026-03-18', bookings: 3 },
-];
+const INIT_USERS = DUMMY_USERS.map((u) => ({
+  id: u.id, firstName: u.firstName, lastName: u.lastName,
+  email: u.email, phone: u.phone ?? '',
+  userType: u.userType, status: 'active' as 'active' | 'suspended',
+  joined: u.createdAt.split('T')[0],
+  bookings: DUMMY_RESERVATIONS.filter((r) => r.userId === u.id).length,
+}));
 
 const typeStyle: Record<string, string> = { admin: 'bg-violet-100 text-violet-700', guest: 'bg-gray-100 text-gray-600', org_admin: 'bg-blue-100 text-blue-700' };
 const statusStyle: Record<string, string> = { active: 'bg-emerald-100 text-emerald-700', suspended: 'bg-red-100 text-red-600' };
 
 const ManageUsersPage: React.FC = () => {
-  const [users, setUsers] = useState(USERS);
+  const [users, setUsers] = useState(INIT_USERS);
   const [search, setSearch] = useState('');
-  const [editUser, setEditUser] = useState<typeof USERS[0] | null>(null);
+  const [editUser, setEditUser] = useState<typeof INIT_USERS[0] | null>(null);
 
   const filtered = users.filter((u) =>
     `${u.firstName} ${u.lastName}`.toLowerCase().includes(search.toLowerCase()) ||

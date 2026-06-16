@@ -2,16 +2,30 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Building2, Calendar, MapPin, ChevronRight, Search, X } from 'lucide-react';
+import { DUMMY_RESERVATIONS, DUMMY_HOTELS, DUMMY_ROOMS } from '@/data/dummy';
+
+const HOTEL_GRAD: Record<string, string> = {
+  'h-001': 'from-blue-400 to-indigo-600', 'h-002': 'from-cyan-500 to-blue-700',
+  'h-003': 'from-emerald-500 to-teal-700', 'h-004': 'from-amber-500 to-orange-700',
+  'h-005': 'from-rose-500 to-pink-700',   'h-006': 'from-violet-500 to-indigo-700',
+};
+
+const RESERVATIONS = DUMMY_RESERVATIONS.map((r) => {
+  const hotel = DUMMY_HOTELS.find((h) => h.id === r.hotelId);
+  const room = DUMMY_ROOMS.find((rm) => rm.id === r.roomId);
+  const nights = Math.round((new Date(r.checkOutDate).getTime() - new Date(r.checkInDate).getTime()) / 86400000);
+  return {
+    id: r.id, hotelName: hotel?.name ?? '', room: room?.category ?? '',
+    city: hotel?.city ?? '', checkIn: r.checkInDate, checkOut: r.checkOutDate,
+    nights, total: r.totalPrice,
+    status: r.status === 'checked-out' ? 'completed' : r.status,
+    grad: HOTEL_GRAD[r.hotelId] ?? 'from-gray-400 to-gray-600',
+    hotelId: r.hotelId,
+  };
+});
 
 const fadeUp = { hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.07 } } };
-
-const RESERVATIONS = [
-  { id: 'R001', hotelName: 'Eko Hotel & Suites', room: 'Deluxe Suite', city: 'Lagos', checkIn: '2026-04-10', checkOut: '2026-04-13', nights: 3, total: 243000, status: 'confirmed', grad: 'from-blue-400 to-indigo-600' },
-  { id: 'R002', hotelName: 'Transcorp Hilton Abuja', room: 'Executive Suite', city: 'Abuja', checkIn: '2026-05-02', checkOut: '2026-05-04', nights: 2, total: 193000, status: 'pending', grad: 'from-cyan-500 to-blue-700' },
-  { id: 'R003', hotelName: 'Hotel Presidential', room: 'Standard Room', city: 'Port Harcourt', checkIn: '2026-02-14', checkOut: '2026-02-16', nights: 2, total: 86900, status: 'completed', grad: 'from-emerald-500 to-teal-700' },
-  { id: 'R004', hotelName: 'Wheatbaker Hotel', room: 'Deluxe Room', city: 'Lagos', checkIn: '2026-01-20', checkOut: '2026-01-22', nights: 2, total: 107800, status: 'cancelled', grad: 'from-rose-500 to-pink-700' },
-];
 
 const STATUS_TABS = ['All', 'Confirmed', 'Pending', 'Completed', 'Cancelled'];
 
@@ -98,7 +112,7 @@ const MyReservationsPage: React.FC = () => {
                             <div className="text-base font-bold text-primary-700">₦{r.total.toLocaleString()}</div>
                             <div className="text-xs text-gray-400">Total paid</div>
                           </div>
-                          <Link to={`/hotels/1`} className="flex items-center gap-1 text-xs font-semibold text-primary-600 hover:text-primary-700 transition-colors whitespace-nowrap">
+                          <Link to={`/hotels/${r.hotelId}`} className="flex items-center gap-1 text-xs font-semibold text-primary-600 hover:text-primary-700 transition-colors whitespace-nowrap">
                             <Building2 className="h-3.5 w-3.5" /> View Hotel <ChevronRight className="h-3.5 w-3.5" />
                           </Link>
                         </div>

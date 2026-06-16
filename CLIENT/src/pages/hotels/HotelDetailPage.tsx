@@ -1,10 +1,32 @@
 import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import {
-  MapPin, Star, Wifi, Dumbbell, Car, Shield, Tag,
+import { MapPin, Star, Wifi, Dumbbell, Car, Shield, Tag,
   ChevronLeft, Heart, Share2, CheckCircle, Users, BedDouble,
 } from 'lucide-react';
+import { DUMMY_HOTELS, getRoomsByHotel, getReviewsByHotel } from '@/data/dummy';
+
+const GRAD: Record<string, string> = {
+  'h-001': 'from-indigo-500 via-purple-600 to-blue-700',
+  'h-002': 'from-cyan-500 via-blue-600 to-indigo-700',
+  'h-003': 'from-emerald-500 via-teal-600 to-cyan-700',
+  'h-004': 'from-amber-500 via-orange-600 to-red-600',
+  'h-005': 'from-rose-500 via-pink-600 to-fuchsia-700',
+  'h-006': 'from-violet-500 via-purple-600 to-indigo-700',
+};
+
+const ROOM_GRAD: Record<string, string> = {
+  'r-001': 'from-slate-400 to-slate-600',
+  'r-002': 'from-blue-400 to-indigo-600',
+  'r-003': 'from-violet-400 to-purple-600',
+  'r-004': 'from-amber-400 to-orange-600',
+  'r-005': 'from-cyan-400 to-blue-600',
+  'r-006': 'from-indigo-400 to-violet-600',
+  'r-007': 'from-teal-400 to-emerald-600',
+  'r-008': 'from-orange-400 to-red-600',
+  'r-009': 'from-rose-400 to-pink-600',
+  'r-010': 'from-fuchsia-400 to-purple-600',
+};
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -23,57 +45,37 @@ function Stars({ rating, size = 'sm' }: { rating: number; size?: 'sm' | 'md' }) 
   );
 }
 
-// Mock hotel data — replace with API call
-const HOTEL = {
-  id: '1',
-  name: 'Eko Hotel & Suites',
-  city: 'Lagos',
-  state: 'Lagos State',
-  address: 'Plot 1415 Adetokunbo Ademola Street, Victoria Island, Lagos',
-  rating: 4.8,
-  reviews: 1240,
-  category: 'Luxury',
-  description:
-    "Experience unparalleled luxury at Eko Hotel & Suites, Lagos's premier five-star destination. Set on Victoria Island, our hotel blends sophisticated design with world-class service, offering breathtaking views of the Atlantic Ocean and easy access to Nigeria's commercial capital.",
-  grad: 'from-indigo-500 via-purple-600 to-blue-700',
-  amenities: ['Wifi', 'Swimming Pool', 'Gym', 'Spa', 'Restaurant', 'Bar', 'Car Park', '24h Security', 'DSTV', 'Front Desk 24h'],
-  rooms: [
-    { id: 'r1', category: 'Standard Room', capacity: 2, price: 45000, availability: true, grad: 'from-slate-400 to-slate-600', desc: 'Comfortable room with city view, king bed and ensuite bathroom.' },
-    { id: 'r2', category: 'Deluxe Suite', capacity: 2, price: 75000, availability: true, grad: 'from-blue-400 to-indigo-600', desc: 'Spacious suite with ocean view, lounge area and premium amenities.' },
-    { id: 'r3', category: 'Executive Suite', capacity: 3, price: 110000, availability: false, grad: 'from-violet-400 to-purple-600', desc: 'Elegant executive suite with panoramic ocean view and butler service.' },
-    { id: 'r4', category: 'Presidential Suite', capacity: 4, price: 200000, availability: true, grad: 'from-amber-400 to-orange-600', desc: 'The ultimate luxury experience — private terrace, dining room and full concierge.' },
-  ],
-  reviews_list: [
-    { id: '1', name: 'Chidi O.', rating: 5, date: 'Mar 2026', text: 'Absolutely fantastic stay. The service was impeccable and the view was stunning.' },
-    { id: '2', name: 'Amaka N.', rating: 5, date: 'Feb 2026', text: 'Best hotel in Lagos, hands down. Will definitely be coming back.' },
-    { id: '3', name: 'Tunde A.', rating: 4, date: 'Jan 2026', text: 'Great hotel with excellent facilities. The pool area is gorgeous.' },
-  ],
-};
-
 const amenityIcon: Record<string, React.ElementType> = {
-  Wifi: Wifi, 'Swimming Pool': Tag, Gym: Dumbbell, Spa: Star,
+  'Free WiFi': Wifi, Wifi: Wifi, 'Swimming Pool': Tag, Gym: Dumbbell, Spa: Star,
   Restaurant: Tag, Bar: Tag, 'Car Park': Car, '24h Security': Shield,
   DSTV: Tag, 'Front Desk 24h': Tag,
 };
 
 const HotelDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+
+  const hotel = DUMMY_HOTELS.find((h) => h.id === id) ?? DUMMY_HOTELS[0];
+  const rooms = getRoomsByHotel(hotel.id);
+  const reviews = getReviewsByHotel(hotel.id);
+
+  const grad = GRAD[hotel.id] ?? 'from-indigo-500 to-blue-700';
+  const category = hotel.starRating === 5 ? 'Luxury' : hotel.starRating === 4 ? 'Standard' : 'Budget';
+
   const [liked, setLiked] = useState(false);
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [guests, setGuests] = useState('1');
-  const [selectedRoom, setSelectedRoom] = useState(HOTEL.rooms[0]);
-  void id; // will be used in API call
+  const [selectedRoom, setSelectedRoom] = useState(rooms[0]);
 
   const nights = checkIn && checkOut
     ? Math.max(0, Math.round((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / 86400000))
     : 1;
-  const total = selectedRoom.price * nights;
+  const total = (selectedRoom?.pricePerNight ?? 0) * nights;
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero image area */}
-      <div className={`relative h-72 md:h-96 bg-gradient-to-br ${HOTEL.grad} overflow-hidden`}>
+      <div className={`relative h-72 md:h-96 bg-gradient-to-br ${grad} overflow-hidden`}>
         <div className="absolute inset-0 bg-black/20" />
         {/* Decorative orbs */}
         <motion.div className="absolute -top-20 -right-20 w-72 h-72 bg-white/10 rounded-full blur-2xl" animate={{ scale: [1, 1.15, 1] }} transition={{ duration: 8, repeat: Infinity }} />
@@ -101,7 +103,7 @@ const HotelDetailPage: React.FC = () => {
         <div className="absolute bottom-6 left-0 right-0">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <span className="badge bg-white/20 backdrop-blur-sm text-white text-xs border border-white/30">
-              {HOTEL.category}
+              {category}
             </span>
           </div>
         </div>
@@ -115,24 +117,24 @@ const HotelDetailPage: React.FC = () => {
             <motion.div variants={stagger} initial="hidden" animate="visible">
               <motion.div variants={fadeUp} className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                 <div>
-                  <h1 className="font-display text-3xl font-bold text-gray-900">{HOTEL.name}</h1>
+                  <h1 className="font-display text-3xl font-bold text-gray-900">{hotel.name}</h1>
                   <div className="flex items-center gap-1.5 text-gray-500 text-sm mt-2">
                     <MapPin className="h-4 w-4 text-primary-500" />
-                    <span>{HOTEL.address}</span>
+                    <span>{hotel.address}, {hotel.city}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-primary-700">{HOTEL.rating}</div>
-                    <Stars rating={HOTEL.rating} />
-                    <div className="text-xs text-gray-400 mt-0.5">{HOTEL.reviews.toLocaleString()} reviews</div>
+                    <div className="text-2xl font-bold text-primary-700">{hotel.rating}</div>
+                    <Stars rating={hotel.rating ?? 0} />
+                    <div className="text-xs text-gray-400 mt-0.5">{hotel.reviewCount?.toLocaleString()} reviews</div>
                   </div>
                 </div>
               </motion.div>
 
               {/* Description */}
               <motion.p variants={fadeUp} className="text-gray-600 leading-relaxed mt-4">
-                {HOTEL.description}
+                {hotel.description}
               </motion.p>
             </motion.div>
 
@@ -142,7 +144,7 @@ const HotelDetailPage: React.FC = () => {
                 Amenities
               </motion.h2>
               <motion.div variants={stagger} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                {HOTEL.amenities.map((a) => {
+                {hotel.amenities.map((a) => {
                   const Icon = amenityIcon[a] ?? Tag;
                   return (
                     <motion.div key={a} variants={fadeUp} className="flex items-center gap-2.5 bg-white rounded-xl px-4 py-3 border border-gray-100 text-sm text-gray-700 font-medium">
@@ -160,35 +162,35 @@ const HotelDetailPage: React.FC = () => {
                 Available Rooms
               </motion.h2>
               <motion.div variants={stagger} className="space-y-4">
-                {HOTEL.rooms.map((room) => (
+                {rooms.map((room) => (
                   <motion.div
                     key={room.id}
                     variants={fadeUp}
                     whileHover={{ y: -2 }}
-                    onClick={() => room.availability && setSelectedRoom(room)}
+                    onClick={() => room.available && setSelectedRoom(room)}
                     className={`card p-0 overflow-hidden cursor-pointer transition-all ${
-                      selectedRoom.id === room.id ? 'ring-2 ring-primary-500 ring-offset-1' : ''
-                    } ${!room.availability ? 'opacity-60 cursor-not-allowed' : 'hover:shadow-md'}`}
+                      selectedRoom?.id === room.id ? 'ring-2 ring-primary-500 ring-offset-1' : ''
+                    } ${!room.available ? 'opacity-60 cursor-not-allowed' : 'hover:shadow-md'}`}
                   >
                     <div className="flex flex-col sm:flex-row">
-                      <div className={`sm:w-28 h-28 bg-gradient-to-br ${room.grad} flex-shrink-0`} />
+                      <div className={`sm:w-28 h-28 bg-gradient-to-br ${ROOM_GRAD[room.id] ?? 'from-gray-400 to-gray-600'} flex-shrink-0`} />
                       <div className="flex-1 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div>
                           <div className="flex items-center gap-2 mb-1">
                             <h3 className="font-semibold text-gray-900 text-sm">{room.category}</h3>
-                            {!room.availability && <span className="badge bg-red-100 text-red-600 text-[10px]">Fully Booked</span>}
-                            {selectedRoom.id === room.id && room.availability && (
+                            {!room.available && <span className="badge bg-red-100 text-red-600 text-[10px]">Fully Booked</span>}
+                            {selectedRoom?.id === room.id && room.available && (
                               <CheckCircle className="h-4 w-4 text-primary-500" />
                             )}
                           </div>
                           <div className="flex items-center gap-3 text-xs text-gray-400">
-                            <span className="flex items-center gap-1"><Users className="h-3 w-3" />{room.capacity} guests</span>
-                            <span className="flex items-center gap-1"><BedDouble className="h-3 w-3" />{room.category.includes('Suite') ? 'Suite' : 'Room'}</span>
+                            <span className="flex items-center gap-1"><Users className="h-3 w-3" />{room.maxOccupancy} guests</span>
+                            <span className="flex items-center gap-1"><BedDouble className="h-3 w-3" />{room.bedType}</span>
                           </div>
-                          <p className="text-xs text-gray-500 mt-1.5 line-clamp-2">{room.desc}</p>
+                          <p className="text-xs text-gray-500 mt-1.5 line-clamp-2">{room.description}</p>
                         </div>
-                        <div className="flex-shrink-0 text-right sm:text-right">
-                          <div className="text-lg font-bold text-primary-700">₦{room.price.toLocaleString()}</div>
+                        <div className="flex-shrink-0 text-right">
+                          <div className="text-lg font-bold text-primary-700">₦{room.pricePerNight.toLocaleString()}</div>
                           <div className="text-xs text-gray-400">per night</div>
                         </div>
                       </div>
@@ -204,21 +206,21 @@ const HotelDetailPage: React.FC = () => {
                 Guest Reviews
               </motion.h2>
               <motion.div variants={stagger} className="space-y-4">
-                {HOTEL.reviews_list.map((r) => (
+                {reviews.map((r) => (
                   <motion.div key={r.id} variants={fadeUp} className="bg-white rounded-2xl p-5 border border-gray-100">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-sm font-semibold">
-                          {r.name[0]}
+                          {r.title[0]}
                         </div>
                         <div>
-                          <div className="font-semibold text-gray-900 text-sm">{r.name}</div>
-                          <div className="text-xs text-gray-400">{r.date}</div>
+                          <div className="font-semibold text-gray-900 text-sm">{r.title}</div>
+                          <div className="text-xs text-gray-400">{new Date(r.createdAt).toLocaleDateString('en-NG', { month: 'short', year: 'numeric' })}</div>
                         </div>
                       </div>
                       <Stars rating={r.rating} />
                     </div>
-                    <p className="text-gray-600 text-sm leading-relaxed">{r.text}</p>
+                    <p className="text-gray-600 text-sm leading-relaxed">{r.comment}</p>
                   </motion.div>
                 ))}
               </motion.div>
@@ -235,7 +237,7 @@ const HotelDetailPage: React.FC = () => {
                 className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm"
               >
                 <div className="mb-5">
-                  <span className="text-2xl font-bold text-primary-700">₦{selectedRoom.price.toLocaleString()}</span>
+                  <span className="text-2xl font-bold text-primary-700">₦{(selectedRoom?.pricePerNight ?? 0).toLocaleString()}</span>
                   <span className="text-sm text-gray-400"> / night</span>
                 </div>
 
@@ -260,8 +262,8 @@ const HotelDetailPage: React.FC = () => {
                 {checkIn && checkOut && nights > 0 && (
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="border-t border-gray-100 py-4 mb-4 space-y-2 text-sm">
                     <div className="flex justify-between text-gray-500">
-                      <span>₦{selectedRoom.price.toLocaleString()} × {nights} night{nights > 1 ? 's' : ''}</span>
-                      <span>₦{(selectedRoom.price * nights).toLocaleString()}</span>
+                      <span>₦{(selectedRoom?.pricePerNight ?? 0).toLocaleString()} × {nights} night{nights > 1 ? 's' : ''}</span>
+                      <span>₦{((selectedRoom?.pricePerNight ?? 0) * nights).toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between text-gray-500">
                       <span>Taxes &amp; fees</span>
@@ -275,10 +277,10 @@ const HotelDetailPage: React.FC = () => {
                 )}
 
                 <Link
-                  to={selectedRoom.availability ? `/book/${selectedRoom.id}` : '#'}
-                  className={`btn-accent w-full py-3 text-center ${!selectedRoom.availability ? 'opacity-50 pointer-events-none' : ''}`}
+                  to={selectedRoom?.available ? `/book/${selectedRoom.id}` : '#'}
+                  className={`btn-accent w-full py-3 text-center ${!selectedRoom?.available ? 'opacity-50 pointer-events-none' : ''}`}
                 >
-                  {selectedRoom.availability ? 'Reserve Now' : 'Room Unavailable'}
+                  {selectedRoom?.available ? 'Reserve Now' : 'Room Unavailable'}
                 </Link>
 
                 <p className="text-center text-xs text-gray-400 mt-3">You won't be charged yet</p>

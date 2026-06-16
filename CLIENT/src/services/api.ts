@@ -86,7 +86,6 @@ class ApiService {
     }
 
     const response = await this.api.post<ApiResponse<T>>(url, formData, {
-      ...config,
       headers: {
         'Content-Type': 'multipart/form-data',
       },

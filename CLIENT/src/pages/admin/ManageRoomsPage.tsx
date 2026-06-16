@@ -2,24 +2,33 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Search, Edit2, Trash2, X, BedDouble, Users } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { DUMMY_ROOMS, DUMMY_HOTELS } from '@/data/dummy';
 
-const ROOMS = [
-  { id: 'r1', hotel: 'Eko Hotel & Suites', category: 'Standard Room', capacity: 2, price: 45000, status: 'available', grad: 'from-slate-400 to-slate-600' },
-  { id: 'r2', hotel: 'Eko Hotel & Suites', category: 'Deluxe Suite', capacity: 2, price: 75000, status: 'occupied', grad: 'from-blue-400 to-indigo-600' },
-  { id: 'r3', hotel: 'Transcorp Hilton', category: 'Executive Suite', capacity: 3, price: 110000, status: 'available', grad: 'from-violet-400 to-purple-600' },
-  { id: 'r4', hotel: 'Hotel Presidential', category: 'Standard Room', capacity: 2, price: 35000, status: 'maintenance', grad: 'from-amber-400 to-orange-600' },
-  { id: 'r5', hotel: 'Wheatbaker Hotel', category: 'Deluxe Room', capacity: 2, price: 48000, status: 'available', grad: 'from-rose-400 to-pink-600' },
-];
+const ROOM_GRAD: Record<string, string> = {
+  'r-001': 'from-slate-400 to-slate-600', 'r-002': 'from-blue-400 to-indigo-600',
+  'r-003': 'from-violet-400 to-purple-600','r-004': 'from-amber-400 to-orange-600',
+  'r-005': 'from-cyan-400 to-blue-600',   'r-006': 'from-indigo-400 to-violet-600',
+  'r-007': 'from-teal-400 to-emerald-600','r-008': 'from-orange-400 to-red-600',
+  'r-009': 'from-rose-400 to-pink-600',   'r-010': 'from-fuchsia-400 to-purple-600',
+};
+
+const INIT_ROOMS = DUMMY_ROOMS.map((r) => ({
+  id: r.id,
+  hotel: DUMMY_HOTELS.find((h) => h.id === r.hotelId)?.name ?? '',
+  category: r.category, capacity: r.maxOccupancy, price: r.pricePerNight,
+  status: r.available ? 'available' : 'occupied',
+  grad: ROOM_GRAD[r.id] ?? 'from-gray-400 to-gray-600',
+}));
 
 const statusStyle: Record<string, string> = { available: 'bg-emerald-100 text-emerald-700', occupied: 'bg-blue-100 text-blue-700', maintenance: 'bg-amber-100 text-amber-700' };
 
 interface RoomForm { hotel: string; category: string; capacity: string; price: string; }
 
 const ManageRoomsPage: React.FC = () => {
-  const [rooms, setRooms] = useState(ROOMS);
+  const [rooms, setRooms] = useState(INIT_ROOMS);
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [editing, setEditing] = useState<typeof ROOMS[0] | null>(null);
+  const [editing, setEditing] = useState<typeof INIT_ROOMS[0] | null>(null);
   const [form, setForm] = useState<RoomForm>({ hotel: '', category: 'Standard Room', capacity: '2', price: '' });
 
   const filtered = rooms.filter((r) =>
@@ -27,7 +36,7 @@ const ManageRoomsPage: React.FC = () => {
   );
 
   const openNew = () => { setEditing(null); setForm({ hotel: '', category: 'Standard Room', capacity: '2', price: '' }); setShowModal(true); };
-  const openEdit = (r: typeof ROOMS[0]) => { setEditing(r); setForm({ hotel: r.hotel, category: r.category, capacity: String(r.capacity), price: String(r.price) }); setShowModal(true); };
+  const openEdit = (r: typeof INIT_ROOMS[0]) => { setEditing(r); setForm({ hotel: r.hotel, category: r.category, capacity: String(r.capacity), price: String(r.price) }); setShowModal(true); };
 
   const handleSave = () => {
     if (!form.hotel.trim() || !form.price) { toast.error('Hotel and price are required.'); return; }

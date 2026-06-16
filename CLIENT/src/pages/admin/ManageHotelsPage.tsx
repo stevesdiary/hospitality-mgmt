@@ -2,24 +2,31 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Search, Edit2, Trash2, X, MapPin, Star } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { DUMMY_HOTELS } from '@/data/dummy';
 
-const HOTELS = [
-  { id: '1', name: 'Eko Hotel & Suites', city: 'Lagos', category: 'Luxury', rooms: 24, rating: 4.8, status: 'active', grad: 'from-indigo-500 to-purple-700' },
-  { id: '2', name: 'Transcorp Hilton Abuja', city: 'Abuja', category: 'Luxury', rooms: 32, rating: 4.9, status: 'active', grad: 'from-cyan-500 to-blue-700' },
-  { id: '3', name: 'Hotel Presidential', city: 'Port Harcourt', category: 'Standard', rooms: 18, rating: 4.6, status: 'active', grad: 'from-emerald-500 to-teal-700' },
-  { id: '4', name: 'Hamdala Hotel', city: 'Kano', category: 'Budget', rooms: 12, rating: 4.4, status: 'inactive', grad: 'from-amber-500 to-orange-700' },
-  { id: '5', name: 'Wheatbaker Hotel', city: 'Lagos', category: 'Boutique', rooms: 15, rating: 4.7, status: 'active', grad: 'from-rose-500 to-pink-700' },
-];
+const GRAD: Record<string, string> = {
+  'h-001': 'from-indigo-500 to-purple-700', 'h-002': 'from-cyan-500 to-blue-700',
+  'h-003': 'from-emerald-500 to-teal-700',  'h-004': 'from-amber-500 to-orange-700',
+  'h-005': 'from-rose-500 to-pink-700',     'h-006': 'from-violet-500 to-indigo-700',
+};
+
+const INIT_HOTELS = DUMMY_HOTELS.map((h) => ({
+  id: h.id, name: h.name, city: h.city,
+  category: h.starRating === 5 ? 'Luxury' : h.starRating === 4 ? 'Standard' : 'Budget',
+  rooms: h.rooms.length, rating: h.rating ?? 0,
+  status: h.status as 'active' | 'inactive',
+  grad: GRAD[h.id] ?? 'from-gray-400 to-gray-600',
+}));
 
 interface HotelForm { name: string; city: string; category: string; }
 
 const CATEGORIES = ['Luxury', 'Standard', 'Budget', 'Boutique'];
 
 const ManageHotelsPage: React.FC = () => {
-  const [hotels, setHotels] = useState(HOTELS);
+  const [hotels, setHotels] = useState(INIT_HOTELS);
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [editing, setEditing] = useState<typeof HOTELS[0] | null>(null);
+  const [editing, setEditing] = useState<typeof INIT_HOTELS[0] | null>(null);
   const [form, setForm] = useState<HotelForm>({ name: '', city: '', category: 'Luxury' });
 
   const filtered = hotels.filter((h) =>
@@ -27,7 +34,7 @@ const ManageHotelsPage: React.FC = () => {
   );
 
   const openNew = () => { setEditing(null); setForm({ name: '', city: '', category: 'Luxury' }); setShowModal(true); };
-  const openEdit = (h: typeof HOTELS[0]) => { setEditing(h); setForm({ name: h.name, city: h.city, category: h.category }); setShowModal(true); };
+  const openEdit = (h: typeof INIT_HOTELS[0]) => { setEditing(h); setForm({ name: h.name, city: h.city, category: h.category }); setShowModal(true); };
 
   const handleSave = () => {
     if (!form.name.trim() || !form.city.trim()) { toast.error('Name and city are required.'); return; }

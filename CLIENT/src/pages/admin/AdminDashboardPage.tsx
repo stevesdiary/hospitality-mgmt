@@ -2,24 +2,22 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Building2, BedDouble, CalendarCheck, Users, TrendingUp, ArrowRight, CheckCircle, Clock, X } from 'lucide-react';
+import { DUMMY_HOTELS, DUMMY_ROOMS, DUMMY_RESERVATIONS, DUMMY_USERS } from '@/data/dummy';
+
+const STATS = [
+  { label: 'Total Hotels', value: String(DUMMY_HOTELS.length), change: `+${DUMMY_HOTELS.length} total`, icon: Building2, color: 'text-blue-600', bg: 'bg-blue-50', grad: 'from-blue-500 to-indigo-600' },
+  { label: 'Total Rooms', value: String(DUMMY_ROOMS.length), change: `+${DUMMY_ROOMS.length} total`, icon: BedDouble, color: 'text-violet-600', bg: 'bg-violet-50', grad: 'from-violet-500 to-purple-600' },
+  { label: 'Reservations', value: String(DUMMY_RESERVATIONS.length), change: `+${DUMMY_RESERVATIONS.length} total`, icon: CalendarCheck, color: 'text-emerald-600', bg: 'bg-emerald-50', grad: 'from-emerald-500 to-teal-600' },
+  { label: 'Registered Users', value: String(DUMMY_USERS.length), change: `+${DUMMY_USERS.length} total`, icon: Users, color: 'text-accent-600', bg: 'bg-accent-50', grad: 'from-orange-400 to-red-500' },
+];
+
+const RECENT = DUMMY_RESERVATIONS.slice(0, 5).map((r) => ({
+  id: r.id, guest: r.guestName, hotel: DUMMY_HOTELS.find((h) => h.id === r.hotelId)?.name ?? '',
+  checkIn: r.checkInDate, status: r.status === 'checked-out' ? 'completed' : r.status,
+}));
 
 const fadeUp = { hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } };
-
-const STATS = [
-  { label: 'Total Hotels', value: '24', change: '+3 this month', icon: Building2, color: 'text-blue-600', bg: 'bg-blue-50', grad: 'from-blue-500 to-indigo-600' },
-  { label: 'Total Rooms', value: '312', change: '+18 this month', icon: BedDouble, color: 'text-violet-600', bg: 'bg-violet-50', grad: 'from-violet-500 to-purple-600' },
-  { label: 'Reservations', value: '1,840', change: '+124 this month', icon: CalendarCheck, color: 'text-emerald-600', bg: 'bg-emerald-50', grad: 'from-emerald-500 to-teal-600' },
-  { label: 'Registered Users', value: '5,290', change: '+310 this month', icon: Users, color: 'text-accent-600', bg: 'bg-accent-50', grad: 'from-orange-400 to-red-500' },
-];
-
-const RECENT = [
-  { id: 'R092', guest: 'Amaka Nwosu', hotel: 'Eko Hotel & Suites', checkIn: '2026-04-10', status: 'confirmed' },
-  { id: 'R091', guest: 'Tunde Adeyemi', hotel: 'Transcorp Hilton', checkIn: '2026-04-08', status: 'pending' },
-  { id: 'R090', guest: 'Chioma Okafor', hotel: 'Hotel Presidential', checkIn: '2026-04-06', status: 'completed' },
-  { id: 'R089', guest: 'Emeka Eze', hotel: 'Nicon Luxury Hotel', checkIn: '2026-04-05', status: 'cancelled' },
-  { id: 'R088', guest: 'Fatima Bello', hotel: 'Wheatbaker Hotel', checkIn: '2026-04-03', status: 'confirmed' },
-];
 
 const QUICK_LINKS = [
   { to: '/admin/hotels', label: 'Manage Hotels', icon: Building2, desc: 'Add, edit or remove hotels', grad: 'from-blue-500 to-indigo-600' },
