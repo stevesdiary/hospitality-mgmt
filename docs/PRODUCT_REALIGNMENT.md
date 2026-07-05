@@ -104,14 +104,15 @@ all of them.
       a hotel's own page and always carry that hotel's `companyId`.
 
 ### Frontend
-- [ ] **New default route.** Authenticated hotel staff land on the management
-      dashboard (`/admin` → rename toward `/console` or `/dashboard`), not the
-      marketing home.
-- [ ] **Reframe `/` and `/hotels`.** The cross-tenant marketing homepage and the
-      "browse all hotels" grid become optional/Phase-2, or convert `/hotels/:id`
-      into each hotel's standalone public booking page.
-- [ ] **Per-hotel public booking page.** A single-hotel branded surface (gallery,
-      rooms, availability, book) reachable by direct link / QR.
+- [x] **New default route.** Authenticated hotel staff land on `/admin` after
+      login; `org_admin` is allowed through the console's admin gate.
+- [x] **Reframe `/` and retire the marketplace.** `/` is now a SaaS product
+      landing for hotel owners (run your hotel, your own booking page). The
+      cross-tenant `/hotels`, `/hotels/:id` and `/search` routes redirect to `/`
+      and their pages were deleted. Nav/footer point to product sections.
+- [x] **Per-hotel public booking page.** `/h/:slug` renders a single hotel's
+      branded page (hero, amenities, rooms with direct Book CTAs), backed by the
+      public by-slug endpoint.
 
 ### Design
 - [ ] **Regenerate the hero.** The Canva/Figma "hero" should be the management

@@ -16,10 +16,7 @@ import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 
 // Pages - Hotels
-import HotelsPage from './pages/hotels/HotelsPage';
-import HotelDetailPage from './pages/hotels/HotelDetailPage';
 import HotelLandingPage from './pages/hotels/HotelLandingPage';
-import SearchHotelsPage from './pages/hotels/SearchHotelsPage';
 
 // Pages - Rooms
 import RoomDetailPage from './pages/rooms/RoomDetailPage';
@@ -75,9 +72,11 @@ const App: React.FC = () => {
           <Route path="/" element={<MainLayout><HomePage /></MainLayout>} />
           {/* Per-hotel public landing/booking page — a single hotel's own branded page */}
           <Route path="/h/:slug" element={<MainLayout><HotelLandingPage /></MainLayout>} />
-          <Route path="/hotels" element={<MainLayout><HotelsPage /></MainLayout>} />
-          <Route path="/hotels/:id" element={<MainLayout><HotelDetailPage /></MainLayout>} />
-          <Route path="/search" element={<MainLayout><SearchHotelsPage /></MainLayout>} />
+          {/* Retired marketplace surfaces — StayNG is not a cross-hotel catalogue.
+              Guests reach a hotel via its own /h/:slug link. */}
+          <Route path="/hotels" element={<Navigate to="/" replace />} />
+          <Route path="/hotels/:id" element={<Navigate to="/" replace />} />
+          <Route path="/search" element={<Navigate to="/" replace />} />
           <Route path="/rooms/:id" element={<MainLayout><RoomDetailPage /></MainLayout>} />
           
           {/* Auth Routes */}
