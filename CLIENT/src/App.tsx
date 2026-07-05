@@ -18,6 +18,7 @@ import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 // Pages - Hotels
 import HotelsPage from './pages/hotels/HotelsPage';
 import HotelDetailPage from './pages/hotels/HotelDetailPage';
+import HotelLandingPage from './pages/hotels/HotelLandingPage';
 import SearchHotelsPage from './pages/hotels/SearchHotelsPage';
 
 // Pages - Rooms
@@ -56,7 +57,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin 
 
   if (requireAdmin && user) {
     const userData = JSON.parse(user);
-    if (userData.userType !== 'admin') {
+    // Both platform admins and hotel admins (org_admin) run the management console.
+    if (userData.userType !== 'admin' && userData.userType !== 'org_admin') {
       return <Navigate to="/" replace />;
     }
   }
@@ -71,6 +73,8 @@ const App: React.FC = () => {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<MainLayout><HomePage /></MainLayout>} />
+          {/* Per-hotel public landing/booking page — a single hotel's own branded page */}
+          <Route path="/h/:slug" element={<MainLayout><HotelLandingPage /></MainLayout>} />
           <Route path="/hotels" element={<MainLayout><HotelsPage /></MainLayout>} />
           <Route path="/hotels/:id" element={<MainLayout><HotelDetailPage /></MainLayout>} />
           <Route path="/search" element={<MainLayout><SearchHotelsPage /></MainLayout>} />

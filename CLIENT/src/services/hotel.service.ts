@@ -12,6 +12,11 @@ class HotelService {
     return apiService.get<Hotel>(`${this.baseUrl}/${id}`);
   }
 
+  /** Public per-hotel landing page — resolves a single hotel by its slug. */
+  async getHotelBySlug(slug: string) {
+    return apiService.get<{ hotel: Hotel }>(`/hotels/by-slug/${slug}`);
+  }
+
   async createHotel(hotelData: Partial<Hotel>) {
     return apiService.post<Hotel>(this.baseUrl, hotelData);
   }

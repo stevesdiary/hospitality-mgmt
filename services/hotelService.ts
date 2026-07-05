@@ -9,13 +9,57 @@ import { HotelSearchQuery } from '../types';
 import { Op } from 'sequelize';
 
 class HotelService {
+  /** Convert a hotel name into a URL-safe slug. */
+  private slugify(value: string): string {
+    return (
+      String(value || '')
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 80) || 'hotel'
+    );
+  }
+
+  /** Generate a slug that is unique across hotels, appending -2, -3, ... on collision. */
+  private async generateUniqueSlug(name: string): Promise<string> {
+    const base = this.slugify(name);
+    let candidate = base;
+    let n = 2;
+    // paranoid model: a soft-deleted hotel still holds its slug, so include deleted rows
+    while (await Hotel.findOne({ where: { slug: candidate }, paranoid: false })) {
+      candidate = `${base}-${n++}`;
+    }
+    return candidate;
+  }
+
   async createHotel(hotelData: Partial<HotelInstance>, companyId: string): Promise<HotelInstance> {
     try {
       const id = uuidv4();
-      const hotel = await Hotel.create({ id, companyId, ...hotelData });
+      const slug = await this.generateUniqueSlug((hotelData.name as string) || '');
+      const hotel = await Hotel.create({ id, companyId, slug, ...hotelData });
       return hotel;
     } catch (error: any) {
       throw new Error(`Error creating hotel: ${error.message}`);
+    }
+  }
+
+  async findHotelBySlug(slug: string): Promise<HotelInstance> {
+    try {
+      const hotel = await Hotel.findOne({
+        where: { slug },
+        attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] },
+        include: [
+          { model: Room, as: 'rooms', attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] } },
+          { model: Facility, as: 'facilities', attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] } },
+          { model: RatingAndReview, as: 'ratingAndReview', attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] } },
+        ],
+      });
+
+      if (!hotel) throw new Error('Hotel not found');
+      return hotel;
+    } catch (error: any) {
+      throw new Error(`Error finding hotel: ${error.message}`);
     }
   }
 
