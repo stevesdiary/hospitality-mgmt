@@ -1,6 +1,6 @@
 # Product Realignment — Management Platform First
 
-**Status:** Proposed · **Date:** 2026-07-05 · **Branch:** `claude/review-multi-tenant-hospitality-ORUYc`
+**Status:** Confirmed · **Date:** 2026-07-05 · **Branch:** `claude/review-multi-tenant-hospitality-ORUYc`
 
 > This document records a product-direction review and the concrete plan to
 > re-center the platform on its **sole aim**: a management system for the
@@ -50,19 +50,39 @@ management tool into a marketplace. **The backbone is fine — the emphasis is n
 
 ---
 
-## 2. Target model: Management-first
+## 2. Target model: Management-first (CONFIRMED)
 
-1. **Foreground the console.** The authenticated management dashboard
-   (front desk, reservations, rooms, staff, occupancy, reporting) is the
-   product a hotel signs up for. It becomes the default post-login surface.
-2. **Scope guest booking per-hotel.** A guest books *one specific hotel* via
-   that hotel's own branded page / link / QR — not a competitive cross-hotel
-   search. No tenant wants the platform steering their guest to a rival.
-3. **Demote the public multi-hotel directory to an opt-in Phase-2 feature.**
-   If kept, a hotel *chooses* to appear in a public directory; it is not the
-   front door and not the default.
+Two distinct surfaces, one shared multi-tenant backbone:
 
-The data model already supports all three without schema changes.
+### A. Per-hotel public landing page (guest-facing)
+Every client hotel gets its **own branded landing/booking page** — e.g.
+*ABC Hotels & Suites* — that shows **only that hotel's** rooms and services and
+lets customers book **directly from there**. It is a single-tenant microsite:
+
+- Hero / branding for that hotel (name, logo, photos)
+- That hotel's rooms, amenities, and services
+- Availability + booking flow scoped to that hotel
+- Reachable by direct link / QR the hotel shares with its own guests
+
+There is **no** cross-hotel search, compare, or "browse all hotels" surface.
+Discovery is the hotel's job (their traffic, their link); ours is booking +
+management for that one hotel.
+
+### B. Management console (client-facing, the platform's focus)
+Each client logs into **their own dashboard** to run operations:
+
+- Front desk (QR / manual check-in & check-out)
+- Reservations management
+- Rooms & availability
+- Services / facilities
+- Staff / users (scoped to their company)
+- Occupancy & reporting
+
+This is the product the client pays for and the default surface after login.
+
+The existing data model already supports both without schema changes — every
+read/booking simply resolves **one** hotel/tenant instead of aggregating across
+all of them.
 
 ---
 
@@ -111,14 +131,26 @@ The data model already supports all three without schema changes.
 
 ---
 
-## 5. Open questions to confirm
+## 5. Decisions
 
-1. **Tenant addressing:** subdomain per hotel (`ekohotels.stayng.com`), path
-   (`/h/eko-hotels`), or direct booking links + QR only?
-2. **Does a guest account live at the platform level or per-hotel?** (Affects
-   whether "My Reservations" spans hotels or is per-stay.)
-3. **Is a public directory in scope at all**, or is discovery entirely off-platform
-   (hotels drive their own traffic to their booking link)?
+**Resolved**
+- ✅ **Per-hotel landing pages, not a marketplace.** Each hotel has its own
+  branded page listing only its rooms/services; guests book there directly.
+- ✅ **Public multi-hotel directory is out of scope.** Discovery is off-platform;
+  each hotel drives its own traffic to its own booking link/QR.
+- ✅ **Management console is the platform's focus and default post-login surface.**
+
+**Still to confirm**
+1. **Tenant addressing for the landing page.** Options:
+   - Path-based slug — `stayng.com/h/abc-hotels-and-suites` *(recommended to start:
+     no wildcard DNS/TLS, simplest to ship)*
+   - Subdomain — `abc-hotels.stayng.com` *(more branded; needs wildcard DNS +
+     TLS; can be added later)*
+   - Custom domain — `book.abchotels.com` *(Phase 3, premium tier)*
+2. **Guest account scope.** Recommended: lightweight **guest checkout** on each
+   hotel page (name/phone/email at booking), with optional account creation.
+   "My Reservations" would then be per-booking-reference rather than a
+   cross-hotel account — keeps the guest side thin and the focus on management.
 
 ---
 
