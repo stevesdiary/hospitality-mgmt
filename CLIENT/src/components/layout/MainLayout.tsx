@@ -45,9 +45,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const isTransparent = isHomePage && !isScrolled;
 
   const navLinks = [
-    { to: '/hotels', label: 'Hotels' },
-    { to: '/search', label: 'Search' },
-    { to: '/search?deals=true', label: 'Deals', highlight: true },
+    { to: '/#how-it-works', label: 'How it works' },
+    { to: '/#features', label: 'Features' },
+    { to: '/#booking-page', label: 'Your booking page' },
   ];
 
   return (
@@ -75,16 +75,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center space-x-1">
-            {navLinks.map(({ to, label, highlight }) => (
+            {navLinks.map(({ to, label }) => (
               <Link
                 key={to}
                 to={to}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  highlight
-                    ? isTransparent
-                      ? 'text-amber-300 hover:bg-white/10'
-                      : 'text-accent-600 hover:bg-accent-50'
-                    : isTransparent
+                  isTransparent
                     ? 'text-white/90 hover:text-white hover:bg-white/10'
                     : 'text-gray-600 hover:text-primary-600 hover:bg-primary-50'
                 }`}
@@ -248,10 +244,16 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             </div>
 
             <div>
-              <h4 className="font-semibold text-xs uppercase tracking-wider mb-5 text-secondary-400">Explore</h4>
+              <h4 className="font-semibold text-xs uppercase tracking-wider mb-5 text-secondary-400">Product</h4>
               <ul className="space-y-3 text-sm text-secondary-400">
-                {['Hotels', 'Apartments', 'Deals', 'Popular Destinations', 'New Arrivals'].map((l) => (
-                  <li key={l}><Link to="/hotels" className="hover:text-white transition-colors">{l}</Link></li>
+                {[
+                  { l: 'How it works', to: '/#how-it-works' },
+                  { l: 'Features', to: '/#features' },
+                  { l: 'Your booking page', to: '/#booking-page' },
+                  { l: 'Sign in', to: '/login' },
+                  { l: 'List your hotel', to: '/register' },
+                ].map(({ l, to }) => (
+                  <li key={l}><Link to={to} className="hover:text-white transition-colors">{l}</Link></li>
                 ))}
               </ul>
             </div>

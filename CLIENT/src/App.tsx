@@ -16,9 +16,7 @@ import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 
 // Pages - Hotels
-import HotelsPage from './pages/hotels/HotelsPage';
-import HotelDetailPage from './pages/hotels/HotelDetailPage';
-import SearchHotelsPage from './pages/hotels/SearchHotelsPage';
+import HotelLandingPage from './pages/hotels/HotelLandingPage';
 
 // Pages - Rooms
 import RoomDetailPage from './pages/rooms/RoomDetailPage';
@@ -35,6 +33,10 @@ import ManageHotelsPage from './pages/admin/ManageHotelsPage';
 import ManageRoomsPage from './pages/admin/ManageRoomsPage';
 import ManageReservationsPage from './pages/admin/ManageReservationsPage';
 import ManageUsersPage from './pages/admin/ManageUsersPage';
+import FrontDeskPage from './pages/admin/FrontDeskPage';
+
+// Pages - Bookings
+import BookingConfirmationPage from './pages/bookings/BookingConfirmationPage';
 
 // Protected Route Component
 interface ProtectedRouteProps {
@@ -52,7 +54,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin 
 
   if (requireAdmin && user) {
     const userData = JSON.parse(user);
-    if (userData.userType !== 'admin') {
+    // Both platform admins and hotel admins (org_admin) run the management console.
+    if (userData.userType !== 'admin' && userData.userType !== 'org_admin') {
       return <Navigate to="/" replace />;
     }
   }
@@ -67,9 +70,13 @@ const App: React.FC = () => {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<MainLayout><HomePage /></MainLayout>} />
-          <Route path="/hotels" element={<MainLayout><HotelsPage /></MainLayout>} />
-          <Route path="/hotels/:id" element={<MainLayout><HotelDetailPage /></MainLayout>} />
-          <Route path="/search" element={<MainLayout><SearchHotelsPage /></MainLayout>} />
+          {/* Per-hotel public landing/booking page — a single hotel's own branded page */}
+          <Route path="/h/:slug" element={<MainLayout><HotelLandingPage /></MainLayout>} />
+          {/* Retired marketplace surfaces — StayNG is not a cross-hotel catalogue.
+              Guests reach a hotel via its own /h/:slug link. */}
+          <Route path="/hotels" element={<Navigate to="/" replace />} />
+          <Route path="/hotels/:id" element={<Navigate to="/" replace />} />
+          <Route path="/search" element={<Navigate to="/" replace />} />
           <Route path="/rooms/:id" element={<MainLayout><RoomDetailPage /></MainLayout>} />
           
           {/* Auth Routes */}
@@ -80,6 +87,14 @@ const App: React.FC = () => {
           
           {/* Booking Routes */}
           <Route path="/book/:roomId" element={<MainLayout><BookingPage /></MainLayout>} />
+          <Route
+            path="/booking/:id/confirmation"
+            element={
+              <ProtectedRoute>
+                <MainLayout><BookingConfirmationPage /></MainLayout>
+              </ProtectedRoute>
+            }
+          />
           
           {/* User Routes */}
           <Route 
@@ -140,13 +155,21 @@ const App: React.FC = () => {
               </ProtectedRoute>
             } 
           />
-          <Route 
-            path="/admin/users" 
+          <Route
+            path="/admin/users"
             element={
               <ProtectedRoute requireAdmin>
                 <MainLayout><ManageUsersPage /></MainLayout>
               </ProtectedRoute>
-            } 
+            }
+          />
+          <Route
+            path="/admin/front-desk"
+            element={
+              <ProtectedRoute requireAdmin>
+                <FrontDeskPage />
+              </ProtectedRoute>
+            }
           />
           
           {/* 404 Route */}

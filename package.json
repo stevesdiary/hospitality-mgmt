@@ -2,11 +2,12 @@
   "name": "express",
   "version": "1.0.0",
   "description": "Express server to run description",
-  "main": "src/app.ts",
+  "main": "dist/app.js",
   "scripts": {
-    "start": "node dist/src/app.js",
-    "dev": "nodemon --exec ts-node src/app.ts",
+    "start": "node dist/app.js",
+    "dev": "nodemon --exec ts-node app.ts",
     "build": "tsc",
+    "build:clean": "rm -rf dist && tsc",
     "migrate": "npx sequelize-cli db:migrate",
     "type-check": "tsc --noEmit"
   },

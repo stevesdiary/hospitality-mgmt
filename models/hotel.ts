@@ -9,6 +9,7 @@ import { HotelType } from '../types';
 export interface HotelInstance extends Model {
   id: string;
   name: string;
+  slug?: string;
   address: string;
   city: string;
   state: string;
@@ -36,6 +37,7 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): ModelCtor<Ho
 
     id!: string;
     name!: string;
+    slug?: string;
     address!: string;
     city!: string;
     state!: string;
@@ -61,6 +63,11 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): ModelCtor<Ho
       name: {
         type: DataTypes.STRING,
         allowNull: false,
+      },
+      slug: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true,
       },
       address: {
         type: DataTypes.STRING,

@@ -10,16 +10,22 @@ export interface ReservationInstance extends Model {
   userId: string;
   roomId: string;
   companyId?: string;
+  guestCount?: number;
   dateIn: Date;
   dateOut: Date;
-  status: string;
+  status: 'pending' | 'confirmed' | 'checked-in' | 'checked-out' | 'cancelled' | 'no-show';
   paymentStatus?: boolean;
+  checkInTime?: Date;
+  checkOutTime?: Date;
   readonly createdAt: Date;
   readonly updatedAt: Date;
   readonly deletedAt: Date;
 }
 
-export interface ReservationCreationAttributes extends Optional<ReservationInstance, 'id' | 'status' | 'paymentStatus' | 'companyId' | 'createdAt' | 'updatedAt' | 'deletedAt'> {}
+export interface ReservationCreationAttributes extends Optional<
+  ReservationInstance,
+  'id' | 'status' | 'paymentStatus' | 'companyId' | 'guestCount' | 'checkInTime' | 'checkOutTime' | 'createdAt' | 'updatedAt' | 'deletedAt'
+> {}
 
 export default (sequelize: Sequelize, dataTypes: typeof DataTypes): any => {
   class Reservation extends Model<ReservationInstance, ReservationCreationAttributes> implements ReservationInstance {
@@ -34,10 +40,13 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): any => {
     userId!: string;
     roomId!: string;
     companyId?: string;
+    guestCount?: number;
     dateIn!: Date;
     dateOut!: Date;
-    status!: string;
+    status!: 'pending' | 'confirmed' | 'checked-in' | 'checked-out' | 'cancelled' | 'no-show';
     paymentStatus?: boolean;
+    checkInTime?: Date;
+    checkOutTime?: Date;
     readonly createdAt!: Date;
     readonly updatedAt!: Date;
     readonly deletedAt!: Date;
@@ -53,9 +62,7 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): any => {
       hotelId: {
         type: dataTypes.UUID,
         allowNull: false,
-        validate: {
-          notNull: { msg: 'Hotel must not be empty' },
-        },
+        validate: { notNull: { msg: 'Hotel must not be empty' } },
       },
       userId: {
         type: dataTypes.UUID,
@@ -64,14 +71,17 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): any => {
       roomId: {
         type: dataTypes.UUID,
         allowNull: false,
-        validate: {
-          notNull: { msg: 'Room must not be empty' },
-        },
+        validate: { notNull: { msg: 'Room must not be empty' } },
       },
       companyId: {
         type: dataTypes.UUID,
         allowNull: true,
         references: { model: 'Companies', key: 'id' },
+      },
+      guestCount: {
+        type: dataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: 1,
       },
       dateIn: {
         type: dataTypes.DATE,
@@ -82,11 +92,19 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): any => {
         allowNull: false,
       },
       status: {
-        type: dataTypes.ENUM('active', 'used', 'expired'),
+        type: dataTypes.ENUM('pending', 'confirmed', 'checked-in', 'checked-out', 'cancelled', 'no-show'),
         allowNull: false,
-        defaultValue: 'active',
+        defaultValue: 'pending',
       },
       paymentStatus: dataTypes.BOOLEAN,
+      checkInTime: {
+        type: dataTypes.DATE,
+        allowNull: true,
+      },
+      checkOutTime: {
+        type: dataTypes.DATE,
+        allowNull: true,
+      },
     } as any,
     {
       sequelize,

@@ -13,16 +13,12 @@
     "moduleResolution": "node",
     "ignoreDeprecations": "5.0",
     "declaration": true,
-    "declarationMap": true,
     "sourceMap": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
+    "incremental": true,
+    "tsBuildInfoFile": "./dist/.tsbuildinfo",
+    "allowSyntheticDefaultImports": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "types": ["node"]
@@ -41,6 +37,7 @@
   "exclude": [
     "node_modules",
     "dist",
+    "CLIENT",
     "**/*.test.ts",
     "tests"
   ]
