@@ -183,7 +183,9 @@ const HotelLandingPage: React.FC = () => {
                     </div>
                     {room.id ? (
                       <Link
-                        to={`/book/${room.id}`}
+                        // Carry the hotel context so the booking binds to this
+                        // tenant (the API derives companyId from hotelId).
+                        to={`/book/${room.id}?hotelId=${(hotel as any).id}&h=${slug ?? ''}`}
                         className="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-[#0F2444] hover:bg-amber-400 transition-colors"
                       >
                         Book

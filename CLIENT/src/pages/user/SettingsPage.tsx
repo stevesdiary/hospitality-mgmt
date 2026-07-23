@@ -118,7 +118,7 @@ const SettingsPage: React.FC = () => {
               <button className="text-xs text-primary-600 hover:text-primary-700 font-semibold transition-colors">Manage</button>
             </Row>
             <Row label="Download my data" desc="Get a copy of all your account data">
-              <button onClick={() => toast.success('Data export requested. You'll receive an email shortly.')} className="text-xs text-primary-600 hover:text-primary-700 font-semibold transition-colors">
+              <button onClick={() => toast.success(`Data export requested. You'll receive an email shortly.`)} className="text-xs text-primary-600 hover:text-primary-700 font-semibold transition-colors">
                 Request
               </button>
             </Row>

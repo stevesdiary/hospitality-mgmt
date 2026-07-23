@@ -29,7 +29,7 @@ const ResetPasswordPage: React.FC = () => {
 
   const onSubmit = async (data: ResetForm) => {
     try {
-      await authService.resetPassword(token, data.password);
+      await authService.resetPassword({ token, newPassword: data.password });
       setDone(true);
     } catch {
       toast.error('Reset link is invalid or expired. Please request a new one.');
