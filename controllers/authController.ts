@@ -7,8 +7,12 @@ import authService from '../services/authService';
 
 export const register = async (req: Request, res: Response): Promise<any> => {
   try {
-    const { firstName, lastName, email, phoneNumber, password, type, companyId } = req.body;
-    const { token, user } = await authService.register({ firstName, lastName, email, phoneNumber, password, type, companyId });
+    // Public self-signup can NEVER grant an elevated role or attach the account
+    // to a company. `type` and `companyId` from the request body are ignored so
+    // nobody can register themselves as a platform admin or join an arbitrary
+    // tenant. Staff (org_admin) are provisioned through a controlled flow.
+    const { firstName, lastName, email, phoneNumber, password } = req.body;
+    const { token, user } = await authService.register({ firstName, lastName, email, phoneNumber, password, type: 'regular' });
 
     return res.status(201).json({
       message: 'Registration successful',
