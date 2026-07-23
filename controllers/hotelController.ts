@@ -126,7 +126,12 @@ export const updateHotel = async (req: Request, res: Response): Promise<any> => 
     if (!(existing as any).companyId || !assertOwnsResource(req, (existing as any).companyId)) {
       return res.status(403).json({ message: 'Forbidden - you do not own this hotel' });
     }
-    const hotel = await hotelService.updateHotel(id, req.body);
+    // companyId is immutable — an owner must not be able to move their hotel to
+    // another tenant.
+    const updateData = { ...req.body };
+    delete updateData.companyId;
+    delete updateData.id;
+    const hotel = await hotelService.updateHotel(id, updateData);
     return res.status(200).json({ message: 'Hotel updated', hotel });
   } catch (err: any) {
     if (err.message.includes('not found')) return res.status(404).json({ message: 'Hotel not found' });
