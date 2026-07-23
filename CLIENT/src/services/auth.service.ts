@@ -12,6 +12,20 @@ class AuthService {
     return apiService.post<{ token: string; user: User }>(`${this.baseUrl}/register`, data);
   }
 
+  /**
+   * Self-serve hotel onboarding: creates a company + its first org_admin and
+   * returns an auto-login token. This is how a hotel "lists" on StayNG.
+   */
+  async onboardHotel(data: {
+    company: { name: string; contactEmail: string; contactPhone?: string; address?: string };
+    admin: { firstName: string; lastName: string; email: string; phoneNumber?: string; password: string };
+  }) {
+    return apiService.post<{ token: string; user: User; company: { id: string; name: string } }>(
+      '/onboard',
+      data
+    );
+  }
+
   async logout() {
     return apiService.post(`${this.baseUrl}/logout`);
   }

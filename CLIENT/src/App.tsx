@@ -12,6 +12,7 @@ import AuthLayout from './components/layout/AuthLayout';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
+import OnboardHotelPage from './pages/auth/OnboardHotelPage';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 
@@ -82,6 +83,7 @@ const App: React.FC = () => {
           {/* Auth Routes */}
           <Route path="/login" element={<AuthLayout><LoginPage /></AuthLayout>} />
           <Route path="/register" element={<AuthLayout><RegisterPage /></AuthLayout>} />
+          <Route path="/list-your-hotel" element={<AuthLayout><OnboardHotelPage /></AuthLayout>} />
           <Route path="/forgot-password" element={<AuthLayout><ForgotPasswordPage /></AuthLayout>} />
           <Route path="/reset-password" element={<AuthLayout><ResetPasswordPage /></AuthLayout>} />
           
