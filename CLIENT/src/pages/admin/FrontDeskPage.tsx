@@ -38,7 +38,10 @@ const FrontDeskPage: React.FC = () => {
     setNotFound(false);
     setReservation(null);
     try {
-      const res: any = await reservationService.lookupReservation(trimmed);
+      // Guest bookings are found by their BK- reference; staff bookings by id.
+      const res: any = /^BK-/i.test(trimmed)
+        ? await reservationService.lookupByReference(trimmed.toUpperCase())
+        : await reservationService.lookupReservation(trimmed);
       setReservation(res?.reservation || res);
     } catch {
       setNotFound(true);

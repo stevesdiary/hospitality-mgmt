@@ -1,27 +1,21 @@
 import apiService from './api';
 import type { Reservation, CreateReservationRequest, PaginationParams, PaginatedResponse } from '@/types';
 
+/**
+ * Paths map to the backend routes/reservation.ts. The axios instance already
+ * prefixes /api, so paths here are relative to the API root.
+ */
 class ReservationService {
-  private baseUrl = '/reservations';
-
   async getAllReservations(params?: PaginationParams) {
-    return apiService.get<PaginatedResponse<Reservation>>(this.baseUrl, { params });
+    return apiService.get<PaginatedResponse<Reservation>>('/getall', { params });
   }
 
   async getReservationById(id: string) {
-    return apiService.get<Reservation>(`${this.baseUrl}/${id}`);
-  }
-
-  async getUserReservations(userId: string, params?: PaginationParams) {
-    return apiService.get<PaginatedResponse<Reservation>>(`${this.baseUrl}/user/${userId}`, { params });
-  }
-
-  async getCurrentUserReservations(params?: PaginationParams) {
-    return apiService.get<PaginatedResponse<Reservation>>(`${this.baseUrl}/my-reservations`, { params });
+    return apiService.get<{ reservation: Reservation }>(`/getone/${id}`);
   }
 
   async createReservation(reservationData: CreateReservationRequest) {
-    return apiService.post<Reservation>(this.baseUrl, reservationData);
+    return apiService.post<{ reservation: Reservation }>('/reservation', reservationData);
   }
 
   /**
@@ -43,38 +37,29 @@ class ReservationService {
   }
 
   async updateReservation(id: string, reservationData: Partial<Reservation>) {
-    return apiService.put<Reservation>(`${this.baseUrl}/${id}`, reservationData);
-  }
-
-  async cancelReservation(id: string) {
-    return apiService.patch<Reservation>(`${this.baseUrl}/${id}/cancel`);
-  }
-
-  async confirmReservation(id: string) {
-    return apiService.patch<Reservation>(`${this.baseUrl}/${id}/confirm`);
+    return apiService.put<{ reservation: Reservation }>(`/updatereservation/${id}`, reservationData);
   }
 
   async deleteReservation(id: string) {
-    return apiService.delete(`${this.baseUrl}/${id}`);
+    return apiService.delete(`/deletereservation/${id}`);
   }
 
-  async checkAvailability(roomId: string, checkIn: string, checkOut: string) {
-    return apiService.get<boolean>(`${this.baseUrl}/check-availability`, {
-      params: { roomId, checkIn, checkOut },
-    });
-  }
-
-  /** Front-desk: look up a booking by ID */
+  /** Front-desk: look up a booking by reservation ID. */
   async lookupReservation(id: string) {
-    return apiService.get<Reservation>(`/lookup/${id}`);
+    return apiService.get<{ reservation: Reservation }>(`/lookup/${id}`);
+  }
+
+  /** Front-desk: look up a guest booking by its booking reference. */
+  async lookupByReference(reference: string) {
+    return apiService.get<{ reservation: Reservation }>(`/lookup-ref/${reference}`);
   }
 
   async checkIn(id: string) {
-    return apiService.put<Reservation>(`/checkin/${id}`, {});
+    return apiService.put<{ reservation: Reservation }>(`/checkin/${id}`, {});
   }
 
   async checkOut(id: string) {
-    return apiService.put<Reservation>(`/checkout/${id}`, {});
+    return apiService.put<{ reservation: Reservation }>(`/checkout/${id}`, {});
   }
 }
 
