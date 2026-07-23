@@ -24,6 +24,24 @@ class ReservationService {
     return apiService.post<Reservation>(this.baseUrl, reservationData);
   }
 
+  /**
+   * Guest checkout — book a hotel from its public page without an account.
+   * Returns a booking reference the guest presents at the front desk.
+   */
+  async createGuestReservation(data: {
+    hotelId: string;
+    roomId: string;
+    dateIn: string;
+    dateOut: string;
+    guestCount: number;
+    guest: { name: string; email: string; phone?: string };
+  }) {
+    return apiService.post<{ bookingReference: string; reservation: Reservation }>(
+      '/reservation/guest',
+      data
+    );
+  }
+
   async updateReservation(id: string, reservationData: Partial<Reservation>) {
     return apiService.put<Reservation>(`${this.baseUrl}/${id}`, reservationData);
   }
