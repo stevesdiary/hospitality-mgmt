@@ -152,8 +152,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 >
                   Sign In
                 </Link>
-                <Link to="/register" className="btn-accent text-sm py-2 px-5">
-                  Get Started
+                <Link to="/list-your-hotel" className="btn-accent text-sm py-2 px-5">
+                  List your hotel
                 </Link>
               </>
             )}
@@ -208,7 +208,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   ) : (
                     <div className="flex flex-col space-y-2 px-4">
                       <Link to="/login" className="btn-outline text-center text-sm">Sign In</Link>
-                      <Link to="/register" className="btn-accent text-center text-sm">Get Started</Link>
+                      <Link to="/list-your-hotel" className="btn-accent text-center text-sm">List your hotel</Link>
                     </div>
                   )}
                 </div>
@@ -251,7 +251,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                   { l: 'Features', to: '/#features' },
                   { l: 'Your booking page', to: '/#booking-page' },
                   { l: 'Sign in', to: '/login' },
-                  { l: 'List your hotel', to: '/register' },
+                  { l: 'List your hotel', to: '/list-your-hotel' },
                 ].map(({ l, to }) => (
                   <li key={l}><Link to={to} className="hover:text-white transition-colors">{l}</Link></li>
                 ))}

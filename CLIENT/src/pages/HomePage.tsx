@@ -89,7 +89,7 @@ const HomePage: React.FC = () => {
             </motion.p>
 
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link to="/register" className="btn-accent py-3 px-7 flex items-center gap-2">
+              <Link to="/list-your-hotel" className="btn-accent py-3 px-7 flex items-center gap-2">
                 List your hotel <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
@@ -245,7 +245,7 @@ const HomePage: React.FC = () => {
               Set up your property and start taking direct bookings today.
             </motion.p>
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link to="/register" className="btn-accent py-3 px-7 flex items-center gap-2">
+              <Link to="/list-your-hotel" className="btn-accent py-3 px-7 flex items-center gap-2">
                 Get started free <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
