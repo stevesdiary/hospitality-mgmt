@@ -86,6 +86,92 @@ export const createReservation = async (req: Request, res: Response): Promise<an
   }
 };
 
+/** Generate a short, human-friendly booking reference unique across reservations. */
+const generateBookingReference = async (): Promise<string> => {
+  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no ambiguous 0/O/1/I
+  for (let attempt = 0; attempt < 6; attempt++) {
+    let code = '';
+    for (let i = 0; i < 8; i++) code += alphabet[Math.floor(Math.random() * alphabet.length)];
+    const reference = `BK-${code}`;
+    const clash = await Reservation.findOne({ where: { bookingReference: reference }, paranoid: false });
+    if (!clash) return reference;
+  }
+  // Extremely unlikely; fall back to a UUID-derived reference.
+  return `BK-${uuidv4().split('-')[0].toUpperCase()}`;
+};
+
+/**
+ * Guest checkout — book a hotel from its own public page WITHOUT an account.
+ * The guest supplies their contact details; the reservation binds to the
+ * hotel's tenant (companyId derived from the hotel) and gets a booking
+ * reference the guest presents at the front desk for check-in.
+ */
+export const createGuestReservation = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { hotelId, roomId, dateIn, dateOut, guestCount, guest } = req.body;
+    if (!hotelId || !roomId) {
+      return res.status(400).json({ message: 'hotelId and roomId are required' });
+    }
+    if (!dateIn || !dateOut) {
+      return res.status(400).json({ message: 'dateIn and dateOut are required' });
+    }
+    const guestName = guest?.name ?? req.body.guestName;
+    const guestEmail = guest?.email ?? req.body.guestEmail;
+    const guestPhone = guest?.phone ?? req.body.guestPhone;
+    if (!guestName || !guestEmail) {
+      return res.status(400).json({ message: 'Guest name and email are required' });
+    }
+
+    const hotel = await Hotel.findByPk(hotelId);
+    if (!hotel) return res.status(404).json({ message: 'Hotel not found' });
+
+    const room = await Room.findByPk(roomId);
+    if (!room || (room as any).hotelId !== hotelId) {
+      return res.status(400).json({ message: 'Room does not belong to the specified hotel' });
+    }
+
+    const bookingReference = await generateBookingReference();
+
+    const reservation = await Reservation.create({
+      id: uuidv4(),
+      userId: null as any, // guest booking — no account
+      hotelId,
+      roomId,
+      companyId: (hotel as any).companyId,
+      guestName,
+      guestEmail,
+      guestPhone,
+      bookingReference,
+      dateIn,
+      dateOut,
+      guestCount: guestCount || 1,
+      status: 'pending',
+    });
+
+    return res.status(201).json({
+      message: 'Booking confirmed',
+      bookingReference,
+      reservation,
+    });
+  } catch (err: any) {
+    return res.status(500).json({ message: 'Failed to create booking', error: err.message });
+  }
+};
+
+/** Front-desk lookup by booking reference (for guest check-in). */
+export const lookupByReference = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { reference } = req.params;
+    const reservation = await Reservation.findOne({ where: { bookingReference: reference }, include: GUEST_INCLUDE });
+    if (!reservation || !canAccessReservation(req, reservation)) {
+      return res.status(404).json({ message: 'Booking not found. Please verify the reference.' });
+    }
+    return res.status(200).json({ message: 'Booking found', reservation });
+  } catch (err: any) {
+    return res.status(500).json({ message: 'Lookup failed', error: err.message });
+  }
+};
+
 export const getOneReservation = async (req: Request, res: Response): Promise<any> => {
   try {
     const { id } = req.params;

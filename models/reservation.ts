@@ -7,10 +7,15 @@ import { Model, DataTypes, Sequelize, Optional } from 'sequelize';
 export interface ReservationInstance extends Model {
   id: string;
   hotelId: string;
-  userId: string;
+  userId?: string;
   roomId: string;
   companyId?: string;
   guestCount?: number;
+  // Guest-checkout contact details (used when there is no user account).
+  guestName?: string;
+  guestEmail?: string;
+  guestPhone?: string;
+  bookingReference?: string;
   dateIn: Date;
   dateOut: Date;
   status: 'pending' | 'confirmed' | 'checked-in' | 'checked-out' | 'cancelled' | 'no-show';
@@ -24,7 +29,7 @@ export interface ReservationInstance extends Model {
 
 export interface ReservationCreationAttributes extends Optional<
   ReservationInstance,
-  'id' | 'status' | 'paymentStatus' | 'companyId' | 'guestCount' | 'checkInTime' | 'checkOutTime' | 'createdAt' | 'updatedAt' | 'deletedAt'
+  'id' | 'status' | 'paymentStatus' | 'companyId' | 'guestCount' | 'userId' | 'guestName' | 'guestEmail' | 'guestPhone' | 'bookingReference' | 'checkInTime' | 'checkOutTime' | 'createdAt' | 'updatedAt' | 'deletedAt'
 > {}
 
 export default (sequelize: Sequelize, dataTypes: typeof DataTypes): any => {
@@ -37,10 +42,14 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): any => {
 
     id!: string;
     hotelId!: string;
-    userId!: string;
+    userId?: string;
     roomId!: string;
     companyId?: string;
     guestCount?: number;
+    guestName?: string;
+    guestEmail?: string;
+    guestPhone?: string;
+    bookingReference?: string;
     dateIn!: Date;
     dateOut!: Date;
     status!: 'pending' | 'confirmed' | 'checked-in' | 'checked-out' | 'cancelled' | 'no-show';
@@ -66,12 +75,29 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): any => {
       },
       userId: {
         type: dataTypes.UUID,
-        allowNull: false,
+        allowNull: true,
       },
       roomId: {
         type: dataTypes.UUID,
         allowNull: false,
         validate: { notNull: { msg: 'Room must not be empty' } },
+      },
+      guestName: {
+        type: dataTypes.STRING,
+        allowNull: true,
+      },
+      guestEmail: {
+        type: dataTypes.STRING,
+        allowNull: true,
+      },
+      guestPhone: {
+        type: dataTypes.STRING,
+        allowNull: true,
+      },
+      bookingReference: {
+        type: dataTypes.STRING,
+        allowNull: true,
+        unique: true,
       },
       companyId: {
         type: dataTypes.UUID,

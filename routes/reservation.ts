@@ -1,8 +1,10 @@
 import { Router } from 'express';
 import {
   createReservation,
+  createGuestReservation,
   getOneReservation,
   lookupReservation,
+  lookupByReference,
   checkIn,
   checkOut,
   getAllReservations,
@@ -16,11 +18,14 @@ import verifyUserType from '../middleware/verifyUserType';
 const router = Router();
 
 router.post('/reservation', authentication, createReservation);
+// Guest checkout — book from a hotel's public page without an account.
+router.post('/reservation/guest', createGuestReservation);
 router.get('/getone/:id', authentication, getOneReservation);
 router.get('/getall', authentication, getAllReservations);
 
-// Front-desk: look up any booking by ID (admin/org_admin)
+// Front-desk: look up any booking by ID or by guest booking reference (admin/org_admin)
 router.get('/lookup/:id', authentication, verifyUserType(['admin', 'org_admin']), lookupReservation);
+router.get('/lookup-ref/:reference', authentication, verifyUserType(['admin', 'org_admin']), lookupByReference);
 
 // Check-in / check-out (front desk only)
 router.put('/checkin/:id', authentication, verifyUserType(['admin', 'org_admin']), checkIn);

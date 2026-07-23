@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { ChevronLeft, BedDouble, Users, Calendar, CheckCircle, CreditCard, Phone, Mail, User } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { reservationService } from '../../services';
 
 // Mock — replace with API call using useParams roomId
 const ROOM = {
@@ -29,12 +30,12 @@ const BookingPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const hotelId = searchParams.get('hotelId') ?? ROOM.hotelId;
   const hotelSlug = searchParams.get('h') ?? '';
-  const navigate = useNavigate();
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [guests, setGuests] = useState('1');
   const [payMethod, setPayMethod] = useState<'card' | 'transfer'>('card');
   const [confirmed, setConfirmed] = useState(false);
+  const [bookingReference, setBookingReference] = useState('');
   const [loading, setLoading] = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm<GuestForm>();
@@ -48,23 +49,31 @@ const BookingPage: React.FC = () => {
 
   const onSubmit = async (data: GuestForm) => {
     if (!checkIn || !checkOut || nights < 1) { toast.error('Please select valid check-in and check-out dates.'); return; }
+    if (!roomId) { toast.error('Missing room. Please start from the hotel page.'); return; }
     setLoading(true);
-    // Tenant-bound reservation payload. companyId is intentionally NOT sent —
-    // the API derives it from hotelId so a booking can't be spoofed onto another
-    // hotel/tenant.
-    const payload = {
-      hotelId,
-      roomId,
-      dateIn: checkIn,
-      dateOut: checkOut,
-      guestCount: Number(guests),
-      guest: data,
-    };
-    void payload; // TODO: submit via reservationService.createReservation once the client API layer is wired
-    // Simulate API
-    await new Promise((r) => setTimeout(r, 1500));
-    setLoading(false);
-    setConfirmed(true);
+    try {
+      // Guest checkout — no account required. companyId is intentionally NOT
+      // sent; the API derives it from hotelId so a booking can't be spoofed
+      // onto another hotel/tenant.
+      const result = await reservationService.createGuestReservation({
+        hotelId,
+        roomId,
+        dateIn: checkIn,
+        dateOut: checkOut,
+        guestCount: Number(guests),
+        guest: {
+          name: `${data.firstName} ${data.lastName}`.trim(),
+          email: data.email,
+          phone: data.phone,
+        },
+      });
+      setBookingReference(result.bookingReference);
+      setConfirmed(true);
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message ?? 'Booking failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (confirmed) {
@@ -76,14 +85,20 @@ const BookingPage: React.FC = () => {
           </div>
           <h2 className="text-2xl font-display font-bold text-gray-900 mb-2">Booking Confirmed!</h2>
           <p className="text-gray-500 text-sm mb-6">Your reservation at <span className="font-semibold text-gray-800">{ROOM.hotelName}</span> has been confirmed. A confirmation email is on its way.</p>
+          {bookingReference && (
+            <div className="rounded-2xl border-2 border-dashed border-amber-300 bg-amber-50 p-4 mb-6">
+              <p className="text-xs uppercase tracking-wider text-amber-700 font-semibold mb-1">Your booking reference</p>
+              <p className="text-2xl font-display font-bold text-[#0F2444] tracking-wider">{bookingReference}</p>
+              <p className="text-xs text-gray-500 mt-2">Show this at the front desk to check in.</p>
+            </div>
+          )}
           <div className="bg-gray-50 rounded-2xl p-4 text-sm text-left space-y-2 mb-8">
             <div className="flex justify-between"><span className="text-gray-500">Room</span><span className="font-medium">{ROOM.category}</span></div>
             <div className="flex justify-between"><span className="text-gray-500">Check-in</span><span className="font-medium">{checkIn}</span></div>
             <div className="flex justify-between"><span className="text-gray-500">Check-out</span><span className="font-medium">{checkOut}</span></div>
             <div className="flex justify-between"><span className="text-gray-500">Total</span><span className="font-bold text-primary-700">₦{total.toLocaleString()}</span></div>
           </div>
-          <button onClick={() => navigate('/my-reservations')} className="btn-accent w-full py-3">View My Reservations</button>
-          <Link to="/" className="block text-center text-sm text-gray-500 hover:text-primary-600 mt-4 transition-colors">Back to Home</Link>
+          <Link to={hotelSlug ? `/h/${hotelSlug}` : '/'} className="btn-accent w-full py-3 inline-block">Done</Link>
         </motion.div>
       </div>
     );
