@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { ChevronLeft, BedDouble, Users, Calendar, CheckCircle, CreditCard, Phone, Mail, User } from 'lucide-react';
@@ -24,7 +24,11 @@ interface GuestForm {
 
 const BookingPage: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
-  void roomId;
+  // The hotel context arrives from the hotel's own landing page; the API binds
+  // the reservation's companyId from hotelId server-side.
+  const [searchParams] = useSearchParams();
+  const hotelId = searchParams.get('hotelId') ?? ROOM.hotelId;
+  const hotelSlug = searchParams.get('h') ?? '';
   const navigate = useNavigate();
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
@@ -45,11 +49,22 @@ const BookingPage: React.FC = () => {
   const onSubmit = async (data: GuestForm) => {
     if (!checkIn || !checkOut || nights < 1) { toast.error('Please select valid check-in and check-out dates.'); return; }
     setLoading(true);
+    // Tenant-bound reservation payload. companyId is intentionally NOT sent —
+    // the API derives it from hotelId so a booking can't be spoofed onto another
+    // hotel/tenant.
+    const payload = {
+      hotelId,
+      roomId,
+      dateIn: checkIn,
+      dateOut: checkOut,
+      guestCount: Number(guests),
+      guest: data,
+    };
+    void payload; // TODO: submit via reservationService.createReservation once the client API layer is wired
     // Simulate API
     await new Promise((r) => setTimeout(r, 1500));
     setLoading(false);
     setConfirmed(true);
-    void data;
   };
 
   if (confirmed) {
@@ -78,7 +93,7 @@ const BookingPage: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center gap-3">
-          <Link to={`/hotels/${ROOM.hotelId}`} className="flex items-center gap-1.5 text-gray-500 hover:text-primary-600 text-sm font-medium transition-colors">
+          <Link to={hotelSlug ? `/h/${hotelSlug}` : '/'} className="flex items-center gap-1.5 text-gray-500 hover:text-primary-600 text-sm font-medium transition-colors">
             <ChevronLeft className="h-4 w-4" /> Back
           </Link>
           <span className="text-gray-300">/</span>

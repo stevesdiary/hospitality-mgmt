@@ -19,21 +19,57 @@ const resolveCompanyScope = (req: Request): string | null => {
   return user.companyId || null;
 };
 
+/**
+ * Whether the requester may access a given reservation.
+ * - Platform admin ('admin'): every tenant.
+ * - Hotel staff (org_admin/staff): only reservations for their own company.
+ * - Guest: only their own reservations.
+ */
+const canAccessReservation = (req: Request, reservation: any): boolean => {
+  const user = req.user;
+  if (!user) return false;
+  if (user.type === 'admin') return true;
+  if (user.companyId && reservation.companyId === user.companyId) return true;
+  return reservation.userId === user.id;
+};
+
+// Fields that must never be set from the client body — they are derived from
+// the hotel / authenticated user or controlled by dedicated endpoints.
+const RESERVATION_PROTECTED_FIELDS = ['id', 'companyId', 'userId', 'status', 'checkInTime', 'checkOutTime'];
+
+const stripProtectedFields = (body: Record<string, any>): Record<string, any> => {
+  const clean = { ...body };
+  for (const field of RESERVATION_PROTECTED_FIELDS) delete clean[field];
+  return clean;
+};
+
 export const createReservation = async (req: Request, res: Response): Promise<any> => {
   try {
     const userId = req.user?.id;
     if (!userId) return res.status(401).json({ message: 'Unauthorized' });
 
     const { hotelId, roomId, dateIn, dateOut, guestCount } = req.body;
+    if (!hotelId || !roomId) {
+      return res.status(400).json({ message: 'hotelId and roomId are required' });
+    }
 
     const hotel = await Hotel.findByPk(hotelId);
     if (!hotel) return res.status(404).json({ message: 'Hotel not found' });
 
+    // The room must belong to the hotel being booked, so the reservation binds
+    // to a single, consistent tenant.
+    const room = await Room.findByPk(roomId);
+    if (!room || (room as any).hotelId !== hotelId) {
+      return res.status(400).json({ message: 'Room does not belong to the specified hotel' });
+    }
+
     const companyId = (hotel as any).companyId;
-    const id = uuidv4();
 
     const reservation = await Reservation.create({
-      id,
+      // Client-supplied extras first, then authoritative fields override them so
+      // companyId/userId/status can never be spoofed via the request body.
+      ...stripProtectedFields(req.body),
+      id: uuidv4(),
       userId,
       hotelId,
       roomId,
@@ -42,7 +78,6 @@ export const createReservation = async (req: Request, res: Response): Promise<an
       dateOut,
       guestCount: guestCount || 1,
       status: 'pending',
-      ...req.body,
     });
 
     return res.status(201).json({ message: 'Reservation created successfully', reservation });
@@ -55,7 +90,11 @@ export const getOneReservation = async (req: Request, res: Response): Promise<an
   try {
     const { id } = req.params;
     const reservation = await Reservation.findOne({ where: { id }, include: GUEST_INCLUDE });
-    if (!reservation) return res.status(404).json({ message: 'Reservation not found' });
+    // 404 rather than 403 when the requester has no access, so reservation
+    // existence isn't leaked across tenants.
+    if (!reservation || !canAccessReservation(req, reservation)) {
+      return res.status(404).json({ message: 'Reservation not found' });
+    }
     return res.status(200).json({ message: 'Reservation retrieved', reservation });
   } catch (err: any) {
     return res.status(500).json({ message: 'Failed to retrieve reservation', error: err.message });
@@ -67,7 +106,9 @@ export const lookupReservation = async (req: Request, res: Response): Promise<an
   try {
     const { id } = req.params;
     const reservation = await Reservation.findOne({ where: { id }, include: GUEST_INCLUDE });
-    if (!reservation) return res.status(404).json({ message: 'Booking not found. Please verify the booking number.' });
+    if (!reservation || !canAccessReservation(req, reservation)) {
+      return res.status(404).json({ message: 'Booking not found. Please verify the booking number.' });
+    }
     return res.status(200).json({ message: 'Booking found', reservation });
   } catch (err: any) {
     return res.status(500).json({ message: 'Lookup failed', error: err.message });
@@ -79,7 +120,9 @@ export const checkIn = async (req: Request, res: Response): Promise<any> => {
     const { id } = req.params;
     const reservation = await Reservation.findByPk(id);
 
-    if (!reservation) return res.status(404).json({ message: 'Reservation not found' });
+    if (!reservation || !canAccessReservation(req, reservation)) {
+      return res.status(404).json({ message: 'Reservation not found' });
+    }
     if (reservation.status === 'checked-in') {
       return res.status(409).json({ message: 'Guest is already checked in' });
     }
@@ -107,7 +150,9 @@ export const checkOut = async (req: Request, res: Response): Promise<any> => {
     const { id } = req.params;
     const reservation = await Reservation.findByPk(id);
 
-    if (!reservation) return res.status(404).json({ message: 'Reservation not found' });
+    if (!reservation || !canAccessReservation(req, reservation)) {
+      return res.status(404).json({ message: 'Reservation not found' });
+    }
     if (reservation.status !== 'checked-in') {
       return res.status(409).json({ message: 'Guest must be checked in before checking out' });
     }
@@ -144,10 +189,15 @@ export const getAllReservations = async (req: Request, res: Response): Promise<a
 export const updateReservation = async (req: Request, res: Response): Promise<any> => {
   try {
     const { id } = req.params;
-    const [updated] = await Reservation.update(req.body, { where: { id } });
-    if (updated === 0) return res.status(404).json({ message: 'Reservation not found' });
     const reservation = await Reservation.findByPk(id);
-    return res.status(200).json({ message: 'Reservation updated', reservation });
+    if (!reservation || !canAccessReservation(req, reservation)) {
+      return res.status(404).json({ message: 'Reservation not found' });
+    }
+    // Never allow the tenant/owner/status fields to be reassigned via update;
+    // status transitions go through the dedicated check-in/check-out endpoints.
+    await reservation.update(stripProtectedFields(req.body));
+    const updated = await Reservation.findByPk(id);
+    return res.status(200).json({ message: 'Reservation updated', reservation: updated });
   } catch (err: any) {
     return res.status(500).json({ message: 'Failed to update reservation', error: err.message });
   }
@@ -168,8 +218,11 @@ export const removeAllReservations = async (req: Request, res: Response): Promis
 export const deleteReservation = async (req: Request, res: Response): Promise<any> => {
   try {
     const { id } = req.params;
-    const deleted = await Reservation.destroy({ where: { id } });
-    if (deleted === 0) return res.status(404).json({ message: 'Reservation not found' });
+    const reservation = await Reservation.findByPk(id);
+    if (!reservation || !canAccessReservation(req, reservation)) {
+      return res.status(404).json({ message: 'Reservation not found' });
+    }
+    await reservation.destroy();
     return res.status(200).json({ message: `Reservation ${id} deleted` });
   } catch (err: any) {
     return res.status(500).json({ message: 'Failed to delete reservation', error: err.message });
