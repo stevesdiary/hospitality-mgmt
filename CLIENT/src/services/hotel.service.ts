@@ -1,15 +1,19 @@
 import apiService from './api';
 import type { Hotel, HotelSearchFilters, PaginatedResponse, PaginationParams } from '@/types';
 
+/**
+ * Paths map to the backend routes/hotel.ts. The axios instance prefixes /api.
+ * The listing/discovery routes require authentication (staff only); the
+ * by-slug and findone routes are the public, single-hotel surfaces.
+ */
 class HotelService {
-  private baseUrl = '/hotels';
-
+  /** Staff-only: list hotels scoped to the caller's company (platform admin: all). */
   async getAllHotels(params?: HotelSearchFilters & PaginationParams) {
-    return apiService.get<PaginatedResponse<Hotel>>(this.baseUrl, { params });
+    return apiService.get<PaginatedResponse<Hotel>>('/findall', { params });
   }
 
   async getHotelById(id: string) {
-    return apiService.get<Hotel>(`${this.baseUrl}/${id}`);
+    return apiService.get<{ hotel: Hotel }>(`/findone/${id}`);
   }
 
   /** Public per-hotel landing page — resolves a single hotel by its slug. */
@@ -18,27 +22,15 @@ class HotelService {
   }
 
   async createHotel(hotelData: Partial<Hotel>) {
-    return apiService.post<Hotel>(this.baseUrl, hotelData);
+    return apiService.post<{ hotel: Hotel }>('/createhotel', hotelData);
   }
 
   async updateHotel(id: string, hotelData: Partial<Hotel>) {
-    return apiService.put<Hotel>(`${this.baseUrl}/${id}`, hotelData);
+    return apiService.put<{ hotel: Hotel }>(`/update/${id}`, hotelData);
   }
 
   async deleteHotel(id: string) {
-    return apiService.delete(`${this.baseUrl}/${id}`);
-  }
-
-  async searchHotels(filters: HotelSearchFilters) {
-    return apiService.get<PaginatedResponse<Hotel>>(`${this.baseUrl}/search`, { params: filters });
-  }
-
-  async getHotelsByCity(city: string) {
-    return apiService.get<PaginatedResponse<Hotel>>(`${this.baseUrl}/city/${city}`);
-  }
-
-  async getPopularHotels(limit?: number) {
-    return apiService.get<Hotel[]>(`${this.baseUrl}/popular`, { params: { limit } });
+    return apiService.delete(`/delete/${id}`);
   }
 }
 

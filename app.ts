@@ -110,14 +110,16 @@ const upload = multer({
 });
 
 // ── Routes ─────────────────────────────────────────────────────────────────────
-app.use('/', authLimiter, authRoute);
-app.use('/', userRoute);
-app.use('/', hotelRoute);
-app.use('/', roomRoute);
-app.use('/', facilityRoute);
-app.use('/', ratingsRoute);
-app.use('/', reservationRoute);
-app.use('/', companyRoute);
+// All API routes are namespaced under /api; the root path is reserved for the
+// health probe, welcome message, and (later) serving the built frontend.
+app.use('/api', authLimiter, authRoute);
+app.use('/api', userRoute);
+app.use('/api', hotelRoute);
+app.use('/api', roomRoute);
+app.use('/api', facilityRoute);
+app.use('/api', ratingsRoute);
+app.use('/api', reservationRoute);
+app.use('/api', companyRoute);
 
 // Health check (no auth, no rate limit — for load-balancer probes)
 app.get('/health', (_req, res) => {

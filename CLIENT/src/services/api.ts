@@ -6,7 +6,10 @@ class ApiService {
 
   constructor() {
     this.api = axios.create({
-      baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3360/api',
+      // Defaults to the backend's default port (LOCAL_PORT || 3000). Override
+      // with VITE_API_URL to point at another host/port. The backend mounts all
+      // API routes under /api.
+      baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
       timeout: 30000,
       headers: {
         'Content-Type': 'application/json',
