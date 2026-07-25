@@ -1,50 +1,119 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search, Edit2, Trash2, X, MapPin, Star } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, X, MapPin, Star, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { hotelService } from '../../services';
 
-const HOTELS = [
-  { id: '1', name: 'Eko Hotel & Suites', city: 'Lagos', category: 'Luxury', rooms: 24, rating: 4.8, status: 'active', grad: 'from-indigo-500 to-purple-700' },
-  { id: '2', name: 'Transcorp Hilton Abuja', city: 'Abuja', category: 'Luxury', rooms: 32, rating: 4.9, status: 'active', grad: 'from-cyan-500 to-blue-700' },
-  { id: '3', name: 'Hotel Presidential', city: 'Port Harcourt', category: 'Standard', rooms: 18, rating: 4.6, status: 'active', grad: 'from-emerald-500 to-teal-700' },
-  { id: '4', name: 'Hamdala Hotel', city: 'Kano', category: 'Budget', rooms: 12, rating: 4.4, status: 'inactive', grad: 'from-amber-500 to-orange-700' },
-  { id: '5', name: 'Wheatbaker Hotel', city: 'Lagos', category: 'Boutique', rooms: 15, rating: 4.7, status: 'active', grad: 'from-rose-500 to-pink-700' },
+interface HotelRow {
+  id: string;
+  name: string;
+  city: string;
+  category: string;
+  rooms: number;
+  rating: number;
+  contactEmail: string;
+  address: string;
+}
+
+interface HotelForm { name: string; city: string; category: string; contactEmail: string; address: string; }
+
+// Hotel types accepted by the backend (models/hotel hotelType).
+const CATEGORIES = ['budget', 'mid-range', 'luxury', 'resort', 'boutique'];
+const GRADS = [
+  'from-indigo-500 to-purple-700', 'from-cyan-500 to-blue-700', 'from-emerald-500 to-teal-700',
+  'from-amber-500 to-orange-700', 'from-rose-500 to-pink-700', 'from-violet-500 to-fuchsia-700',
 ];
 
-interface HotelForm { name: string; city: string; category: string; }
+const emptyForm: HotelForm = { name: '', city: '', category: 'luxury', contactEmail: '', address: '' };
 
-const CATEGORIES = ['Luxury', 'Standard', 'Budget', 'Boutique'];
+const toRow = (h: any): HotelRow => {
+  const reviews = h.ratingAndReview ?? [];
+  const rating = reviews.length
+    ? reviews.reduce((s: number, r: any) => s + (r.overallRating ?? 0), 0) / reviews.length
+    : 0;
+  return {
+    id: h.id,
+    name: h.name,
+    city: h.city ?? '—',
+    category: h.hotelType ?? '—',
+    rooms: Array.isArray(h.rooms) ? h.rooms.length : 0,
+    rating: Math.round(rating * 10) / 10,
+    contactEmail: h.contactEmail ?? '',
+    address: h.address ?? '',
+  };
+};
 
 const ManageHotelsPage: React.FC = () => {
-  const [hotels, setHotels] = useState(HOTELS);
+  const [hotels, setHotels] = useState<HotelRow[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [editing, setEditing] = useState<typeof HOTELS[0] | null>(null);
-  const [form, setForm] = useState<HotelForm>({ name: '', city: '', category: 'Luxury' });
+  const [saving, setSaving] = useState(false);
+  const [editing, setEditing] = useState<HotelRow | null>(null);
+  const [form, setForm] = useState<HotelForm>(emptyForm);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res: any = await hotelService.getAllHotels();
+      const list = res?.Hotels ?? res?.hotels ?? res?.data ?? [];
+      setHotels(list.map(toRow));
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message ?? 'Failed to load hotels.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
 
   const filtered = hotels.filter((h) =>
     h.name.toLowerCase().includes(search.toLowerCase()) || h.city.toLowerCase().includes(search.toLowerCase())
   );
 
-  const openNew = () => { setEditing(null); setForm({ name: '', city: '', category: 'Luxury' }); setShowModal(true); };
-  const openEdit = (h: typeof HOTELS[0]) => { setEditing(h); setForm({ name: h.name, city: h.city, category: h.category }); setShowModal(true); };
-
-  const handleSave = () => {
-    if (!form.name.trim() || !form.city.trim()) { toast.error('Name and city are required.'); return; }
-    if (editing) {
-      setHotels((p) => p.map((h) => h.id === editing.id ? { ...h, ...form } : h));
-      toast.success('Hotel updated!');
-    } else {
-      const newHotel = { id: String(Date.now()), ...form, rooms: 0, rating: 0, status: 'active' as const, grad: 'from-gray-400 to-gray-600' };
-      setHotels((p) => [newHotel, ...p]);
-      toast.success('Hotel added!');
-    }
-    setShowModal(false);
+  const openNew = () => { setEditing(null); setForm(emptyForm); setShowModal(true); };
+  const openEdit = (h: HotelRow) => {
+    setEditing(h);
+    setForm({ name: h.name, city: h.city, category: h.category, contactEmail: h.contactEmail, address: h.address });
+    setShowModal(true);
   };
 
-  const handleDelete = (id: string) => {
-    setHotels((p) => p.filter((h) => h.id !== id));
-    toast.success('Hotel removed.');
+  const handleSave = async () => {
+    if (!form.name.trim() || !form.city.trim()) { toast.error('Name and city are required.'); return; }
+    if (!editing && !form.contactEmail.trim()) { toast.error('Contact email is required.'); return; }
+    setSaving(true);
+    try {
+      const payload = {
+        name: form.name,
+        city: form.city,
+        hotelType: form.category,
+        contactEmail: form.contactEmail || undefined,
+        address: form.address || undefined,
+      };
+      if (editing) {
+        await hotelService.updateHotel(editing.id, payload);
+        toast.success('Hotel updated!');
+      } else {
+        await hotelService.createHotel(payload);
+        toast.success('Hotel added!');
+      }
+      setShowModal(false);
+      await load();
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message ?? 'Failed to save hotel.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await hotelService.deleteHotel(id);
+      setHotels((p) => p.filter((h) => h.id !== id));
+      toast.success('Hotel removed.');
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message ?? 'Failed to remove hotel.');
+    }
   };
 
   return (
@@ -74,32 +143,27 @@ const ManageHotelsPage: React.FC = () => {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100">
-                  {['Hotel', 'City', 'Category', 'Rooms', 'Rating', 'Status', 'Actions'].map((h) => (
+                  {['Hotel', 'City', 'Category', 'Rooms', 'Rating', 'Actions'].map((h) => (
                     <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {filtered.map((hotel) => (
+                {filtered.map((hotel, i) => (
                   <motion.tr key={hotel.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="hover:bg-gray-50 transition-colors">
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${hotel.grad} flex-shrink-0`} />
+                        <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${GRADS[i % GRADS.length]} flex-shrink-0`} />
                         <span className="font-medium text-gray-900 whitespace-nowrap">{hotel.name}</span>
                       </div>
                     </td>
                     <td className="px-5 py-4 text-gray-500">
                       <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{hotel.city}</span>
                     </td>
-                    <td className="px-5 py-4"><span className="badge badge-primary text-xs">{hotel.category}</span></td>
+                    <td className="px-5 py-4"><span className="badge badge-primary text-xs capitalize">{hotel.category}</span></td>
                     <td className="px-5 py-4 text-gray-700">{hotel.rooms}</td>
                     <td className="px-5 py-4">
-                      <span className="flex items-center gap-1 text-amber-600 font-medium"><Star className="h-3.5 w-3.5 fill-amber-400" />{hotel.rating}</span>
-                    </td>
-                    <td className="px-5 py-4">
-                      <span className={`badge text-xs ${hotel.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
-                        {hotel.status}
-                      </span>
+                      <span className="flex items-center gap-1 text-amber-600 font-medium"><Star className="h-3.5 w-3.5 fill-amber-400" />{hotel.rating || '—'}</span>
                     </td>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2">
@@ -115,7 +179,10 @@ const ManageHotelsPage: React.FC = () => {
                 ))}
               </tbody>
             </table>
-            {filtered.length === 0 && (
+            {loading && (
+              <div className="flex items-center justify-center py-16 text-gray-400"><Loader2 className="h-6 w-6 animate-spin" /></div>
+            )}
+            {!loading && filtered.length === 0 && (
               <div className="text-center py-16 text-gray-400 text-sm">No hotels found</div>
             )}
           </div>
@@ -140,20 +207,30 @@ const ManageHotelsPage: React.FC = () => {
                   <input type="text" placeholder="e.g. Eko Hotel & Suites" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} className="input-field" />
                 </div>
                 <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Contact Email</label>
+                  <input type="email" placeholder="reservations@hotel.com" value={form.contactEmail} onChange={(e) => setForm((p) => ({ ...p, contactEmail: e.target.value }))} className="input-field" />
+                </div>
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">City</label>
                   <input type="text" placeholder="e.g. Lagos" value={form.city} onChange={(e) => setForm((p) => ({ ...p, city: e.target.value }))} className="input-field" />
                 </div>
                 <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Address (optional)</label>
+                  <input type="text" placeholder="Street, area" value={form.address} onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))} className="input-field" />
+                </div>
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Category</label>
-                  <select value={form.category} onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))} className="input-field">
-                    {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
+                  <select value={form.category} onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))} className="input-field capitalize">
+                    {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
               </div>
 
               <div className="flex gap-3 mt-6">
                 <button onClick={() => setShowModal(false)} className="btn-secondary flex-1">Cancel</button>
-                <button onClick={handleSave} className="btn-accent flex-1">{editing ? 'Save Changes' : 'Add Hotel'}</button>
+                <button onClick={handleSave} disabled={saving} className="btn-accent flex-1 disabled:opacity-60">
+                  {saving ? 'Saving…' : editing ? 'Save Changes' : 'Add Hotel'}
+                </button>
               </div>
             </motion.div>
           </motion.div>

@@ -1,47 +1,107 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search, Edit2, Trash2, X, BedDouble, Users } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, X, BedDouble, Users, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { roomService, hotelService } from '../../services';
 
-const ROOMS = [
-  { id: 'r1', hotel: 'Eko Hotel & Suites', category: 'Standard Room', capacity: 2, price: 45000, status: 'available', grad: 'from-slate-400 to-slate-600' },
-  { id: 'r2', hotel: 'Eko Hotel & Suites', category: 'Deluxe Suite', capacity: 2, price: 75000, status: 'occupied', grad: 'from-blue-400 to-indigo-600' },
-  { id: 'r3', hotel: 'Transcorp Hilton', category: 'Executive Suite', capacity: 3, price: 110000, status: 'available', grad: 'from-violet-400 to-purple-600' },
-  { id: 'r4', hotel: 'Hotel Presidential', category: 'Standard Room', capacity: 2, price: 35000, status: 'maintenance', grad: 'from-amber-400 to-orange-600' },
-  { id: 'r5', hotel: 'Wheatbaker Hotel', category: 'Deluxe Room', capacity: 2, price: 48000, status: 'available', grad: 'from-rose-400 to-pink-600' },
-];
+interface RoomRow {
+  id: string;
+  hotel: string;
+  category: string;
+  capacity: number;
+  price: number;
+  condition: string;
+}
 
-const statusStyle: Record<string, string> = { available: 'bg-emerald-100 text-emerald-700', occupied: 'bg-blue-100 text-blue-700', maintenance: 'bg-amber-100 text-amber-700' };
+// Room categories accepted by the backend (models/room category ENUM).
+const CATEGORIES = ['regular', 'luxury', 'conference', 'event hall', 'studio apartment'];
+const GRADS = ['from-slate-400 to-slate-600', 'from-blue-400 to-indigo-600', 'from-violet-400 to-purple-600', 'from-amber-400 to-orange-600', 'from-rose-400 to-pink-600'];
 
-interface RoomForm { hotel: string; category: string; capacity: string; price: string; }
+interface RoomForm { contactEmail: string; category: string; capacity: string; price: string; }
+const emptyForm: RoomForm = { contactEmail: '', category: 'regular', capacity: '2', price: '' };
 
 const ManageRoomsPage: React.FC = () => {
-  const [rooms, setRooms] = useState(ROOMS);
+  const [rooms, setRooms] = useState<RoomRow[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [editing, setEditing] = useState<typeof ROOMS[0] | null>(null);
-  const [form, setForm] = useState<RoomForm>({ hotel: '', category: 'Standard Room', capacity: '2', price: '' });
+  const [saving, setSaving] = useState(false);
+  const [editing, setEditing] = useState<RoomRow | null>(null);
+  const [form, setForm] = useState<RoomForm>(emptyForm);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [roomsRes, hotelsRes]: any[] = await Promise.all([
+        roomService.getAllRooms(),
+        hotelService.getAllHotels().catch(() => ({})),
+      ]);
+      const hotelList = hotelsRes?.Hotels ?? hotelsRes?.hotels ?? [];
+      const nameById = new Map<string, string>(hotelList.map((h: any) => [h.id, h.name]));
+      const list = roomsRes?.Rooms ?? roomsRes?.rooms ?? roomsRes?.data ?? [];
+      setRooms(list.map((r: any): RoomRow => ({
+        id: r.id,
+        hotel: nameById.get(r.hotelId) ?? '—',
+        category: r.category ?? '—',
+        capacity: r.capacity ?? 0,
+        price: r.price ?? 0,
+        condition: r.condition ?? '—',
+      })));
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message ?? 'Failed to load rooms.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
 
   const filtered = rooms.filter((r) =>
     r.hotel.toLowerCase().includes(search.toLowerCase()) || r.category.toLowerCase().includes(search.toLowerCase())
   );
 
-  const openNew = () => { setEditing(null); setForm({ hotel: '', category: 'Standard Room', capacity: '2', price: '' }); setShowModal(true); };
-  const openEdit = (r: typeof ROOMS[0]) => { setEditing(r); setForm({ hotel: r.hotel, category: r.category, capacity: String(r.capacity), price: String(r.price) }); setShowModal(true); };
+  const openNew = () => { setEditing(null); setForm(emptyForm); setShowModal(true); };
+  const openEdit = (r: RoomRow) => { setEditing(r); setForm({ contactEmail: '', category: r.category, capacity: String(r.capacity), price: String(r.price) }); setShowModal(true); };
 
-  const handleSave = () => {
-    if (!form.hotel.trim() || !form.price) { toast.error('Hotel and price are required.'); return; }
-    if (editing) {
-      setRooms((p) => p.map((r) => r.id === editing.id ? { ...r, hotel: form.hotel, category: form.category, capacity: Number(form.capacity), price: Number(form.price) } : r));
-      toast.success('Room updated!');
-    } else {
-      setRooms((p) => [{ id: String(Date.now()), hotel: form.hotel, category: form.category, capacity: Number(form.capacity), price: Number(form.price), status: 'available', grad: 'from-gray-400 to-gray-600' }, ...p]);
-      toast.success('Room added!');
+  const handleSave = async () => {
+    if (!form.price) { toast.error('Price is required.'); return; }
+    if (!editing && !form.contactEmail.trim()) { toast.error("The hotel's contact email is required to add a room."); return; }
+    setSaving(true);
+    try {
+      if (editing) {
+        await roomService.updateRoom(editing.id, {
+          category: form.category as any,
+          capacity: Number(form.capacity),
+          price: Number(form.price),
+        } as any);
+        toast.success('Room updated!');
+      } else {
+        await roomService.createRoom({
+          contactEmail: form.contactEmail,
+          category: form.category,
+          capacity: Number(form.capacity),
+          price: Number(form.price),
+        } as any);
+        toast.success('Room added!');
+      }
+      setShowModal(false);
+      await load();
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message ?? 'Failed to save room.');
+    } finally {
+      setSaving(false);
     }
-    setShowModal(false);
   };
 
-  const handleDelete = (id: string) => { setRooms((p) => p.filter((r) => r.id !== id)); toast.success('Room removed.'); };
+  const handleDelete = async (id: string) => {
+    try {
+      await roomService.deleteRoom(id);
+      setRooms((p) => p.filter((r) => r.id !== id));
+      toast.success('Room removed.');
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message ?? 'Failed to remove room.');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -70,20 +130,20 @@ const ManageRoomsPage: React.FC = () => {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100">
-                  {['Room', 'Hotel', 'Capacity', 'Price/Night', 'Status', 'Actions'].map((h) => (
+                  {['Room', 'Hotel', 'Capacity', 'Price/Night', 'Condition', 'Actions'].map((h) => (
                     <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {filtered.map((room) => (
+                {filtered.map((room, i) => (
                   <motion.tr key={room.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="hover:bg-gray-50 transition-colors">
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${room.grad} flex-shrink-0`} />
+                        <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${GRADS[i % GRADS.length]} flex-shrink-0`} />
                         <div>
-                          <span className="font-medium text-gray-900 whitespace-nowrap block">{room.category}</span>
-                          <span className="text-xs text-gray-400 flex items-center gap-1"><BedDouble className="h-3 w-3" />Suite/Room</span>
+                          <span className="font-medium text-gray-900 whitespace-nowrap block capitalize">{room.category}</span>
+                          <span className="text-xs text-gray-400 flex items-center gap-1"><BedDouble className="h-3 w-3" />Room</span>
                         </div>
                       </div>
                     </td>
@@ -92,9 +152,7 @@ const ManageRoomsPage: React.FC = () => {
                       <span className="flex items-center gap-1"><Users className="h-3.5 w-3.5 text-gray-400" />{room.capacity}</span>
                     </td>
                     <td className="px-5 py-4 font-semibold text-primary-700">₦{room.price.toLocaleString()}</td>
-                    <td className="px-5 py-4">
-                      <span className={`badge text-xs ${statusStyle[room.status]}`}>{room.status}</span>
-                    </td>
+                    <td className="px-5 py-4"><span className="badge text-xs bg-gray-100 text-gray-600 capitalize">{room.condition}</span></td>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2">
                         <button onClick={() => openEdit(room)} className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all">
@@ -109,7 +167,8 @@ const ManageRoomsPage: React.FC = () => {
                 ))}
               </tbody>
             </table>
-            {filtered.length === 0 && <div className="text-center py-16 text-gray-400 text-sm">No rooms found</div>}
+            {loading && <div className="flex items-center justify-center py-16 text-gray-400"><Loader2 className="h-6 w-6 animate-spin" /></div>}
+            {!loading && filtered.length === 0 && <div className="text-center py-16 text-gray-400 text-sm">No rooms found</div>}
           </div>
         </div>
       </div>
@@ -125,14 +184,17 @@ const ManageRoomsPage: React.FC = () => {
                 </button>
               </div>
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Hotel</label>
-                  <input type="text" placeholder="Hotel name" value={form.hotel} onChange={(e) => setForm((p) => ({ ...p, hotel: e.target.value }))} className="input-field" />
-                </div>
+                {!editing && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Hotel contact email</label>
+                    <input type="email" placeholder="reservations@hotel.com" value={form.contactEmail} onChange={(e) => setForm((p) => ({ ...p, contactEmail: e.target.value }))} className="input-field" />
+                    <p className="text-xs text-gray-400 mt-1">The room is added to the hotel with this contact email.</p>
+                  </div>
+                )}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Room Category</label>
-                  <select value={form.category} onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))} className="input-field">
-                    {['Standard Room', 'Deluxe Room', 'Deluxe Suite', 'Executive Suite', 'Presidential Suite'].map((c) => <option key={c}>{c}</option>)}
+                  <select value={form.category} onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))} className="input-field capitalize">
+                    {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
@@ -150,7 +212,9 @@ const ManageRoomsPage: React.FC = () => {
               </div>
               <div className="flex gap-3 mt-6">
                 <button onClick={() => setShowModal(false)} className="btn-secondary flex-1">Cancel</button>
-                <button onClick={handleSave} className="btn-accent flex-1">{editing ? 'Save Changes' : 'Add Room'}</button>
+                <button onClick={handleSave} disabled={saving} className="btn-accent flex-1 disabled:opacity-60">
+                  {saving ? 'Saving…' : editing ? 'Save Changes' : 'Add Room'}
+                </button>
               </div>
             </motion.div>
           </motion.div>
