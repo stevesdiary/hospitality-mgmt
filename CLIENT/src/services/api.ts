@@ -78,6 +78,16 @@ class ApiService {
     return response.data.data;
   }
 
+  /** Upload an image to the backend and get back its hosted URL. */
+  async uploadImage(file: File): Promise<{ url: string }> {
+    const formData = new FormData();
+    formData.append('image', file);
+    const response = await this.api.post<{ url: string }>('/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  }
+
   async uploadFile<T>(url: string, file: File, additionalData?: Record<string, any>): Promise<T> {
     const formData = new FormData();
     formData.append('image', file);
