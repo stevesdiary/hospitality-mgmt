@@ -1,12 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Bell, Globe, Shield, Trash2, LogOut } from 'lucide-react';
-import { useDispatch } from 'react-redux';
+import { Bell, Globe, Trash2, LogOut } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../store/authSlice';
+import type { RootState } from '../../store';
+import { userService } from '../../services';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 const fadeUp = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
+
+const NOTIF_KEY = 'stayng.notifs';
+const PREFS_KEY = 'stayng.prefs';
+const loadJSON = <T,>(key: string, fallback: T): T => {
+  try { const v = localStorage.getItem(key); return v ? { ...fallback, ...JSON.parse(v) } : fallback; }
+  catch { return fallback; }
+};
 
 function Toggle({ checked, onChange }: { checked: boolean; onChange: () => void }) {
   return (
@@ -23,13 +32,35 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: () => void 
 const SettingsPage: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { user } = useSelector((state: RootState) => state.auth);
+  const [deleting, setDeleting] = useState(false);
 
-  const [notifs, setNotifs] = useState({ email: true, sms: false, deals: true, reminders: true });
-  const [prefs, setPrefs] = useState({ currency: 'NGN', language: 'en', darkMode: false });
+  const [notifs, setNotifs] = useState(() => loadJSON(NOTIF_KEY, { email: true, sms: false, deals: true, reminders: true }));
+  const [prefs, setPrefs] = useState(() => loadJSON(PREFS_KEY, { currency: 'NGN', language: 'en', darkMode: false }));
+
+  // Persist preferences locally so they survive reloads.
+  useEffect(() => { localStorage.setItem(NOTIF_KEY, JSON.stringify(notifs)); }, [notifs]);
+  useEffect(() => { localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); }, [prefs]);
 
   const handleLogout = () => {
     dispatch(logout());
     navigate('/login');
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!user?.id) return;
+    if (!window.confirm('Permanently delete your account? This cannot be undone.')) return;
+    setDeleting(true);
+    try {
+      await userService.deleteUser(user.id);
+      toast.success('Your account has been deleted.');
+      dispatch(logout());
+      navigate('/');
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message ?? 'Could not delete account.');
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const toggleNotif = (key: keyof typeof notifs) => setNotifs((p) => ({ ...p, [key]: !p[key] }));
@@ -109,21 +140,6 @@ const SettingsPage: React.FC = () => {
             </Row>
           </Section>
 
-          {/* Security */}
-          <Section title="Security" icon={Shield}>
-            <Row label="Two-Factor Authentication" desc="Add an extra layer of security to your account">
-              <button className="btn-outline text-xs py-1.5 px-3">Enable</button>
-            </Row>
-            <Row label="Active sessions" desc="Manage devices logged in to your account">
-              <button className="text-xs text-primary-600 hover:text-primary-700 font-semibold transition-colors">Manage</button>
-            </Row>
-            <Row label="Download my data" desc="Get a copy of all your account data">
-              <button onClick={() => toast.success(`Data export requested. You'll receive an email shortly.`)} className="text-xs text-primary-600 hover:text-primary-700 font-semibold transition-colors">
-                Request
-              </button>
-            </Row>
-          </Section>
-
           {/* Danger zone */}
           <motion.div variants={fadeUp} className="bg-white rounded-2xl border border-red-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-red-50 flex items-center gap-3">
@@ -138,8 +154,8 @@ const SettingsPage: React.FC = () => {
                   <p className="text-sm font-medium text-gray-800">Delete Account</p>
                   <p className="text-xs text-gray-400 mt-0.5">Permanently delete your account and all data</p>
                 </div>
-                <button onClick={() => toast.error('Account deletion requires contacting support.')} className="text-xs bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-3 py-1.5 rounded-lg transition-colors">
-                  Delete
+                <button onClick={handleDeleteAccount} disabled={deleting} className="text-xs bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-3 py-1.5 rounded-lg transition-colors disabled:opacity-60">
+                  {deleting ? 'Deleting…' : 'Delete'}
                 </button>
               </div>
               <div className="flex items-center justify-between">

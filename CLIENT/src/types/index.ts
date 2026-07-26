@@ -15,6 +15,8 @@ export interface User {
   dateOfBirth?: string;
   gender?: 'male' | 'female' | 'other';
   profileImage?: string;
+  avatarUrl?: string;
+  phoneNumber?: string;
   createdAt: string;
   updatedAt: string;
 }

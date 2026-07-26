@@ -21,7 +21,6 @@ import bodyParser from 'body-parser';
 
 import { b2Storage, UploadResult } from './src/shared/services/b2Storage.service';
 import { authentication } from './middleware/authentication';
-import verifyUserType from './middleware/verifyUserType';
 
 import authRoute from './routes/auth';
 import userRoute from './routes/user';
@@ -130,12 +129,11 @@ app.get('/', (_req, res) => {
   res.status(200).json({ message: 'Welcome to Hotel Management Platform!' });
 });
 
-// ── Image upload (authenticated + admin/org_admin only) ───────────────────────
+// ── Image upload (any authenticated user — e.g. profile avatar, hotel photos) ──
 app.post(
-  '/upload',
+  '/api/upload',
   uploadLimiter,
   authentication,
-  verifyUserType(['admin', 'org_admin']),
   upload.single('image'),
   async (req: Request, res: Response): Promise<any> => {
     if (!req.file) {

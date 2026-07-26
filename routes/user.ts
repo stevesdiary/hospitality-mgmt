@@ -8,6 +8,8 @@ const router = Router();
 router.get('/alluser', authentication, verifyUserType(['admin', 'org_admin']), findAllUser);
 router.get('/user/:id', authentication, findOne);
 router.put('/updateuser/:id', authentication, updateUser);
-router.delete('/deleteuser/:id', authentication, verifyUserType(['admin']), deleteUser);
+// Scope is enforced in the controller (canAccessUser): platform admin any,
+// org_admin their company, and a user may delete their own account.
+router.delete('/deleteuser/:id', authentication, deleteUser);
 
 export default router;
