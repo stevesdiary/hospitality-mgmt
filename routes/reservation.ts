@@ -2,6 +2,8 @@ import { Router } from 'express';
 import {
   createReservation,
   createGuestReservation,
+  checkRoomAvailability,
+  getAvailableRooms,
   getOneReservation,
   lookupReservation,
   lookupByReference,
@@ -20,6 +22,10 @@ const router = Router();
 router.post('/reservation', authentication, createReservation);
 // Guest checkout — book from a hotel's public page without an account.
 router.post('/reservation/guest', createGuestReservation);
+
+// Public availability — a guest needs these before committing to a booking.
+router.get('/availability/room/:roomId', checkRoomAvailability);
+router.get('/availability/hotel/:hotelId', getAvailableRooms);
 router.get('/getone/:id', authentication, getOneReservation);
 router.get('/getall', authentication, getAllReservations);
 

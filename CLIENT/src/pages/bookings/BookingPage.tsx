@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
-import { ChevronLeft, BedDouble, Users, Calendar, CheckCircle, CreditCard, Phone, Mail, User } from 'lucide-react';
+import { ChevronLeft, BedDouble, Users, Calendar, CheckCircle, AlertCircle, CreditCard, Phone, Mail, User } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { reservationService } from '../../services';
 
@@ -37,6 +37,9 @@ const BookingPage: React.FC = () => {
   const [confirmed, setConfirmed] = useState(false);
   const [bookingReference, setBookingReference] = useState('');
   const [loading, setLoading] = useState(false);
+  // null = not checked yet (dates incomplete)
+  const [availability, setAvailability] = useState<{ available: boolean; reason?: string } | null>(null);
+  const [checking, setChecking] = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm<GuestForm>();
 
@@ -47,9 +50,29 @@ const BookingPage: React.FC = () => {
   const tax = Math.round(subtotal * 0.075);
   const total = subtotal + tax;
 
+  // Check availability as soon as the guest has picked a valid stay, so they
+  // learn the room is taken before filling in their details.
+  useEffect(() => {
+    if (!roomId || !checkIn || !checkOut || new Date(checkOut) <= new Date(checkIn)) {
+      setAvailability(null);
+      return;
+    }
+    let active = true;
+    setChecking(true);
+    reservationService.checkRoomAvailability(roomId, checkIn, checkOut)
+      .then((res) => { if (active) setAvailability(res); })
+      .catch(() => { if (active) setAvailability(null); })
+      .finally(() => { if (active) setChecking(false); });
+    return () => { active = false; };
+  }, [roomId, checkIn, checkOut]);
+
   const onSubmit = async (data: GuestForm) => {
     if (!checkIn || !checkOut || nights < 1) { toast.error('Please select valid check-in and check-out dates.'); return; }
     if (!roomId) { toast.error('Missing room. Please start from the hotel page.'); return; }
+    if (availability && !availability.available) {
+      toast.error(availability.reason ?? 'This room is not available for those dates.');
+      return;
+    }
     setLoading(true);
     try {
       // Guest checkout — no account required. companyId is intentionally NOT
@@ -70,7 +93,12 @@ const BookingPage: React.FC = () => {
       setBookingReference(result.bookingReference);
       setConfirmed(true);
     } catch (err: any) {
-      toast.error(err?.response?.data?.message ?? 'Booking failed. Please try again.');
+      const message = err?.response?.data?.message ?? 'Booking failed. Please try again.';
+      // 409 = someone booked these dates between our check and this submit.
+      if (err?.response?.status === 409) {
+        setAvailability({ available: false, reason: message });
+      }
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -147,6 +175,25 @@ const BookingPage: React.FC = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* Live availability for the chosen stay */}
+                {checking && (
+                  <p className="mt-4 text-sm text-gray-400 flex items-center gap-2">
+                    <span className="w-3.5 h-3.5 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin" />
+                    Checking availability…
+                  </p>
+                )}
+                {!checking && availability?.available === true && (
+                  <p className="mt-4 text-sm text-emerald-600 font-medium flex items-center gap-1.5">
+                    <CheckCircle className="h-4 w-4" /> Available for these dates
+                  </p>
+                )}
+                {!checking && availability?.available === false && (
+                  <p className="mt-4 text-sm text-red-600 font-medium flex items-center gap-1.5">
+                    <AlertCircle className="h-4 w-4" />
+                    {availability.reason ?? 'Not available for these dates'}
+                  </p>
+                )}
               </div>
 
               {/* Guest details */}
@@ -280,16 +327,18 @@ const BookingPage: React.FC = () => {
 
                 <motion.button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || checking || availability?.available === false}
                   whileTap={{ scale: 0.98 }}
-                  className="btn-accent w-full py-3.5"
+                  className="btn-accent w-full py-3.5 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
                       <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       Confirming…
                     </span>
-                  ) : `Confirm & Pay ₦${total.toLocaleString()}`}
+                  ) : availability?.available === false
+                    ? 'Unavailable for these dates'
+                    : `Confirm & Pay ₦${total.toLocaleString()}`}
                 </motion.button>
 
                 <div className="space-y-2">

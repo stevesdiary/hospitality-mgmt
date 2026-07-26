@@ -36,6 +36,22 @@ class ReservationService {
     );
   }
 
+  /** Public: is this room free for the given stay? */
+  async checkRoomAvailability(roomId: string, dateIn: string, dateOut: string) {
+    return apiService.get<{ available: boolean; reason?: string }>(
+      `/availability/room/${roomId}`,
+      { params: { dateIn, dateOut } }
+    );
+  }
+
+  /** Public: which of a hotel's rooms are free for the given stay. */
+  async getAvailableRooms(hotelId: string, dateIn: string, dateOut: string) {
+    return apiService.get<{ Count: number; Rooms: any[] }>(
+      `/availability/hotel/${hotelId}`,
+      { params: { dateIn, dateOut } }
+    );
+  }
+
   async updateReservation(id: string, reservationData: Partial<Reservation>) {
     return apiService.put<{ reservation: Reservation }>(`/updatereservation/${id}`, reservationData);
   }
