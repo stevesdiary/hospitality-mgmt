@@ -32,6 +32,7 @@ import reservationRoute from './routes/reservation';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import companyRoute from './routes/company';
+import paymentRoute from './routes/payment';
 
 import errorHandler from './middleware/errorHandler';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -78,7 +79,12 @@ const uploadLimiter = rateLimit({
 app.use(globalLimiter);
 
 // ── Body parsing ───────────────────────────────────────────────────────────────
-app.use(express.json({ limit: '10mb' }));
+// Keep the raw body around: the Paystack webhook signature is an HMAC of the
+// exact bytes sent, so the parsed object can't be used to verify it.
+app.use(express.json({
+  limit: '10mb',
+  verify: (req, _res, buf) => { (req as any).rawBody = buf; },
+}));
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(auditMutations);
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -119,6 +125,7 @@ app.use('/api', facilityRoute);
 app.use('/api', ratingsRoute);
 app.use('/api', reservationRoute);
 app.use('/api', companyRoute);
+app.use('/api', paymentRoute);
 
 // Health check (no auth, no rate limit — for load-balancer probes)
 app.get('/health', (_req, res) => {

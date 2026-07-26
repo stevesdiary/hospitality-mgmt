@@ -199,6 +199,7 @@ export interface EnvConfig {
   QSTASH_TOKEN: string;
   QSTASH_CURRENT_SIGNING_KEY: string;
   QSTASH_NEXT_SIGNING_KEY: string;
+  PAYSTACK_SECRET_KEY: string;
   LOCAL_PORT?: string;
   NODE_ENV?: string;
 }

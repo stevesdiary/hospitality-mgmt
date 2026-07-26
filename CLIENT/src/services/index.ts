@@ -5,3 +5,4 @@ export { default as hotelService, hotelService as hotelApi } from './hotel.servi
 export { default as roomService, roomService as roomApi } from './room.service';
 export { default as reservationService, reservationService as reservationApi } from './reservation.service';
 export { default as userService, userService as userApi } from './user.service';
+export { default as paymentService, paymentService as paymentApi } from './payment.service';

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { ChevronLeft, BedDouble, Users, Calendar, CheckCircle, AlertCircle, CreditCard, Phone, Mail, User } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { reservationService } from '../../services';
+import { reservationService, paymentService } from '../../services';
 
 // Mock — replace with API call using useParams roomId
 const ROOM = {
@@ -91,7 +91,22 @@ const BookingPage: React.FC = () => {
         },
       });
       setBookingReference(result.bookingReference);
-      setConfirmed(true);
+
+      // Hand off to Paystack. The backend computes the amount from the
+      // reservation — we never send a price from here.
+      try {
+        const payment = await paymentService.initialize({
+          bookingReference: result.bookingReference,
+          callbackUrl: `${window.location.origin}/booking/payment/callback`,
+        });
+        window.location.href = payment.authorizationUrl;
+        return;
+      } catch {
+        // The booking exists and is held; payment can be retried from the
+        // confirmation screen rather than losing the reservation.
+        toast.error('Booking held, but payment could not be started. You can pay from your confirmation.');
+        setConfirmed(true);
+      }
     } catch (err: any) {
       const message = err?.response?.data?.message ?? 'Booking failed. Please try again.';
       // 409 = someone booked these dates between our check and this submit.
