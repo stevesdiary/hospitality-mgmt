@@ -98,7 +98,7 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): ModelCtor<Ho
         allowNull: false,
       },
       contactPhone: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT,
         allowNull: false,
       },
       termsAndConditions: {
