@@ -9,6 +9,7 @@
     "build": "tsc",
     "build:clean": "rm -rf dist && tsc",
     "migrate": "npx sequelize-cli db:migrate",
+    "seed": "ts-node scripts/seed.ts",
     "type-check": "tsc --noEmit"
   },
   "keywords": [
