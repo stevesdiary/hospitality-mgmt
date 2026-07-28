@@ -38,6 +38,7 @@ import FrontDeskPage from './pages/admin/FrontDeskPage';
 
 // Pages - Bookings
 import BookingConfirmationPage from './pages/bookings/BookingConfirmationPage';
+import PaymentCallbackPage from './pages/bookings/PaymentCallbackPage';
 
 // Protected Route Component
 interface ProtectedRouteProps {
@@ -89,6 +90,8 @@ const App: React.FC = () => {
           
           {/* Booking Routes */}
           <Route path="/book/:roomId" element={<MainLayout><BookingPage /></MainLayout>} />
+          {/* Where Paystack returns the guest after checkout */}
+          <Route path="/booking/payment/callback" element={<MainLayout><PaymentCallbackPage /></MainLayout>} />
           <Route
             path="/booking/:id/confirmation"
             element={

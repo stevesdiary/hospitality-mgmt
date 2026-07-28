@@ -4,7 +4,8 @@
 
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { Reservation, Hotel, Room, User } from '../models';
+import { Reservation, Hotel, Room, User, sequelize } from '../models';
+import { parseStay, isRoomAvailable, findAvailableRooms } from '../services/availabilityService';
 
 const GUEST_INCLUDE = [
   { model: User, as: 'User', attributes: { exclude: ['password'] } },
@@ -53,6 +54,9 @@ export const createReservation = async (req: Request, res: Response): Promise<an
       return res.status(400).json({ message: 'hotelId and roomId are required' });
     }
 
+    const stay = parseStay(dateIn, dateOut);
+    if (stay.error) return res.status(400).json({ message: stay.error });
+
     const hotel = await Hotel.findByPk(hotelId);
     if (!hotel) return res.status(404).json({ message: 'Hotel not found' });
 
@@ -65,23 +69,40 @@ export const createReservation = async (req: Request, res: Response): Promise<an
 
     const companyId = (hotel as any).companyId;
 
-    const reservation = await Reservation.create({
-      // Client-supplied extras first, then authoritative fields override them so
-      // companyId/userId/status can never be spoofed via the request body.
-      ...stripProtectedFields(req.body),
-      id: uuidv4(),
-      userId,
-      hotelId,
-      roomId,
-      companyId,
-      dateIn,
-      dateOut,
-      guestCount: guestCount || 1,
-      status: 'pending',
+    // Lock the room row for the duration, so two concurrent bookings for the
+    // same room can't both pass the availability check.
+    const reservation = await sequelize.transaction(async (t) => {
+      await Room.findByPk(roomId, { transaction: t, lock: t.LOCK.UPDATE });
+
+      const check = await isRoomAvailable(roomId, stay.range!, { transaction: t });
+      if (!check.available) {
+        const conflict: any = new Error(check.reason || 'Room unavailable');
+        conflict.statusCode = 409;
+        throw conflict;
+      }
+
+      return Reservation.create(
+        {
+          // Client-supplied extras first, then authoritative fields override them so
+          // companyId/userId/status can never be spoofed via the request body.
+          ...stripProtectedFields(req.body),
+          id: uuidv4(),
+          userId,
+          hotelId,
+          roomId,
+          companyId,
+          dateIn: stay.range!.dateIn,
+          dateOut: stay.range!.dateOut,
+          guestCount: guestCount || 1,
+          status: 'pending',
+        },
+        { transaction: t }
+      );
     });
 
     return res.status(201).json({ message: 'Reservation created successfully', reservation });
   } catch (err: any) {
+    if (err.statusCode === 409) return res.status(409).json({ message: err.message });
     return res.status(500).json({ message: 'Failed to create reservation', error: err.message });
   }
 };
@@ -112,9 +133,9 @@ export const createGuestReservation = async (req: Request, res: Response): Promi
     if (!hotelId || !roomId) {
       return res.status(400).json({ message: 'hotelId and roomId are required' });
     }
-    if (!dateIn || !dateOut) {
-      return res.status(400).json({ message: 'dateIn and dateOut are required' });
-    }
+    const stay = parseStay(dateIn, dateOut);
+    if (stay.error) return res.status(400).json({ message: stay.error });
+
     const guestName = guest?.name ?? req.body.guestName;
     const guestEmail = guest?.email ?? req.body.guestEmail;
     const guestPhone = guest?.phone ?? req.body.guestPhone;
@@ -132,20 +153,35 @@ export const createGuestReservation = async (req: Request, res: Response): Promi
 
     const bookingReference = await generateBookingReference();
 
-    const reservation = await Reservation.create({
-      id: uuidv4(),
-      userId: null as any, // guest booking — no account
-      hotelId,
-      roomId,
-      companyId: (hotel as any).companyId,
-      guestName,
-      guestEmail,
-      guestPhone,
-      bookingReference,
-      dateIn,
-      dateOut,
-      guestCount: guestCount || 1,
-      status: 'pending',
+    // Lock the room row so two guests can't book the same dates concurrently.
+    const reservation = await sequelize.transaction(async (t) => {
+      await Room.findByPk(roomId, { transaction: t, lock: t.LOCK.UPDATE });
+
+      const check = await isRoomAvailable(roomId, stay.range!, { transaction: t });
+      if (!check.available) {
+        const conflict: any = new Error(check.reason || 'Room unavailable');
+        conflict.statusCode = 409;
+        throw conflict;
+      }
+
+      return Reservation.create(
+        {
+          id: uuidv4(),
+          userId: null as any, // guest booking — no account
+          hotelId,
+          roomId,
+          companyId: (hotel as any).companyId,
+          guestName,
+          guestEmail,
+          guestPhone,
+          bookingReference,
+          dateIn: stay.range!.dateIn,
+          dateOut: stay.range!.dateOut,
+          guestCount: guestCount || 1,
+          status: 'pending',
+        },
+        { transaction: t }
+      );
     });
 
     return res.status(201).json({
@@ -154,7 +190,39 @@ export const createGuestReservation = async (req: Request, res: Response): Promi
       reservation,
     });
   } catch (err: any) {
+    if (err.statusCode === 409) return res.status(409).json({ message: err.message });
     return res.status(500).json({ message: 'Failed to create booking', error: err.message });
+  }
+};
+
+/**
+ * Public availability check for a single room over a date range — lets the
+ * booking page tell a guest before they fill in their details.
+ */
+export const checkRoomAvailability = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { roomId } = req.params;
+    const stay = parseStay(req.query.dateIn, req.query.dateOut);
+    if (stay.error) return res.status(400).json({ message: stay.error });
+
+    const result = await isRoomAvailable(roomId, stay.range!);
+    return res.status(200).json({ available: result.available, reason: result.reason });
+  } catch (err: any) {
+    return res.status(500).json({ message: 'Availability check failed', error: err.message });
+  }
+};
+
+/** Public: which of a hotel's rooms are free for a date range. */
+export const getAvailableRooms = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { hotelId } = req.params;
+    const stay = parseStay(req.query.dateIn, req.query.dateOut);
+    if (stay.error) return res.status(400).json({ message: stay.error });
+
+    const rooms = await findAvailableRooms(hotelId, stay.range!);
+    return res.status(200).json({ message: 'Available rooms retrieved', Count: rooms.length, Rooms: rooms });
+  } catch (err: any) {
+    return res.status(500).json({ message: 'Availability lookup failed', error: err.message });
   }
 };
 

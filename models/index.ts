@@ -30,6 +30,7 @@ import FacilityFactory from './facilities';
 import RatingAndReviewFactory from './ratingAndReview';
 import MediaFileFactory from './mediaFile';
 import ReservationFactory from './reservation';
+import PaymentFactory from './payment';
 
 // JS models (company and auditLog are still .js)
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -44,6 +45,7 @@ export const Facility = FacilityFactory(sequelize, DataTypes);
 export const RatingAndReview = RatingAndReviewFactory(sequelize, DataTypes);
 export const MediaFile = MediaFileFactory(sequelize, DataTypes);
 export const Reservation = ReservationFactory(sequelize, DataTypes);
+export const Payment = PaymentFactory(sequelize, DataTypes);
 export const Company = CompanyFactory(sequelize, DataTypes);
 export const AuditLog = AuditLogFactory(sequelize, DataTypes);
 
@@ -55,6 +57,7 @@ const models = {
   RatingAndReview,
   MediaFile,
   Reservation,
+  Payment,
   Company,
   AuditLog,
 };
