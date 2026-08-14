@@ -24,10 +24,6 @@ class AuthService {
     return apiService.post(`${this.baseUrl}/reset-password`, { token, password });
   }
 
-  async verifyEmail(token: string) {
-    return apiService.post(`${this.baseUrl}/verify-email`, { token });
-  }
-
   async getCurrentUser() {
     return apiService.get<User>('/users/me');
   }

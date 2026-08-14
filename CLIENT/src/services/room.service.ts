@@ -1,5 +1,5 @@
 import apiService from './api';
-import type { Room, RoomBookingRequest, PaginationParams, PaginatedResponse } from '@/types';
+import type { Room, PaginationParams, PaginatedResponse } from '@/types';
 
 class RoomService {
   private baseUrl = '/rooms';
