@@ -17,7 +17,7 @@ class ReservationService {
   }
 
   async getCurrentUserReservations(params?: PaginationParams) {
-    return apiService.get<PaginatedResponse<Reservation>>(`${this.baseUrl}/my-reservations`, { params });
+    return apiService.get<PaginatedResponse<Reservation>>(`${this.baseUrl}/my`, { params });
   }
 
   async createReservation(reservationData: CreateReservationRequest) {
@@ -38,6 +38,15 @@ class ReservationService {
 
   async deleteReservation(id: string) {
     return apiService.delete(`${this.baseUrl}/${id}`);
+  }
+
+  // Admin endpoints
+  async getAllReservationsAdmin(params?: PaginationParams) {
+    return apiService.get<PaginatedResponse<Reservation>>(this.baseUrl, { params });
+  }
+
+  async removeAllReservations() {
+    return apiService.delete(this.baseUrl);
   }
 
   async checkAvailability(roomId: string, checkIn: string, checkOut: string) {

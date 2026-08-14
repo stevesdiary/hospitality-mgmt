@@ -27,16 +27,6 @@ class RoomService {
   async deleteRoom(id: string) {
     return apiService.delete(`${this.baseUrl}/${id}`);
   }
-
-  async checkAvailability(hotelId: string, checkIn: string, checkOut: string, guests?: number) {
-    return apiService.get<Room[]>(`${this.baseUrl}/availability`, {
-      params: { hotelId, checkIn, checkOut, guests },
-    });
-  }
-
-  async bookRoom(bookingRequest: RoomBookingRequest) {
-    return apiService.post(`${this.baseUrl}/book`, bookingRequest);
-  }
 }
 
 export const roomService = new RoomService();
