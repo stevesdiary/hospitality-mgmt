@@ -30,6 +30,7 @@ import roomRoute from './routes/room';
 import facilityRoute from './routes/facility';
 import ratingsRoute from './routes/ratingsAndReviews';
 import reservationRoute from './routes/reservation';
+import paymentRoute from './routes/payment';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import companyRoute from './routes/company';
@@ -41,6 +42,9 @@ import { auditMutations } from './middleware/auditMiddleware';
 
 const app: Application = express();
 const port = process.env.LOCAL_PORT || 3000;
+
+// Ensure uploads directory exists before multer tries to write to it
+fs.mkdir('./uploads', { recursive: true }).catch(() => {});
 
 // ── Security middleware ────────────────────────────────────────────────────────
 app.use(helmet());
@@ -117,6 +121,7 @@ app.use('/rooms', roomRoute);
 app.use('/facilities', facilityRoute);
 app.use('/reviews', ratingsRoute);
 app.use('/reservations', reservationRoute);
+app.use('/payments', paymentRoute);
 app.use('/companies', companyRoute);
 
 // Health check (no auth, no rate limit — for load-balancer probes)
