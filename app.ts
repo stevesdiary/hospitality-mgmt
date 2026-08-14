@@ -110,14 +110,14 @@ const upload = multer({
 });
 
 // ── Routes ─────────────────────────────────────────────────────────────────────
-app.use('/', authLimiter, authRoute);
-app.use('/', userRoute);
-app.use('/', hotelRoute);
-app.use('/', roomRoute);
-app.use('/', facilityRoute);
-app.use('/', ratingsRoute);
-app.use('/', reservationRoute);
-app.use('/', companyRoute);
+app.use('/auth', authLimiter, authRoute);
+app.use('/users', userRoute);
+app.use('/hotels', hotelRoute);
+app.use('/rooms', roomRoute);
+app.use('/facilities', facilityRoute);
+app.use('/reviews', ratingsRoute);
+app.use('/reservations', reservationRoute);
+app.use('/companies', companyRoute);
 
 // Health check (no auth, no rate limit — for load-balancer probes)
 app.get('/health', (_req, res) => {

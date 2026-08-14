@@ -3,13 +3,52 @@
  */
 
 import { Request, Response } from 'express';
+import bcrypt from 'bcryptjs';
 import userService from '../services/userService';
+import { User } from '../models';
 
 const resolveCompanyScope = (req: Request): string | undefined => {
   const user = req.user;
   if (!user) return undefined;
   if (user.type === 'admin') return undefined;
   return user.companyId;
+};
+
+export const getMe = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const user = await userService.findUserById(req.user!.id);
+    return res.status(200).json({ message: 'User retrieved', user });
+  } catch (err: any) {
+    if (err.message === 'User not found') return res.status(404).json({ message: err.message });
+    return res.status(500).json({ message: 'Failed to retrieve user', error: err.message });
+  }
+};
+
+export const updateMe = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const user = await userService.updateUserById(req.user!.id, req.body);
+    return res.status(200).json({ message: 'Profile updated', user });
+  } catch (err: any) {
+    if (err.message === 'User not found') return res.status(404).json({ message: err.message });
+    return res.status(500).json({ message: 'Failed to update profile', error: err.message });
+  }
+};
+
+export const changePassword = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const user = await User.findByPk(req.user!.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const valid = await bcrypt.compare(currentPassword, user.password);
+    if (!valid) return res.status(401).json({ message: 'Current password is incorrect' });
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+    return res.status(200).json({ message: 'Password changed successfully' });
+  } catch (err: any) {
+    return res.status(500).json({ message: 'Failed to change password', error: err.message });
+  }
 };
 
 export const findAllUser = async (req: Request, res: Response): Promise<any> => {

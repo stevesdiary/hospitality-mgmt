@@ -6,10 +6,10 @@ import { userValidation } from '../src/shared/utils/validationSchemas';
 
 const router = Router();
 
-router.post('/signup', validateBody(userValidation.register), register);
+router.post('/register', validateBody(userValidation.register), register);
 router.post('/login', validateBody(userValidation.login), login);
 router.post('/logout', authentication, logout);
-router.post('/forgot', forgotPassword);
-router.post('/reset/:token', resetPassword);
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password/:token', resetPassword);
 
 export default router;

@@ -96,6 +96,52 @@ export const updateReservation = async (req: Request, res: Response): Promise<an
   }
 };
 
+export const getMyReservations = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+    const { count, rows: reservations } = await Reservation.findAndCountAll({
+      where: { userId },
+      include: [
+        { model: Hotel, as: 'Hotel' },
+        { model: Room, as: 'Room' },
+      ],
+    });
+    return res.status(200).json({ message: 'Reservations retrieved', Count: count, Reservations: reservations });
+  } catch (err: any) {
+    return res.status(500).json({ message: 'Failed to retrieve reservations', error: err.message });
+  }
+};
+
+export const cancelReservation = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { id } = req.params;
+    const userId = req.user?.id;
+    const reservation = await Reservation.findByPk(id);
+    if (!reservation) return res.status(404).json({ message: 'Reservation not found' });
+
+    const isOwner = reservation.userId === userId;
+    const isPrivileged = req.user?.type === 'admin' || req.user?.type === 'org_admin';
+    if (!isOwner && !isPrivileged) return res.status(403).json({ message: 'Forbidden' });
+
+    await Reservation.update({ status: 'cancelled' }, { where: { id } });
+    return res.status(200).json({ message: 'Reservation cancelled' });
+  } catch (err: any) {
+    return res.status(500).json({ message: 'Failed to cancel reservation', error: err.message });
+  }
+};
+
+export const confirmReservation = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { id } = req.params;
+    const [updated] = await Reservation.update({ status: 'confirmed' }, { where: { id } });
+    if (updated === 0) return res.status(404).json({ message: 'Reservation not found' });
+    return res.status(200).json({ message: 'Reservation confirmed' });
+  } catch (err: any) {
+    return res.status(500).json({ message: 'Failed to confirm reservation', error: err.message });
+  }
+};
+
 export const removeAllReservations = async (req: Request, res: Response): Promise<any> => {
   try {
     const companyId = resolveCompanyScope(req);

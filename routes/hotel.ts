@@ -16,15 +16,16 @@ import verifyUserType from '../middleware/verifyUserType';
 
 const router = Router();
 
-router.post('/createhotel', authentication, verifyUserType(['admin', 'org_admin']), createHotel);
-router.get('/findall', getAllHotels);
-router.get('/topdeals', getTopDeals);
-router.get('/tophotels', getTopHotels);
-router.get('/hotels-by-cities', getHotelsByCity);
-router.get('/topdestinations', getTopDestinations);
-router.get('/findone/:id', getOneHotel);
-router.get('/bydate', getHotelsByDate);
-router.put('/update/:id', authentication, verifyUserType(['admin', 'org_admin']), updateHotel);
-router.delete('/delete/:id', authentication, verifyUserType(['admin', 'org_admin']), deleteHotel);
+router.post('/', authentication, verifyUserType(['admin', 'org_admin']), createHotel);
+router.get('/', getAllHotels);
+router.get('/search', getAllHotels);
+router.get('/top-deals', getTopDeals);
+router.get('/top-rated', getTopHotels);
+router.get('/by-city', getHotelsByCity);
+router.get('/top-destinations', getTopDestinations);
+router.get('/by-date', getHotelsByDate);
+router.get('/:id', getOneHotel);
+router.put('/:id', authentication, verifyUserType(['admin', 'org_admin']), updateHotel);
+router.delete('/:id', authentication, verifyUserType(['admin', 'org_admin']), deleteHotel);
 
 export default router;

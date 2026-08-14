@@ -66,6 +66,19 @@ export const updateRoom = async (req: Request, res: Response): Promise<any> => {
   }
 };
 
+export const getRoomsByHotel = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { hotelId } = req.params;
+    const companyId = resolveCompanyScope(req);
+    const where: any = { hotelId };
+    if (companyId) where.companyId = companyId;
+    const { count, rows: rooms } = await Room.findAndCountAll({ where });
+    return res.status(200).json({ message: 'Rooms retrieved', Count: count, Rooms: rooms });
+  } catch (err: any) {
+    return res.status(500).json({ message: 'Failed to retrieve rooms', error: err.message });
+  }
+};
+
 export const deleteRoom = async (req: Request, res: Response): Promise<any> => {
   try {
     const { id } = req.params;
