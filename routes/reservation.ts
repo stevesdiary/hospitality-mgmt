@@ -1,6 +1,9 @@
 import { Router } from 'express';
 import {
   createReservation,
+  createGuestReservation,
+  checkRoomAvailability,
+  getAvailableRooms,
   getOneReservation,
   getMyReservations,
   getAllReservations,

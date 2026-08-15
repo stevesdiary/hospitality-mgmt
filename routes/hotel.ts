@@ -7,6 +7,7 @@ import {
   getHotelsByCity,
   getTopDestinations,
   getOneHotel,
+  getHotelBySlug,
   getHotelsByDate,
   updateHotel,
   deleteHotel,

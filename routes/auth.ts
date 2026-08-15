@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { register, login, logout, forgotPassword, resetPassword } from '../controllers/authController';
+import { register, onboardHotel, inviteStaff, login, logout, forgotPassword, resetPassword } from '../controllers/authController';
 import { authentication } from '../middleware/authentication';
+import verifyUserType from '../middleware/verifyUserType';
 import { validateBody } from '../middleware/validation';
 import { userValidation } from '../src/shared/utils/validationSchemas';
 

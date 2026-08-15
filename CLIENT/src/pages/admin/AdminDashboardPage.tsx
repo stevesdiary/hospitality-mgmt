@@ -13,11 +13,17 @@ const QUICK_LINKS = [
   { to: '/admin/hotels', label: 'Manage Hotels', icon: Building2, desc: 'Add, edit or remove hotels', grad: 'from-blue-500 to-indigo-600' },
   { to: '/admin/rooms', label: 'Manage Rooms', icon: BedDouble, desc: 'Configure room types and pricing', grad: 'from-violet-500 to-purple-600' },
   { to: '/admin/reservations', label: 'Reservations', icon: CalendarCheck, desc: 'Review and process bookings', grad: 'from-emerald-500 to-teal-600' },
-  { to: '/admin/users', label: 'Manage Users', icon: Users, desc: 'View and manage guest accounts', grad: 'from-orange-400 to-red-500' },
+  { to: '/admin/users', label: 'Manage Users', icon: Users, desc: 'View and manage user accounts', grad: 'from-orange-400 to-red-500' },
 ];
 
-const statusIcon: Record<string, React.ElementType> = { confirmed: CheckCircle, pending: Clock, completed: CheckCircle, cancelled: X };
-const statusStyle: Record<string, string> = { confirmed: 'bg-emerald-100 text-emerald-700', pending: 'bg-amber-100 text-amber-700', completed: 'bg-blue-100 text-blue-700', cancelled: 'bg-red-100 text-red-600' };
+const statusIcon: Record<string, React.ElementType> = {
+  confirmed: CheckCircle, pending: Clock, 'checked-in': LogIn, 'checked-out': LogOut, cancelled: X, 'no-show': X,
+};
+const statusStyle: Record<string, string> = {
+  confirmed: 'bg-emerald-100 text-emerald-700', pending: 'bg-amber-100 text-amber-700',
+  'checked-in': 'bg-blue-100 text-blue-700', 'checked-out': 'bg-gray-100 text-gray-600',
+  cancelled: 'bg-red-100 text-red-600', 'no-show': 'bg-red-100 text-red-600',
+};
 
 const AdminDashboardPage: React.FC = () => {
   const [stats, setStats] = useState({ hotels: 0, rooms: 0, reservations: 0, users: 0 });

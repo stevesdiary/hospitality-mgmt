@@ -23,6 +23,11 @@ const companyController = {
 
   getCompany: async (req, res) => {
     try {
+      const { user } = req;
+      // org_admin may only view their own company; platform admin sees any.
+      if (user.type === 'org_admin' && user.companyId !== req.params.id) {
+        return res.status(403).json({ message: 'You can only view your own company' });
+      }
       const company = await companyService.findCompanyById(req.params.id);
       return sendSuccess(res, 'Company found', company);
     } catch (err) {

@@ -1,43 +1,22 @@
 import apiService from './api';
 import type { User, PaginationParams, PaginatedResponse } from '@/types';
 
+/** Paths map to the backend routes/user.ts. The axios instance prefixes /api. */
 class UserService {
-  private baseUrl = '/users';
-
   async getAllUsers(params?: PaginationParams) {
-    return apiService.get<PaginatedResponse<User>>(this.baseUrl, { params });
+    return apiService.get<PaginatedResponse<User>>('/alluser', { params });
   }
 
   async getUserById(id: string) {
-    return apiService.get<User>(`${this.baseUrl}/${id}`);
-  }
-
-  async getCurrentUser() {
-    return apiService.get<User>(`${this.baseUrl}/me`);
-  }
-
-  async createUser(userData: Partial<User>) {
-    return apiService.post<User>(this.baseUrl, userData);
+    return apiService.get<{ user: User }>(`/user/${id}`);
   }
 
   async updateUser(id: string, userData: Partial<User>) {
-    return apiService.put<User>(`${this.baseUrl}/${id}`, userData);
-  }
-
-  async updateCurrentUser(userData: Partial<User>) {
-    return apiService.put<User>(`${this.baseUrl}/me`, userData);
+    return apiService.put<{ user: User }>(`/updateuser/${id}`, userData);
   }
 
   async deleteUser(id: string) {
-    return apiService.delete(`${this.baseUrl}/${id}`);
-  }
-
-  async changePassword(oldPassword: string, newPassword: string) {
-    return apiService.patch(`${this.baseUrl}/change-password`, { oldPassword, newPassword });
-  }
-
-  async uploadProfileImage(file: File) {
-    return apiService.uploadFile<{ url: string }>(`${this.baseUrl}/upload-image`, file);
+    return apiService.delete(`/deleteuser/${id}`);
   }
 }
 

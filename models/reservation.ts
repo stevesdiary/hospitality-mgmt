@@ -7,9 +7,15 @@ import { Model, DataTypes, Sequelize, Optional } from 'sequelize';
 export interface ReservationInstance extends Model {
   id: string;
   hotelId: string;
-  userId: string;
+  userId?: string;
   roomId: string;
   companyId?: string;
+  guestCount?: number;
+  // Guest-checkout contact details (used when there is no user account).
+  guestName?: string;
+  guestEmail?: string;
+  guestPhone?: string;
+  bookingReference?: string;
   dateIn: Date;
   dateOut: Date;
   status: string;
@@ -22,7 +28,10 @@ export interface ReservationInstance extends Model {
   Room?: any;
 }
 
-export interface ReservationCreationAttributes extends Optional<ReservationInstance, 'id' | 'status' | 'paymentStatus' | 'companyId' | 'createdAt' | 'updatedAt' | 'deletedAt'> {}
+export interface ReservationCreationAttributes extends Optional<
+  ReservationInstance,
+  'id' | 'status' | 'paymentStatus' | 'companyId' | 'guestCount' | 'userId' | 'guestName' | 'guestEmail' | 'guestPhone' | 'bookingReference' | 'checkInTime' | 'checkOutTime' | 'createdAt' | 'updatedAt' | 'deletedAt'
+> {}
 
 export default (sequelize: Sequelize, dataTypes: typeof DataTypes): any => {
   class Reservation extends Model<ReservationInstance, ReservationCreationAttributes> implements ReservationInstance {
@@ -34,9 +43,14 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): any => {
 
     id!: string;
     hotelId!: string;
-    userId!: string;
+    userId?: string;
     roomId!: string;
     companyId?: string;
+    guestCount?: number;
+    guestName?: string;
+    guestEmail?: string;
+    guestPhone?: string;
+    bookingReference?: string;
     dateIn!: Date;
     dateOut!: Date;
     status!: string;
@@ -59,25 +73,43 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): any => {
       hotelId: {
         type: dataTypes.UUID,
         allowNull: false,
-        validate: {
-          notNull: { msg: 'Hotel must not be empty' },
-        },
+        validate: { notNull: { msg: 'Hotel must not be empty' } },
       },
       userId: {
         type: dataTypes.UUID,
-        allowNull: false,
+        allowNull: true,
       },
       roomId: {
         type: dataTypes.UUID,
         allowNull: false,
-        validate: {
-          notNull: { msg: 'Room must not be empty' },
-        },
+        validate: { notNull: { msg: 'Room must not be empty' } },
+      },
+      guestName: {
+        type: dataTypes.STRING,
+        allowNull: true,
+      },
+      guestEmail: {
+        type: dataTypes.STRING,
+        allowNull: true,
+      },
+      guestPhone: {
+        type: dataTypes.STRING,
+        allowNull: true,
+      },
+      bookingReference: {
+        type: dataTypes.STRING,
+        allowNull: true,
+        unique: true,
       },
       companyId: {
         type: dataTypes.UUID,
         allowNull: true,
         references: { model: 'Companies', key: 'id' },
+      },
+      guestCount: {
+        type: dataTypes.INTEGER,
+        allowNull: true,
+        defaultValue: 1,
       },
       dateIn: {
         type: dataTypes.DATE,
@@ -90,7 +122,7 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): any => {
       status: {
         type: dataTypes.ENUM('active', 'confirmed', 'cancelled', 'checked-out', 'used', 'expired'),
         allowNull: false,
-        defaultValue: 'active',
+        defaultValue: 'pending',
       },
       paymentStatus: {
         type: dataTypes.ENUM('pending', 'paid', 'failed', 'refunded'),

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
-import { ChevronLeft, BedDouble, Users, Calendar, CheckCircle, CreditCard, Phone, Mail, User } from 'lucide-react';
+import { ChevronLeft, BedDouble, Users, Calendar, CheckCircle, AlertCircle, CreditCard, Phone, Mail, User } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { reservationService, paymentService } from '../../services';
 
 // Mock — replace with API call using useParams roomId
 const ROOM = {
@@ -24,14 +25,21 @@ interface GuestForm {
 
 const BookingPage: React.FC = () => {
   const { roomId } = useParams<{ roomId: string }>();
-  void roomId;
-  const navigate = useNavigate();
+  // The hotel context arrives from the hotel's own landing page; the API binds
+  // the reservation's companyId from hotelId server-side.
+  const [searchParams] = useSearchParams();
+  const hotelId = searchParams.get('hotelId') ?? ROOM.hotelId;
+  const hotelSlug = searchParams.get('h') ?? '';
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [guests, setGuests] = useState('1');
   const [payMethod, setPayMethod] = useState<'card' | 'transfer'>('card');
   const [confirmed, setConfirmed] = useState(false);
+  const [bookingReference, setBookingReference] = useState('');
   const [loading, setLoading] = useState(false);
+  // null = not checked yet (dates incomplete)
+  const [availability, setAvailability] = useState<{ available: boolean; reason?: string } | null>(null);
+  const [checking, setChecking] = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm<GuestForm>();
 
@@ -42,14 +50,73 @@ const BookingPage: React.FC = () => {
   const tax = Math.round(subtotal * 0.075);
   const total = subtotal + tax;
 
+  // Check availability as soon as the guest has picked a valid stay, so they
+  // learn the room is taken before filling in their details.
+  useEffect(() => {
+    if (!roomId || !checkIn || !checkOut || new Date(checkOut) <= new Date(checkIn)) {
+      setAvailability(null);
+      return;
+    }
+    let active = true;
+    setChecking(true);
+    reservationService.checkRoomAvailability(roomId, checkIn, checkOut)
+      .then((res) => { if (active) setAvailability(res); })
+      .catch(() => { if (active) setAvailability(null); })
+      .finally(() => { if (active) setChecking(false); });
+    return () => { active = false; };
+  }, [roomId, checkIn, checkOut]);
+
   const onSubmit = async (data: GuestForm) => {
     if (!checkIn || !checkOut || nights < 1) { toast.error('Please select valid check-in and check-out dates.'); return; }
+    if (!roomId) { toast.error('Missing room. Please start from the hotel page.'); return; }
+    if (availability && !availability.available) {
+      toast.error(availability.reason ?? 'This room is not available for those dates.');
+      return;
+    }
     setLoading(true);
-    // Simulate API
-    await new Promise((r) => setTimeout(r, 1500));
-    setLoading(false);
-    setConfirmed(true);
-    void data;
+    try {
+      // Guest checkout — no account required. companyId is intentionally NOT
+      // sent; the API derives it from hotelId so a booking can't be spoofed
+      // onto another hotel/tenant.
+      const result = await reservationService.createGuestReservation({
+        hotelId,
+        roomId,
+        dateIn: checkIn,
+        dateOut: checkOut,
+        guestCount: Number(guests),
+        guest: {
+          name: `${data.firstName} ${data.lastName}`.trim(),
+          email: data.email,
+          phone: data.phone,
+        },
+      });
+      setBookingReference(result.bookingReference);
+
+      // Hand off to Paystack. The backend computes the amount from the
+      // reservation — we never send a price from here.
+      try {
+        const payment = await paymentService.initialize({
+          bookingReference: result.bookingReference,
+          callbackUrl: `${window.location.origin}/booking/payment/callback`,
+        });
+        window.location.href = payment.authorizationUrl;
+        return;
+      } catch {
+        // The booking exists and is held; payment can be retried from the
+        // confirmation screen rather than losing the reservation.
+        toast.error('Booking held, but payment could not be started. You can pay from your confirmation.');
+        setConfirmed(true);
+      }
+    } catch (err: any) {
+      const message = err?.response?.data?.message ?? 'Booking failed. Please try again.';
+      // 409 = someone booked these dates between our check and this submit.
+      if (err?.response?.status === 409) {
+        setAvailability({ available: false, reason: message });
+      }
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (confirmed) {
@@ -61,14 +128,20 @@ const BookingPage: React.FC = () => {
           </div>
           <h2 className="text-2xl font-display font-bold text-gray-900 mb-2">Booking Confirmed!</h2>
           <p className="text-gray-500 text-sm mb-6">Your reservation at <span className="font-semibold text-gray-800">{ROOM.hotelName}</span> has been confirmed. A confirmation email is on its way.</p>
+          {bookingReference && (
+            <div className="rounded-2xl border-2 border-dashed border-amber-300 bg-amber-50 p-4 mb-6">
+              <p className="text-xs uppercase tracking-wider text-amber-700 font-semibold mb-1">Your booking reference</p>
+              <p className="text-2xl font-display font-bold text-[#0F2444] tracking-wider">{bookingReference}</p>
+              <p className="text-xs text-gray-500 mt-2">Show this at the front desk to check in.</p>
+            </div>
+          )}
           <div className="bg-gray-50 rounded-2xl p-4 text-sm text-left space-y-2 mb-8">
             <div className="flex justify-between"><span className="text-gray-500">Room</span><span className="font-medium">{ROOM.category}</span></div>
             <div className="flex justify-between"><span className="text-gray-500">Check-in</span><span className="font-medium">{checkIn}</span></div>
             <div className="flex justify-between"><span className="text-gray-500">Check-out</span><span className="font-medium">{checkOut}</span></div>
             <div className="flex justify-between"><span className="text-gray-500">Total</span><span className="font-bold text-primary-700">₦{total.toLocaleString()}</span></div>
           </div>
-          <button onClick={() => navigate('/my-reservations')} className="btn-accent w-full py-3">View My Reservations</button>
-          <Link to="/" className="block text-center text-sm text-gray-500 hover:text-primary-600 mt-4 transition-colors">Back to Home</Link>
+          <Link to={hotelSlug ? `/h/${hotelSlug}` : '/'} className="btn-accent w-full py-3 inline-block">Done</Link>
         </motion.div>
       </div>
     );
@@ -78,7 +151,7 @@ const BookingPage: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center gap-3">
-          <Link to={`/hotels/${ROOM.hotelId}`} className="flex items-center gap-1.5 text-gray-500 hover:text-primary-600 text-sm font-medium transition-colors">
+          <Link to={hotelSlug ? `/h/${hotelSlug}` : '/'} className="flex items-center gap-1.5 text-gray-500 hover:text-primary-600 text-sm font-medium transition-colors">
             <ChevronLeft className="h-4 w-4" /> Back
           </Link>
           <span className="text-gray-300">/</span>
@@ -117,6 +190,25 @@ const BookingPage: React.FC = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* Live availability for the chosen stay */}
+                {checking && (
+                  <p className="mt-4 text-sm text-gray-400 flex items-center gap-2">
+                    <span className="w-3.5 h-3.5 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin" />
+                    Checking availability…
+                  </p>
+                )}
+                {!checking && availability?.available === true && (
+                  <p className="mt-4 text-sm text-emerald-600 font-medium flex items-center gap-1.5">
+                    <CheckCircle className="h-4 w-4" /> Available for these dates
+                  </p>
+                )}
+                {!checking && availability?.available === false && (
+                  <p className="mt-4 text-sm text-red-600 font-medium flex items-center gap-1.5">
+                    <AlertCircle className="h-4 w-4" />
+                    {availability.reason ?? 'Not available for these dates'}
+                  </p>
+                )}
               </div>
 
               {/* Guest details */}
@@ -250,16 +342,18 @@ const BookingPage: React.FC = () => {
 
                 <motion.button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || checking || availability?.available === false}
                   whileTap={{ scale: 0.98 }}
-                  className="btn-accent w-full py-3.5"
+                  className="btn-accent w-full py-3.5 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {loading ? (
                     <span className="flex items-center justify-center gap-2">
                       <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       Confirming…
                     </span>
-                  ) : `Confirm & Pay ₦${total.toLocaleString()}`}
+                  ) : availability?.available === false
+                    ? 'Unavailable for these dates'
+                    : `Confirm & Pay ₦${total.toLocaleString()}`}
                 </motion.button>
 
                 <div className="space-y-2">

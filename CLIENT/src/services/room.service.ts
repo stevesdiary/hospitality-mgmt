@@ -1,27 +1,22 @@
 import apiService from './api';
 import type { Room, PaginationParams, PaginatedResponse } from '@/types';
 
+/** Paths map to the backend routes/room.ts. The axios instance prefixes /api. */
 class RoomService {
-  private baseUrl = '/rooms';
-
   async getAllRooms(params?: PaginationParams) {
-    return apiService.get<PaginatedResponse<Room>>(this.baseUrl, { params });
+    return apiService.get<PaginatedResponse<Room>>('/rooms', { params });
   }
 
   async getRoomById(id: string) {
-    return apiService.get<Room>(`${this.baseUrl}/${id}`);
-  }
-
-  async getRoomsByHotel(hotelId: string, params?: PaginationParams) {
-    return apiService.get<PaginatedResponse<Room>>(`${this.baseUrl}/hotel/${hotelId}`, { params });
+    return apiService.get<{ room: Room }>(`/room/${id}`);
   }
 
   async createRoom(roomData: Partial<Room>) {
-    return apiService.post<Room>(this.baseUrl, roomData);
+    return apiService.post<{ room: Room }>('/room', roomData);
   }
 
   async updateRoom(id: string, roomData: Partial<Room>) {
-    return apiService.put<Room>(`${this.baseUrl}/${id}`, roomData);
+    return apiService.put<{ room: Room }>(`/updateroom/${id}`, roomData);
   }
 
   async deleteRoom(id: string) {

@@ -17,6 +17,7 @@ export interface UserInstance extends Model {
   profileImage?: string;
   type?: UserType;
   companyId?: string;
+  avatarUrl?: string;
   readonly createdAt: Date;
   readonly updatedAt: Date;
   readonly deletedAt: Date;
@@ -39,6 +40,7 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): ModelCtor<Us
     profileImage?: string;
     type?: UserType;
     companyId?: string;
+    avatarUrl?: string;
     readonly createdAt!: Date;
     readonly updatedAt!: Date;
     readonly deletedAt!: Date;
@@ -109,6 +111,10 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): ModelCtor<Us
         type: DataTypes.UUID,
         allowNull: true,
         references: { model: 'Companies', key: 'id' },
+      },
+      avatarUrl: {
+        type: DataTypes.STRING,
+        allowNull: true,
       },
     },
     {

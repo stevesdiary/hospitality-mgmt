@@ -113,7 +113,7 @@ const ManageHotelsPage: React.FC = () => {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100">
-                  {['Hotel', 'City', 'Category', 'Rooms', 'Rating', 'Status', 'Actions'].map((h) => (
+                  {['Hotel', 'City', 'Category', 'Rooms', 'Rating', 'Actions'].map((h) => (
                     <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
@@ -191,6 +191,10 @@ const ManageHotelsPage: React.FC = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Address</label>
                   <input type="text" placeholder="Full address" value={form.address} onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))} className="input-field" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Address (optional)</label>
+                  <input type="text" placeholder="Street, area" value={form.address} onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))} className="input-field" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Category</label>

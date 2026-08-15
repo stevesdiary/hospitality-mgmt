@@ -6,8 +6,37 @@ import { reservationService } from '@/services';
 import { transformReservation, transformPaginatedResponse } from '@/utils/apiTransformers';
 import type { Reservation } from '@/types';
 
-const STATUS_TABS = ['All', 'Confirmed', 'Pending', 'Completed', 'Cancelled'];
-const statusStyle: Record<string, string> = { confirmed: 'bg-emerald-100 text-emerald-700', pending: 'bg-amber-100 text-amber-700', completed: 'bg-blue-100 text-blue-700', cancelled: 'bg-red-100 text-red-600' };
+const STATUS_TABS = ['All', 'Pending', 'Confirmed', 'Checked-in', 'Checked-out', 'Cancelled'];
+const statusStyle: Record<string, string> = {
+  confirmed: 'bg-emerald-100 text-emerald-700',
+  pending: 'bg-amber-100 text-amber-700',
+  'checked-in': 'bg-blue-100 text-blue-700',
+  'checked-out': 'bg-gray-100 text-gray-600',
+  cancelled: 'bg-red-100 text-red-600',
+  'no-show': 'bg-red-100 text-red-600',
+};
+
+const dateOnly = (d?: string) => (d ? String(d).slice(0, 10) : '—');
+
+const toRow = (r: any): ReservationRow => {
+  const nights = r.dateIn && r.dateOut
+    ? Math.max(1, Math.round((new Date(r.dateOut).getTime() - new Date(r.dateIn).getTime()) / 86400000))
+    : 1;
+  const price = r.Room?.price ?? 0;
+  const guestName = r.User ? `${r.User.firstName ?? ''} ${r.User.lastName ?? ''}`.trim() : r.guestName;
+  return {
+    id: r.id,
+    ref: r.bookingReference ?? `#${String(r.id).slice(0, 8)}`,
+    guest: guestName || 'Guest',
+    email: r.User?.email ?? r.guestEmail ?? '—',
+    hotel: r.Hotel?.name ?? '—',
+    room: r.Room?.category ?? r.Room?.type ?? '—',
+    checkIn: dateOnly(r.dateIn),
+    checkOut: dateOnly(r.dateOut),
+    total: price * nights,
+    status: r.status ?? 'pending',
+  };
+};
 
 const ManageReservationsPage: React.FC = () => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
@@ -80,7 +109,7 @@ const ManageReservationsPage: React.FC = () => {
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             <div className="relative max-w-xs">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-              <input type="text" placeholder="Search guest, hotel or ID…" value={search} onChange={(e) => setSearch(e.target.value)} className="input-field pl-9 text-sm py-2" />
+              <input type="text" placeholder="Search guest, hotel or ref…" value={search} onChange={(e) => setSearch(e.target.value)} className="input-field pl-9 text-sm py-2" />
             </div>
             <div className="flex gap-2 overflow-x-auto pb-1">
               {STATUS_TABS.map((t) => (
@@ -100,7 +129,7 @@ const ManageReservationsPage: React.FC = () => {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100">
-                  {['ID', 'Guest', 'Hotel / Room', 'Dates', 'Total', 'Status', 'Actions'].map((h) => (
+                  {['Ref', 'Guest', 'Hotel / Room', 'Dates', 'Total', 'Status', 'Actions'].map((h) => (
                     <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
@@ -152,7 +181,8 @@ const ManageReservationsPage: React.FC = () => {
                 })}
               </tbody>
             </table>
-            {filtered.length === 0 && <div className="text-center py-16 text-gray-400 text-sm">No reservations found</div>}
+            {loading && <div className="flex items-center justify-center py-16 text-gray-400"><Loader2 className="h-6 w-6 animate-spin" /></div>}
+            {!loading && filtered.length === 0 && <div className="text-center py-16 text-gray-400 text-sm">No reservations found</div>}
           </div>
         </div>
       </div>

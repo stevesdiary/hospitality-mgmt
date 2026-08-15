@@ -15,6 +15,8 @@ export interface User {
   dateOfBirth?: string;
   gender?: 'male' | 'female' | 'other';
   profileImage?: string;
+  avatarUrl?: string;
+  phoneNumber?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -118,6 +120,9 @@ export interface Reservation {
   hotelId: string;
   checkInDate: string;
   checkOutDate: string;
+  dateIn: string;
+  dateOut: string;
+  guestCount?: number;
   numberOfGuests: number;
   totalPrice: number;
   status: 'pending' | 'confirmed' | 'checked-in' | 'checked-out' | 'cancelled' | 'no-show';
@@ -126,8 +131,13 @@ export interface Reservation {
   guestName: string;
   guestEmail: string;
   guestPhone?: string;
+  checkInTime?: string;
+  checkOutTime?: string;
   createdAt: string;
   updatedAt: string;
+  Room?: Room;
+  Hotel?: Hotel;
+  User?: User;
   room?: Room;
   hotel?: Hotel;
   user?: User;

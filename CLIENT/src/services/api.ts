@@ -6,7 +6,10 @@ class ApiService {
 
   constructor() {
     this.api = axios.create({
-      baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3360/api',
+      // Defaults to the backend's default port (LOCAL_PORT || 3000). Override
+      // with VITE_API_URL to point at another host/port. The backend mounts all
+      // API routes under /api.
+      baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
       timeout: 30000,
       headers: {
         'Content-Type': 'application/json',
@@ -73,6 +76,16 @@ class ApiService {
   async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.api.delete<ApiResponse<T>>(url, config);
     return response.data.data;
+  }
+
+  /** Upload an image to the backend and get back its hosted URL. */
+  async uploadImage(file: File): Promise<{ url: string }> {
+    const formData = new FormData();
+    formData.append('image', file);
+    const response = await this.api.post<{ url: string }>('/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
   }
 
   async uploadFile<T>(url: string, file: File, additionalData?: Record<string, any>): Promise<T> {

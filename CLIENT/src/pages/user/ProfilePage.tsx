@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useSelector, useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
-import { User, Mail, Phone, Camera, Save, Lock, Eye, EyeOff } from 'lucide-react';
+import { User, Mail, Phone, Camera, Save, Lock, Loader2 } from 'lucide-react';
 import type { RootState } from '../../store';
 import { updateUser } from '../../store/authSlice';
+import { userService, authService, apiService } from '../../services';
 import toast from 'react-hot-toast';
 
 const fadeUp = { hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
@@ -13,9 +14,10 @@ const ProfilePage: React.FC = () => {
   const { user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
   const [tab, setTab] = useState<'info' | 'password'>('info');
-  const [showOld, setShowOld] = useState(false);
-  const [showNew, setShowNew] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [sendingReset, setSendingReset] = useState(false);
+  const fileInput = useRef<HTMLInputElement>(null);
 
   const { register, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
@@ -26,25 +28,56 @@ const ProfilePage: React.FC = () => {
     },
   });
 
-  const { register: registerPw, handleSubmit: handlePwSubmit, reset: resetPw, formState: { errors: pwErrors } } = useForm<{ oldPassword: string; newPassword: string }>();
-
   const onSaveProfile = async (data: any) => {
+    if (!user?.id) return;
     setSaving(true);
-    await new Promise((r) => setTimeout(r, 800));
-    dispatch(updateUser({ firstName: data.firstName, lastName: data.lastName }));
-    toast.success('Profile updated successfully!');
-    setSaving(false);
+    try {
+      await userService.updateUser(user.id, {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phoneNumber: data.phoneNumber,
+      } as any);
+      dispatch(updateUser({ firstName: data.firstName, lastName: data.lastName, phoneNumber: data.phoneNumber } as any));
+      toast.success('Profile updated successfully!');
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message ?? 'Failed to update profile.');
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const onChangePassword = async (_data: any) => {
-    setSaving(true);
-    await new Promise((r) => setTimeout(r, 800));
-    toast.success('Password updated!');
-    resetPw();
-    setSaving(false);
+  const onPickAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user?.id) return;
+    setUploading(true);
+    try {
+      const { url } = await apiService.uploadImage(file);
+      await userService.updateUser(user.id, { avatarUrl: url } as any);
+      dispatch(updateUser({ avatarUrl: url } as any));
+      toast.success('Photo updated!');
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message ?? 'Failed to upload photo.');
+    } finally {
+      setUploading(false);
+      if (fileInput.current) fileInput.current.value = '';
+    }
+  };
+
+  const sendResetLink = async () => {
+    if (!user?.email) return;
+    setSendingReset(true);
+    try {
+      await authService.forgotPassword(user.email);
+      toast.success('Password reset link sent to your email.');
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message ?? 'Could not send reset link.');
+    } finally {
+      setSendingReset(false);
+    }
   };
 
   const initials = `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase() || 'U';
+  const avatarUrl = (user as any)?.avatarUrl;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -53,11 +86,18 @@ const ProfilePage: React.FC = () => {
           <motion.div initial="hidden" animate="visible" variants={fadeUp} className="flex items-center gap-5">
             {/* Avatar */}
             <div className="relative">
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white text-2xl font-bold">
-                {initials}
+              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white text-2xl font-bold overflow-hidden">
+                {avatarUrl ? <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" /> : initials}
               </div>
-              <button className="absolute -bottom-1 -right-1 w-7 h-7 bg-white rounded-full border-2 border-gray-200 flex items-center justify-center shadow-sm hover:bg-gray-50 transition-colors">
-                <Camera className="h-3.5 w-3.5 text-gray-500" />
+              <input ref={fileInput} type="file" accept="image/*" className="hidden" onChange={onPickAvatar} />
+              <button
+                type="button"
+                onClick={() => fileInput.current?.click()}
+                disabled={uploading}
+                title="Change photo"
+                className="absolute -bottom-1 -right-1 w-7 h-7 bg-white rounded-full border-2 border-gray-200 flex items-center justify-center shadow-sm hover:bg-gray-50 transition-colors disabled:opacity-60"
+              >
+                {uploading ? <Loader2 className="h-3.5 w-3.5 text-gray-500 animate-spin" /> : <Camera className="h-3.5 w-3.5 text-gray-500" />}
               </button>
             </div>
             <div>
@@ -71,7 +111,7 @@ const ProfilePage: React.FC = () => {
             {(['info', 'password'] as const).map((t) => (
               <button key={t} onClick={() => setTab(t)}
                 className={`px-5 py-2 rounded-xl text-sm font-semibold transition-all ${tab === t ? 'bg-primary-600 text-white' : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100'}`}>
-                {t === 'info' ? 'Personal Info' : 'Change Password'}
+                {t === 'info' ? 'Personal Info' : 'Password'}
               </button>
             ))}
           </div>
@@ -128,41 +168,22 @@ const ProfilePage: React.FC = () => {
 
         {tab === 'password' && (
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-gray-100 p-6 max-w-md">
-            <form onSubmit={handlePwSubmit(onChangePassword)} className="space-y-5">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
-                  <Lock className="h-3.5 w-3.5 text-gray-400" /> Current Password
-                </label>
-                <div className="relative">
-                  <input type={showOld ? 'text' : 'password'} {...registerPw('oldPassword', { required: 'Required' })}
-                    className={`input-field pr-11 ${pwErrors.oldPassword ? 'border-red-400' : ''}`} />
-                  <button type="button" onClick={() => setShowOld(!showOld)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
-                    {showOld ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-                {pwErrors.oldPassword && <p className="text-red-500 text-xs mt-1">{pwErrors.oldPassword.message}</p>}
+            <div className="flex items-start gap-3 mb-5">
+              <div className="p-2 bg-primary-50 rounded-xl">
+                <Lock className="h-4 w-4 text-primary-600" />
               </div>
-
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
-                  <Lock className="h-3.5 w-3.5 text-gray-400" /> New Password
-                </label>
-                <div className="relative">
-                  <input type={showNew ? 'text' : 'password'} {...registerPw('newPassword', { required: 'Required', minLength: { value: 8, message: 'Minimum 8 characters' } })}
-                    placeholder="Min. 8 characters"
-                    className={`input-field pr-11 ${pwErrors.newPassword ? 'border-red-400' : ''}`} />
-                  <button type="button" onClick={() => setShowNew(!showNew)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
-                    {showNew ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-                {pwErrors.newPassword && <p className="text-red-500 text-xs mt-1">{pwErrors.newPassword.message}</p>}
+                <h3 className="font-semibold text-gray-900 text-sm">Reset your password</h3>
+                <p className="text-sm text-gray-500 mt-1">
+                  We&apos;ll email a secure link to <span className="font-medium text-gray-700">{user?.email}</span> that lets
+                  you set a new password. The link expires shortly for your security.
+                </p>
               </div>
-
-              <motion.button type="submit" disabled={saving} whileTap={{ scale: 0.98 }} className="btn-primary flex items-center gap-2">
-                {saving ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="h-4 w-4" />}
-                {saving ? 'Updating…' : 'Update Password'}
-              </motion.button>
-            </form>
+            </div>
+            <motion.button onClick={sendResetLink} disabled={sendingReset} whileTap={{ scale: 0.98 }} className="btn-primary flex items-center gap-2">
+              {sendingReset ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Mail className="h-4 w-4" />}
+              {sendingReset ? 'Sending…' : 'Send reset link'}
+            </motion.button>
           </motion.div>
         )}
       </div>

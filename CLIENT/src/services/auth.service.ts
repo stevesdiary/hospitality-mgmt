@@ -1,23 +1,47 @@
 import apiService from './api';
 import type { LoginCredentials, RegisterData, User } from '@/types';
 
+// The backend returns the user's role as `type`; the client reads `userType`
+// (ProtectedRoute, login redirect). Normalise so both names are present.
+const normalizeUser = (user: any): User => (
+  user ? { ...user, userType: user.userType ?? user.type } : user
+);
+
 class AuthService {
-  private baseUrl = '/auth';
+  // Routes are mounted at the API root (see backend routes/auth.ts), e.g.
+  // /login, /signup — the axios instance already prefixes /api.
 
   async login(credentials: LoginCredentials) {
-    return apiService.post<{ token: string; user: User }>(`${this.baseUrl}/login`, credentials);
+    const res = await apiService.post<{ token: string; user: any }>('/login', credentials);
+    return { ...res, user: normalizeUser(res.user) };
   }
 
   async register(data: RegisterData) {
-    return apiService.post<{ token: string; user: User }>(`${this.baseUrl}/register`, data);
+    const res = await apiService.post<{ token: string; user: any }>('/signup', data);
+    return { ...res, user: normalizeUser(res.user) };
+  }
+
+  /**
+   * Self-serve hotel onboarding: creates a company + its first org_admin and
+   * returns an auto-login token. This is how a hotel "lists" on StayNG.
+   */
+  async onboardHotel(data: {
+    company: { name: string; contactEmail: string; contactPhone?: string; address?: string };
+    admin: { firstName: string; lastName: string; email: string; phoneNumber?: string; password: string };
+  }) {
+    const res = await apiService.post<{ token: string; user: any; company: { id: string; name: string } }>(
+      '/onboard',
+      data
+    );
+    return { ...res, user: normalizeUser(res.user) };
   }
 
   async logout() {
-    return apiService.post(`${this.baseUrl}/logout`);
+    return apiService.post('/logout');
   }
 
   async forgotPassword(email: string) {
-    return apiService.post(`${this.baseUrl}/forgot-password`, { email });
+    return apiService.post('/forgot', { email });
   }
 
   async resetPassword(token: string, password: string) {

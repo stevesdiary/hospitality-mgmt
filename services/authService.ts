@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import { v4 as uuidv4 } from 'uuid';
-import { User } from '../models';
+import { User, Company, sequelize } from '../models';
 import { UserInstance } from '../models/user';
 import { JwtPayload } from '../types';
 
@@ -35,6 +35,81 @@ class AuthService {
 
     const token = this.signToken(user);
     return { token, user };
+  }
+
+  /**
+   * Self-serve hotel onboarding: atomically create a company (tenant) and its
+   * first org_admin, then return an auto-login token. This is the ONLY public
+   * path to an elevated (org_admin) account — plain /signup can't grant it.
+   */
+  async onboardCompany(
+    company: { name: string; contactEmail: string; contactPhone?: string; address?: string },
+    admin: { firstName: string; lastName: string; email: string; phoneNumber?: string; password: string }
+  ): Promise<{ token: string; user: UserInstance; company: any }> {
+    const existingUser = await User.findOne({ where: { email: admin.email } });
+    if (existingUser) throw new Error('Email already registered');
+
+    const existingCompany = await Company.findOne({ where: { contactEmail: company.contactEmail } });
+    if (existingCompany) throw new Error('A company with that contact email already exists');
+
+    const hashedPassword = await bcrypt.hash(admin.password, 10);
+
+    // Wrap both inserts in a transaction so we never leave a company without its
+    // owner (or an owner pointing at a company that failed to create).
+    const result = await sequelize.transaction(async (t) => {
+      const createdCompany = await Company.create(
+        { id: uuidv4(), ...company },
+        { transaction: t }
+      );
+
+      const user = await User.create(
+        {
+          id: uuidv4(),
+          firstName: admin.firstName,
+          lastName: admin.lastName,
+          email: admin.email,
+          phoneNumber: admin.phoneNumber,
+          password: hashedPassword,
+          type: 'org_admin',
+          companyId: (createdCompany as any).id,
+        },
+        { transaction: t }
+      );
+
+      return { createdCompany, user };
+    });
+
+    const token = this.signToken(result.user);
+    return { token, user: result.user, company: result.createdCompany };
+  }
+
+  /**
+   * Create a staff account inside a company. Used by an org_admin to add staff
+   * to their OWN company (companyId is supplied by the controller from the
+   * authenticated user, never the request body). Role is constrained so this
+   * can't mint a platform admin.
+   */
+  async createStaff(
+    companyId: string,
+    staff: { firstName: string; lastName: string; email: string; phoneNumber?: string; password: string; type?: string }
+  ): Promise<UserInstance> {
+    const existing = await User.findOne({ where: { email: staff.email } });
+    if (existing) throw new Error('Email already registered');
+
+    const allowedRoles = ['org_admin', 'regular'];
+    const role = staff.type && allowedRoles.includes(staff.type) ? staff.type : 'org_admin';
+
+    const hashedPassword = await bcrypt.hash(staff.password, 10);
+    return User.create({
+      id: uuidv4(),
+      firstName: staff.firstName,
+      lastName: staff.lastName,
+      email: staff.email,
+      phoneNumber: staff.phoneNumber,
+      password: hashedPassword,
+      type: role as any,
+      companyId,
+    });
   }
 
   async login(email: string, password: string): Promise<{ token: string; user: UserInstance }> {

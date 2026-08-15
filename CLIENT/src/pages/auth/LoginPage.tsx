@@ -41,7 +41,9 @@ const LoginPage: React.FC = () => {
       const result = await authService.login(data);
       dispatch(loginSuccess({ token: result.token, user: result.user }));
       toast.success(`Welcome back!`);
-      navigate('/');
+      // Hotel staff run operations from the management console; send them there.
+      const isStaff = result.user?.userType === 'admin' || result.user?.userType === 'org_admin';
+      navigate(isStaff ? '/admin' : '/my-reservations');
     } catch (err: any) {
       const msg = err?.response?.data?.message ?? 'Login failed. Please try again.';
       dispatch(setError(msg));

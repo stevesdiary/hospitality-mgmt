@@ -12,7 +12,9 @@ const ROOM_GRADS = [
 ];
 const getGrad = (index: number) => ROOM_GRADS[index % ROOM_GRADS.length];
 
-const statusStyle: Record<string, string> = { available: 'bg-emerald-100 text-emerald-700', occupied: 'bg-blue-100 text-blue-700', maintenance: 'bg-amber-100 text-amber-700' };
+// Room categories accepted by the backend (models/room category ENUM).
+const CATEGORIES = ['regular', 'luxury', 'conference', 'event hall', 'studio apartment'];
+const GRADS = ['from-slate-400 to-slate-600', 'from-blue-400 to-indigo-600', 'from-violet-400 to-purple-600', 'from-amber-400 to-orange-600', 'from-rose-400 to-pink-600'];
 
 interface RoomForm { hotelId: string; category: string; capacity: string; price: string; description: string; }
 
@@ -125,17 +127,17 @@ const ManageRoomsPage: React.FC = () => {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100">
-                  {['Room', 'Hotel', 'Capacity', 'Price/Night', 'Status', 'Actions'].map((h) => (
+                  {['Room', 'Hotel', 'Capacity', 'Price/Night', 'Condition', 'Actions'].map((h) => (
                     <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {filtered.map((room) => (
+                {filtered.map((room, i) => (
                   <motion.tr key={room.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="hover:bg-gray-50 transition-colors">
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${room.grad} flex-shrink-0`} />
+                        <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${GRADS[i % GRADS.length]} flex-shrink-0`} />
                         <div>
                           <span className="font-medium text-gray-900 whitespace-nowrap block">{room.category}</span>
                           <span className="text-xs text-gray-400 flex items-center gap-1"><BedDouble className="h-3 w-3" />{room.bedType}</span>
@@ -166,7 +168,8 @@ const ManageRoomsPage: React.FC = () => {
                 ))}
               </tbody>
             </table>
-            {filtered.length === 0 && <div className="text-center py-16 text-gray-400 text-sm">No rooms found</div>}
+            {loading && <div className="flex items-center justify-center py-16 text-gray-400"><Loader2 className="h-6 w-6 animate-spin" /></div>}
+            {!loading && filtered.length === 0 && <div className="text-center py-16 text-gray-400 text-sm">No rooms found</div>}
           </div>
         </div>
       </div>

@@ -21,7 +21,6 @@ import bodyParser from 'body-parser';
 
 import { b2Storage, UploadResult } from './src/shared/services/b2Storage.service';
 import { authentication } from './middleware/authentication';
-import verifyUserType from './middleware/verifyUserType';
 
 import authRoute from './routes/auth';
 import userRoute from './routes/user';
@@ -34,6 +33,7 @@ import paymentRoute from './routes/payment';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import companyRoute from './routes/company';
+import paymentRoute from './routes/payment';
 
 import errorHandler from './middleware/errorHandler';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -83,7 +83,12 @@ const uploadLimiter = rateLimit({
 app.use(globalLimiter);
 
 // ── Body parsing ───────────────────────────────────────────────────────────────
-app.use(express.json({ limit: '10mb' }));
+// Keep the raw body around: the Paystack webhook signature is an HMAC of the
+// exact bytes sent, so the parsed object can't be used to verify it.
+app.use(express.json({
+  limit: '10mb',
+  verify: (req, _res, buf) => { (req as any).rawBody = buf; },
+}));
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(auditMutations);
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
@@ -133,12 +138,11 @@ app.get('/', (_req, res) => {
   res.status(200).json({ message: 'Welcome to Hotel Management Platform!' });
 });
 
-// ── Image upload (authenticated + admin/org_admin only) ───────────────────────
+// ── Image upload (any authenticated user — e.g. profile avatar, hotel photos) ──
 app.post(
-  '/upload',
+  '/api/upload',
   uploadLimiter,
   authentication,
-  verifyUserType(['admin', 'org_admin']),
   upload.single('image'),
   async (req: Request, res: Response): Promise<any> => {
     if (!req.file) {
