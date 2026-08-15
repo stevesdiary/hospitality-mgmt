@@ -1,37 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Search, CheckCircle, X, Clock, ChevronDown } from 'lucide-react';
+import { Search, CheckCircle, X, Clock, ChevronDown, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { DUMMY_RESERVATIONS, DUMMY_HOTELS, DUMMY_ROOMS, DUMMY_USERS } from '@/data/dummy';
-
-const INIT_RESERVATIONS = DUMMY_RESERVATIONS.map((r) => ({
-  id: r.id,
-  guest: r.guestName, email: r.guestEmail,
-  hotel: DUMMY_HOTELS.find((h) => h.id === r.hotelId)?.name ?? '',
-  room: DUMMY_ROOMS.find((rm) => rm.id === r.roomId)?.category ?? '',
-  checkIn: r.checkInDate, checkOut: r.checkOutDate,
-  total: r.totalPrice,
-  status: r.status === 'checked-out' ? 'completed' : r.status,
-}));
+import { reservationService } from '@/services';
+import { transformReservation, transformPaginatedResponse } from '@/utils/apiTransformers';
+import type { Reservation } from '@/types';
 
 const STATUS_TABS = ['All', 'Confirmed', 'Pending', 'Completed', 'Cancelled'];
 const statusStyle: Record<string, string> = { confirmed: 'bg-emerald-100 text-emerald-700', pending: 'bg-amber-100 text-amber-700', completed: 'bg-blue-100 text-blue-700', cancelled: 'bg-red-100 text-red-600' };
 
 const ManageReservationsPage: React.FC = () => {
-  const [reservations, setReservations] = useState(INIT_RESERVATIONS);
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState('All');
 
+  const fetchReservations = async () => {
+    try {
+      setLoading(true);
+      const response = await reservationService.getAllReservationsAdmin({ limit: 100 });
+      const data = response as any;
+      const transformed = transformPaginatedResponse(data, 'Reservations', transformReservation);
+      setReservations(transformed.items);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to load reservations');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchReservations(); }, []);
+
+  const mapStatus = (status: string) => {
+    if (status === 'checked-out' || status === 'checked-in') return 'completed';
+    if (status === 'active') return 'pending';
+    return status;
+  };
+
   const filtered = reservations.filter((r) => {
-    const matchTab = tab === 'All' || r.status === tab.toLowerCase();
-    const matchSearch = r.guest.toLowerCase().includes(search.toLowerCase()) || r.hotel.toLowerCase().includes(search.toLowerCase()) || r.id.toLowerCase().includes(search.toLowerCase());
+    const displayStatus = mapStatus(r.status);
+    const matchTab = tab === 'All' || displayStatus === tab.toLowerCase();
+    const matchSearch = r.guestName.toLowerCase().includes(search.toLowerCase()) || 
+      (r.hotel?.name || '').toLowerCase().includes(search.toLowerCase()) || 
+      r.id.toLowerCase().includes(search.toLowerCase());
     return matchTab && matchSearch;
   });
 
-  const updateStatus = (id: string, status: string) => {
-    setReservations((p) => p.map((r) => r.id === id ? { ...r, status } : r));
-    toast.success(`Reservation ${status}`);
+  const updateStatus = async (id: string, status: string) => {
+    try {
+      if (status === 'confirmed') {
+        await reservationService.confirmReservation(id);
+      } else if (status === 'cancelled') {
+        await reservationService.cancelReservation(id);
+      } else {
+        await reservationService.updateReservation(id, { status } as any);
+      }
+      toast.success(`Reservation ${status}`);
+      fetchReservations();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update reservation');
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -69,45 +106,50 @@ const ManageReservationsPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {filtered.map((r) => (
-                  <motion.tr key={r.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-5 py-4 font-medium text-gray-500">#{r.id}</td>
-                    <td className="px-5 py-4">
-                      <div className="font-medium text-gray-900 whitespace-nowrap">{r.guest}</div>
-                      <div className="text-xs text-gray-400">{r.email}</div>
-                    </td>
-                    <td className="px-5 py-4">
-                      <div className="font-medium text-gray-700 whitespace-nowrap">{r.hotel}</div>
-                      <div className="text-xs text-gray-400">{r.room}</div>
-                    </td>
-                    <td className="px-5 py-4 text-gray-500 whitespace-nowrap">
-                      <div>{r.checkIn}</div>
-                      <div className="text-xs">→ {r.checkOut}</div>
-                    </td>
-                    <td className="px-5 py-4 font-semibold text-primary-700 whitespace-nowrap">₦{r.total.toLocaleString()}</td>
-                    <td className="px-5 py-4">
-                      <span className={`badge text-xs ${statusStyle[r.status]}`}>{r.status.charAt(0).toUpperCase() + r.status.slice(1)}</span>
-                    </td>
-                    <td className="px-5 py-4">
-                      <div className="relative group">
-                        <button className="flex items-center gap-1 text-xs font-medium text-gray-600 hover:text-primary-600 bg-gray-100 hover:bg-primary-50 px-3 py-1.5 rounded-lg transition-all">
-                          Update <ChevronDown className="h-3 w-3" />
-                        </button>
-                        <div className="absolute right-0 top-full mt-1 w-36 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 hidden group-hover:block z-10">
-                          {['confirmed', 'completed', 'cancelled'].filter((s) => s !== r.status).map((s) => (
-                            <button key={s} onClick={() => updateStatus(r.id, s)}
-                              className="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 flex items-center gap-2 transition-colors capitalize">
-                              {s === 'confirmed' && <CheckCircle className="h-3.5 w-3.5 text-emerald-500" />}
-                              {s === 'completed' && <Clock className="h-3.5 w-3.5 text-blue-500" />}
-                              {s === 'cancelled' && <X className="h-3.5 w-3.5 text-red-500" />}
-                              {s}
-                            </button>
-                          ))}
+                {filtered.map((r) => {
+                  const displayStatus = mapStatus(r.status);
+                  return (
+                    <motion.tr key={r.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-5 py-4 font-medium text-gray-500">#{r.id.slice(0, 8)}</td>
+                      <td className="px-5 py-4">
+                        <div className="font-medium text-gray-900 whitespace-nowrap">{r.guestName || 'Guest'}</div>
+                        <div className="text-xs text-gray-400">{r.guestEmail}</div>
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="font-medium text-gray-700 whitespace-nowrap">{r.hotel?.name || 'Hotel'}</div>
+                        <div className="text-xs text-gray-400">{r.room?.category || 'Room'}</div>
+                      </td>
+                      <td className="px-5 py-4 text-gray-500 whitespace-nowrap">
+                        <div>{r.checkInDate}</div>
+                        <div className="text-xs">→ {r.checkOutDate}</div>
+                      </td>
+                      <td className="px-5 py-4 font-semibold text-primary-700 whitespace-nowrap">₦{r.totalPrice.toLocaleString()}</td>
+                      <td className="px-5 py-4">
+                        <span className={`badge text-xs ${statusStyle[displayStatus] || 'bg-gray-100 text-gray-600'}`}>
+                          {displayStatus.charAt(0).toUpperCase() + displayStatus.slice(1)}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="relative group">
+                          <button className="flex items-center gap-1 text-xs font-medium text-gray-600 hover:text-primary-600 bg-gray-100 hover:bg-primary-50 px-3 py-1.5 rounded-lg transition-all">
+                            Update <ChevronDown className="h-3 w-3" />
+                          </button>
+                          <div className="absolute right-0 top-full mt-1 w-36 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 hidden group-hover:block z-10">
+                            {['confirmed', 'completed', 'cancelled'].filter((s) => s !== displayStatus).map((s) => (
+                              <button key={s} onClick={() => updateStatus(r.id, s)}
+                                className="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 flex items-center gap-2 transition-colors capitalize">
+                                {s === 'confirmed' && <CheckCircle className="h-3.5 w-3.5 text-emerald-500" />}
+                                {s === 'completed' && <Clock className="h-3.5 w-3.5 text-blue-500" />}
+                                {s === 'cancelled' && <X className="h-3.5 w-3.5 text-red-500" />}
+                                {s}
+                              </button>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                  </motion.tr>
-                ))}
+                      </td>
+                    </motion.tr>
+                  );
+                })}
               </tbody>
             </table>
             {filtered.length === 0 && <div className="text-center py-16 text-gray-400 text-sm">No reservations found</div>}

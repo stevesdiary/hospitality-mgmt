@@ -15,6 +15,10 @@ import RegisterPage from './pages/auth/RegisterPage';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 
+// Pages - Legal
+import PrivacyPolicyPage from './pages/legal/PrivacyPolicyPage';
+import TermsOfServicePage from './pages/legal/TermsOfServicePage';
+
 // Pages - Hotels
 import HotelsPage from './pages/hotels/HotelsPage';
 import HotelDetailPage from './pages/hotels/HotelDetailPage';
@@ -77,6 +81,10 @@ const App: React.FC = () => {
           <Route path="/register" element={<AuthLayout><RegisterPage /></AuthLayout>} />
           <Route path="/forgot-password" element={<AuthLayout><ForgotPasswordPage /></AuthLayout>} />
           <Route path="/reset-password" element={<AuthLayout><ResetPasswordPage /></AuthLayout>} />
+          
+          {/* Legal Routes */}
+          <Route path="/privacy-policy" element={<MainLayout><PrivacyPolicyPage /></MainLayout>} />
+          <Route path="/terms-of-service" element={<MainLayout><TermsOfServicePage /></MainLayout>} />
           
           {/* Booking Routes */}
           <Route path="/book/:roomId" element={<MainLayout><BookingPage /></MainLayout>} />

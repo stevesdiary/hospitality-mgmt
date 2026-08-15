@@ -1,24 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Edit2, Trash2, X, UserCheck, UserX, Shield } from 'lucide-react';
+import { Search, Edit2, Trash2, X, UserCheck, UserX, Shield, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { DUMMY_USERS, DUMMY_RESERVATIONS } from '@/data/dummy';
+import { userService } from '@/services';
+import { transformUser, transformPaginatedResponse } from '@/utils/apiTransformers';
+import type { User } from '@/types';
 
-const INIT_USERS = DUMMY_USERS.map((u) => ({
-  id: u.id, firstName: u.firstName, lastName: u.lastName,
-  email: u.email, phone: u.phone ?? '',
-  userType: u.userType, status: 'active' as 'active' | 'suspended',
-  joined: u.createdAt.split('T')[0],
-  bookings: DUMMY_RESERVATIONS.filter((r) => r.userId === u.id).length,
-}));
-
-const typeStyle: Record<string, string> = { admin: 'bg-violet-100 text-violet-700', guest: 'bg-gray-100 text-gray-600', org_admin: 'bg-blue-100 text-blue-700' };
+const typeStyle: Record<string, string> = { admin: 'bg-violet-100 text-violet-700', guest: 'bg-gray-100 text-gray-600', org_admin: 'bg-blue-100 text-blue-700', regular: 'bg-gray-100 text-gray-600', premium: 'bg-amber-100 text-amber-700' };
 const statusStyle: Record<string, string> = { active: 'bg-emerald-100 text-emerald-700', suspended: 'bg-red-100 text-red-600' };
 
 const ManageUsersPage: React.FC = () => {
-  const [users, setUsers] = useState(INIT_USERS);
+  const [users, setUsers] = useState<(User & { status: 'active' | 'suspended' })[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [editUser, setEditUser] = useState<typeof INIT_USERS[0] | null>(null);
+  const [editUser, setEditUser] = useState<User | null>(null);
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await userService.getAllUsers({ limit: 100 });
+      const data = response as any;
+      const transformed = transformPaginatedResponse(data, 'Users', transformUser);
+      setUsers(transformed.items.map(u => ({ ...u, status: 'active' as const })));
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to load users');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchUsers(); }, []);
 
   const filtered = users.filter((u) =>
     `${u.firstName} ${u.lastName}`.toLowerCase().includes(search.toLowerCase()) ||
@@ -31,14 +42,36 @@ const ManageUsersPage: React.FC = () => {
     toast.success(`User ${user?.status === 'active' ? 'suspended' : 'activated'}`);
   };
 
-  const handleDelete = (id: string) => { setUsers((p) => p.filter((u) => u.id !== id)); toast.success('User removed.'); };
-
-  const handleSaveRole = (role: string) => {
-    if (!editUser) return;
-    setUsers((p) => p.map((u) => u.id === editUser.id ? { ...u, userType: role } : u));
-    toast.success('Role updated!');
-    setEditUser(null);
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this user?')) return;
+    try {
+      await userService.deleteUser(id);
+      toast.success('User removed.');
+      fetchUsers();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to delete user');
+    }
   };
+
+  const handleSaveRole = async (role: string) => {
+    if (!editUser) return;
+    try {
+      await userService.updateUser(editUser.id, { userType: role } as any);
+      toast.success('Role updated!');
+      setEditUser(null);
+      fetchUsers();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update role');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -59,7 +92,7 @@ const ManageUsersPage: React.FC = () => {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100">
-                  {['User', 'Email', 'Phone', 'Role', 'Bookings', 'Status', 'Joined', 'Actions'].map((h) => (
+                  {['User', 'Email', 'Phone', 'Role', 'Status', 'Joined', 'Actions'].map((h) => (
                     <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
@@ -83,11 +116,10 @@ const ManageUsersPage: React.FC = () => {
                         {user.userType}
                       </span>
                     </td>
-                    <td className="px-5 py-4 text-gray-700 text-center">{user.bookings}</td>
                     <td className="px-5 py-4">
                       <span className={`badge text-xs ${statusStyle[user.status]}`}>{user.status}</span>
                     </td>
-                    <td className="px-5 py-4 text-gray-400 text-xs whitespace-nowrap">{user.joined}</td>
+                    <td className="px-5 py-4 text-gray-400 text-xs whitespace-nowrap">{user.createdAt?.split('T')[0]}</td>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-1.5">
                         <button onClick={() => setEditUser(user)} title="Change role" className="p-1.5 text-gray-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-all">
@@ -110,7 +142,6 @@ const ManageUsersPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Role edit modal */}
       <AnimatePresence>
         {editUser && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -123,7 +154,7 @@ const ManageUsersPage: React.FC = () => {
               </div>
               <p className="text-sm text-gray-500 mb-5">Changing role for <span className="font-semibold text-gray-900">{editUser.firstName} {editUser.lastName}</span></p>
               <div className="space-y-2">
-                {['guest', 'admin', 'org_admin'].map((role) => (
+                {['guest', 'regular', 'premium', 'admin', 'org_admin'].map((role) => (
                   <button key={role} onClick={() => handleSaveRole(role)}
                     className={`w-full text-left px-4 py-3 rounded-xl border-2 text-sm font-semibold transition-all ${editUser.userType === role ? 'border-primary-500 bg-primary-50 text-primary-700' : 'border-gray-100 text-gray-600 hover:border-gray-200 hover:bg-gray-50'}`}>
                     <span className="flex items-center gap-2">

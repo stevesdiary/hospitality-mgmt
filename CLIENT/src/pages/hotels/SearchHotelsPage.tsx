@@ -1,23 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Search, Star, Heart, Calendar, Users, SlidersHorizontal, X, Wifi, Dumbbell, Tag } from 'lucide-react';
-import { DUMMY_HOTELS } from '@/data/dummy';
+import { MapPin, Search, Star, Heart, Calendar, Users, SlidersHorizontal, X, Wifi, Dumbbell, Tag, Loader2 } from 'lucide-react';
+import { hotelService } from '@/services';
+import { transformHotel, transformPaginatedResponse } from '@/utils/apiTransformers';
+import type { Hotel } from '@/types';
 
-const GRAD: Record<string, string> = {
-  'h-001': 'from-indigo-500 to-purple-700', 'h-002': 'from-cyan-500 to-blue-700',
-  'h-003': 'from-emerald-500 to-teal-700',  'h-004': 'from-amber-500 to-orange-700',
-  'h-005': 'from-rose-500 to-pink-700',     'h-006': 'from-violet-500 to-indigo-700',
-};
+const GRAD_COLORS = [
+  'from-indigo-500 to-purple-700', 'from-cyan-500 to-blue-700', 'from-emerald-500 to-teal-700',
+  'from-amber-500 to-orange-700', 'from-rose-500 to-pink-700', 'from-violet-500 to-indigo-700',
+];
+const getGrad = (index: number) => GRAD_COLORS[index % GRAD_COLORS.length];
 const categoryLabel = (stars: number) => stars === 5 ? 'Luxury' : stars === 4 ? 'Standard' : 'Budget';
-
-const ALL_HOTELS = DUMMY_HOTELS.map((h) => ({
-  id: h.id, name: h.name, city: h.city,
-  rating: h.rating ?? 0, price: h.priceRange.min,
-  category: categoryLabel(h.starRating),
-  grad: GRAD[h.id] ?? 'from-gray-400 to-gray-600',
-  amenities: h.amenities.slice(0, 3),
-}));
 
 const fadeUp = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.45 } } };
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.07 } } };
@@ -36,6 +30,9 @@ type ActiveFilter = { type: string; value: string };
 
 const SearchHotelsPage: React.FC = () => {
   const [params, setParams] = useSearchParams();
+  const [hotels, setHotels] = useState<(Hotel & { grad: string })[]>([]);
+  const [loading, setLoading] = useState(true);
+
   const [location, setLocation] = useState(params.get('location') ?? '');
   const [checkIn, setCheckIn] = useState(params.get('checkIn') ?? '');
   const [checkOut, setCheckOut] = useState(params.get('checkOut') ?? '');
@@ -45,6 +42,23 @@ const SearchHotelsPage: React.FC = () => {
   const [liked, setLiked] = useState<Record<string, boolean>>({});
   const [showFilterPanel, setShowFilterPanel] = useState(false);
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([]);
+
+  useEffect(() => {
+    const fetchHotels = async () => {
+      try {
+        setLoading(true);
+        const response = await hotelService.searchHotels({ city: location || undefined });
+        const data = response as any;
+        const transformed = transformPaginatedResponse(data, 'Hotels', transformHotel);
+        setHotels(transformed.items.map((h, i) => ({ ...h, grad: getGrad(i) })));
+      } catch (err: any) {
+        console.error('Failed to search hotels:', err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchHotels();
+  }, []);
 
   useEffect(() => {
     const newFilters: ActiveFilter[] = [];
@@ -65,12 +79,21 @@ const SearchHotelsPage: React.FC = () => {
     if (f.type === 'price') setPriceMax(100000);
   };
 
-  const results = ALL_HOTELS.filter((h) => {
+  const results = hotels.filter((h) => {
     if (location && !h.city.toLowerCase().includes(location.toLowerCase()) && !h.name.toLowerCase().includes(location.toLowerCase())) return false;
-    if (selectedCat !== 'All' && h.category !== selectedCat) return false;
-    if (h.price > priceMax) return false;
+    const cat = categoryLabel(h.starRating);
+    if (selectedCat !== 'All' && cat !== selectedCat) return false;
+    if (h.priceRange.min > priceMax) return false;
     return true;
   });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -164,19 +187,19 @@ const SearchHotelsPage: React.FC = () => {
                     className="absolute top-3 right-3 w-8 h-8 bg-white/20 hover:bg-white/40 backdrop-blur-sm rounded-full flex items-center justify-center transition-all">
                     <Heart className={`h-4 w-4 ${liked[hotel.id] ? 'fill-red-500 text-red-500' : 'text-white'}`} />
                   </button>
-                  <span className="absolute bottom-3 left-3 text-xs font-semibold text-white bg-black/30 backdrop-blur-sm px-2.5 py-1 rounded-md">{hotel.category}</span>
+                  <span className="absolute bottom-3 left-3 text-xs font-semibold text-white bg-black/30 backdrop-blur-sm px-2.5 py-1 rounded-md">{categoryLabel(hotel.starRating)}</span>
                 </div>
                 <div className="p-4">
                   <div className="flex items-center justify-between mb-1">
-                    <Stars rating={hotel.rating} />
-                    <span className="text-xs text-gray-400">{hotel.rating}</span>
+                    <Stars rating={hotel.rating || 0} />
+                    <span className="text-xs text-gray-400">{hotel.rating || 0}</span>
                   </div>
                   <h3 className="font-semibold text-gray-900 text-sm mt-1 mb-0.5 line-clamp-1">{hotel.name}</h3>
                   <div className="flex items-center gap-1 text-gray-400 text-xs mb-3">
                     <MapPin className="h-3 w-3" /><span>{hotel.city}</span>
                   </div>
                   <div className="flex flex-wrap gap-1 mb-4">
-                    {hotel.amenities.map((a) => (
+                    {hotel.amenities.slice(0, 3).map((a) => (
                       <span key={a} className="inline-flex items-center gap-1 text-[10px] font-medium bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
                         {a.includes('WiFi') ? <Wifi className="h-2.5 w-2.5" /> : a === 'Gym' ? <Dumbbell className="h-2.5 w-2.5" /> : <Tag className="h-2.5 w-2.5" />}
                         {a}
@@ -185,7 +208,7 @@ const SearchHotelsPage: React.FC = () => {
                   </div>
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="text-base font-bold text-primary-700">₦{hotel.price.toLocaleString()}</span>
+                      <span className="text-base font-bold text-primary-700">₦{hotel.priceRange.min.toLocaleString()}</span>
                       <span className="text-xs text-gray-400"> /night</span>
                     </div>
                     <Link to={`/hotels/${hotel.id}`} className="btn-accent text-xs py-1.5 px-3">View</Link>
@@ -196,7 +219,7 @@ const SearchHotelsPage: React.FC = () => {
           ))}
         </motion.div>
 
-        {results.length === 0 && (
+        {results.length === 0 && !loading && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-24">
             <div className="text-6xl mb-4">🔍</div>
             <h3 className="text-lg font-semibold text-gray-700 mb-2">No results found</h3>

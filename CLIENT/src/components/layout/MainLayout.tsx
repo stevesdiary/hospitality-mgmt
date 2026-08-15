@@ -288,9 +288,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           <div className="border-t border-secondary-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-secondary-500 text-sm">&copy; 2026 StayNG. All rights reserved.</p>
             <div className="flex space-x-6 text-sm text-secondary-500">
-              {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map((l) => (
-                <Link key={l} to="/" className="hover:text-white transition-colors">{l}</Link>
-              ))}
+              <Link to="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+              <Link to="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</Link>
+              <Link to="/cookie-policy" className="hover:text-white transition-colors">Cookie Policy</Link>
             </div>
           </div>
         </div>
