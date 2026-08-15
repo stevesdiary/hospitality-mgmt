@@ -22,6 +22,7 @@ const REQUIRED: EnvRule[] = [
   { key: 'B2_APPLICATION_KEY' },
   { key: 'B2_BUCKET_ID' },
   { key: 'B2_BUCKET_NAME' },
+  { key: 'PAYSTACK_SECRET_KEY', validator: (v) => v.startsWith('sk_'), hint: 'must start with sk_' },
 ];
 
 const PRODUCTION_ONLY: EnvRule[] = [

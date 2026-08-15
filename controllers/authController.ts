@@ -7,8 +7,9 @@ import authService from '../services/authService';
 
 export const register = async (req: Request, res: Response): Promise<any> => {
   try {
-    const { firstName, lastName, email, phoneNumber, password, type, companyId } = req.body;
-    const { token, user } = await authService.register({ firstName, lastName, email, phoneNumber, password, type, companyId });
+    const { firstName, lastName, email, phoneNumber, password, type } = req.body;
+    // companyId is intentionally excluded — must be assigned server-side by an admin
+    const { token, user } = await authService.register({ firstName, lastName, email, phoneNumber, password, type });
 
     return res.status(201).json({
       message: 'Registration successful',
