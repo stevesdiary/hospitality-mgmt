@@ -13,10 +13,13 @@ export interface ReservationInstance extends Model {
   dateIn: Date;
   dateOut: Date;
   status: string;
-  paymentStatus?: boolean;
+  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
+  totalPrice?: number;
+  paymentReference?: string;
   readonly createdAt: Date;
   readonly updatedAt: Date;
   readonly deletedAt: Date;
+  Room?: any;
 }
 
 export interface ReservationCreationAttributes extends Optional<ReservationInstance, 'id' | 'status' | 'paymentStatus' | 'companyId' | 'createdAt' | 'updatedAt' | 'deletedAt'> {}
@@ -37,10 +40,13 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): any => {
     dateIn!: Date;
     dateOut!: Date;
     status!: string;
-    paymentStatus?: boolean;
+    paymentStatus!: 'pending' | 'paid' | 'failed' | 'refunded';
+    totalPrice?: number;
+    paymentReference?: string;
     readonly createdAt!: Date;
     readonly updatedAt!: Date;
     readonly deletedAt!: Date;
+    Room?: any;
   }
 
   Reservation.init(
@@ -82,11 +88,24 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): any => {
         allowNull: false,
       },
       status: {
-        type: dataTypes.ENUM('active', 'used', 'expired'),
+        type: dataTypes.ENUM('active', 'confirmed', 'cancelled', 'checked-out', 'used', 'expired'),
         allowNull: false,
         defaultValue: 'active',
       },
-      paymentStatus: dataTypes.BOOLEAN,
+      paymentStatus: {
+        type: dataTypes.ENUM('pending', 'paid', 'failed', 'refunded'),
+        allowNull: false,
+        defaultValue: 'pending',
+      },
+      totalPrice: {
+        type: dataTypes.DECIMAL(10, 2),
+        allowNull: true,
+      },
+      paymentReference: {
+        type: dataTypes.STRING(100),
+        allowNull: true,
+        unique: true,
+      },
     } as any,
     {
       sequelize,

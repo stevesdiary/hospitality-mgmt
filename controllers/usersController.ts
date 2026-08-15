@@ -54,8 +54,10 @@ export const changePassword = async (req: Request, res: Response): Promise<any> 
 export const findAllUser = async (req: Request, res: Response): Promise<any> => {
   try {
     const companyId = resolveCompanyScope(req);
-    const result = await userService.findAllUsers(companyId);
-    return res.status(200).json({ message: 'Users retrieved', Count: result.count, Users: result.users });
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 10));
+    const result = await userService.findAllUsers(companyId, page, limit);
+    return res.status(200).json({ message: 'Users retrieved', Count: result.count, page, limit, Users: result.users });
   } catch (err: any) {
     return res.status(500).json({ message: 'Failed to retrieve users', error: err.message });
   }

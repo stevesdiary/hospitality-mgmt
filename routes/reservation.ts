@@ -12,10 +12,12 @@ import {
 } from '../controllers/reservationController';
 import { authentication } from '../middleware/authentication';
 import verifyUserType from '../middleware/verifyUserType';
+import { validateBody } from '../middleware/validation';
+import { reservationValidation } from '../src/shared/utils/validationSchemas';
 
 const router = Router();
 
-router.post('/', authentication, createReservation);
+router.post('/', authentication, validateBody(reservationValidation.create), createReservation);
 router.get('/', authentication, verifyUserType(['admin', 'org_admin']), getAllReservations);
 router.get('/my', authentication, getMyReservations);
 router.get('/:id', authentication, getOneReservation);
