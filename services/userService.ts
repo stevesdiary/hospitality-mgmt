@@ -6,12 +6,15 @@ import { User } from '../models';
 import { UserInstance } from '../models/user';
 
 class UserService {
-  async findAllUsers(companyId?: string): Promise<{ count: number; users: UserInstance[] }> {
+  async findAllUsers(companyId?: string, page = 1, limit = 10): Promise<{ count: number; users: UserInstance[] }> {
     const where: any = {};
     if (companyId) where.companyId = companyId;
+    const offset = (page - 1) * limit;
     const { count, rows: users } = await User.findAndCountAll({
       where,
       attributes: { exclude: ['password'] },
+      limit,
+      offset,
     });
     return { count, users };
   }

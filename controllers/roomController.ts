@@ -31,10 +31,10 @@ const stripProtectedRoomFields = (body: Record<string, any>): Record<string, any
 
 export const createRoom = async (req: Request, res: Response): Promise<any> => {
   try {
-    const { contactEmail, ...roomData } = req.body;
+    const { hotelId, ...roomData } = req.body;
 
-    const hotel = await Hotel.findOne({ where: { contactEmail } });
-    if (!hotel) return res.status(404).json({ message: 'Hotel not found for provided contact email' });
+    const hotel = await Hotel.findByPk(hotelId);
+    if (!hotel) return res.status(404).json({ message: 'Hotel not found' });
 
     const companyId = (hotel as any).companyId;
     // The requester must own the hotel they're adding a room to.
@@ -64,11 +64,14 @@ export const getRoom = async (req: Request, res: Response): Promise<any> => {
 export const getAllRooms = async (req: Request, res: Response): Promise<any> => {
   try {
     const companyId = resolveCompanyScope(req);
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 10));
+    const offset = (page - 1) * limit;
     const where: any = {};
     if (companyId) where.companyId = companyId;
 
-    const { count, rows: rooms } = await Room.findAndCountAll({ where });
-    return res.status(200).json({ message: 'Rooms retrieved', Count: count, Rooms: rooms });
+    const { count, rows: rooms } = await Room.findAndCountAll({ where, limit, offset });
+    return res.status(200).json({ message: 'Rooms retrieved', Count: count, page, limit, Rooms: rooms });
   } catch (err: any) {
     return res.status(500).json({ message: 'Failed to retrieve rooms', error: err.message });
   }
@@ -86,6 +89,19 @@ export const updateRoom = async (req: Request, res: Response): Promise<any> => {
     return res.status(200).json({ message: 'Room updated', room: updated });
   } catch (err: any) {
     return res.status(500).json({ message: 'Failed to update room', error: err.message });
+  }
+};
+
+export const getRoomsByHotel = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { hotelId } = req.params;
+    const companyId = resolveCompanyScope(req);
+    const where: any = { hotelId };
+    if (companyId) where.companyId = companyId;
+    const { count, rows: rooms } = await Room.findAndCountAll({ where });
+    return res.status(200).json({ message: 'Rooms retrieved', Count: count, Rooms: rooms });
+  } catch (err: any) {
+    return res.status(500).json({ message: 'Failed to retrieve rooms', error: err.message });
   }
 };
 

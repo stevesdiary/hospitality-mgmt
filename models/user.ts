@@ -14,6 +14,7 @@ export interface UserInstance extends Model {
   phoneNumber: string;
   email: string;
   password: string;
+  profileImage?: string;
   type?: UserType;
   companyId?: string;
   avatarUrl?: string;
@@ -36,6 +37,7 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): ModelCtor<Us
     phoneNumber!: string;
     email!: string;
     password!: string;
+    profileImage?: string;
     type?: UserType;
     companyId?: string;
     avatarUrl?: string;
@@ -90,11 +92,15 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): ModelCtor<Us
         },
       },
       password: {
-        type: DataTypes.STRING(64),
+        type: DataTypes.STRING(255),
         allowNull: false,
         validate: {
           notEmpty: { msg: 'Password must not be empty' },
         },
+      },
+      profileImage: {
+        type: DataTypes.STRING(500),
+        allowNull: true,
       },
       type: {
         type: DataTypes.ENUM('guest', 'regular', 'premium', 'admin', 'org_admin'),

@@ -5,40 +5,29 @@ import {
   checkRoomAvailability,
   getAvailableRooms,
   getOneReservation,
-  lookupReservation,
-  lookupByReference,
-  checkIn,
-  checkOut,
+  getMyReservations,
   getAllReservations,
   updateReservation,
+  cancelReservation,
+  confirmReservation,
   removeAllReservations,
   deleteReservation,
 } from '../controllers/reservationController';
 import { authentication } from '../middleware/authentication';
 import verifyUserType from '../middleware/verifyUserType';
+import { validateBody } from '../middleware/validation';
+import { reservationValidation } from '../src/shared/utils/validationSchemas';
 
 const router = Router();
 
-router.post('/reservation', authentication, createReservation);
-// Guest checkout — book from a hotel's public page without an account.
-router.post('/reservation/guest', createGuestReservation);
-
-// Public availability — a guest needs these before committing to a booking.
-router.get('/availability/room/:roomId', checkRoomAvailability);
-router.get('/availability/hotel/:hotelId', getAvailableRooms);
-router.get('/getone/:id', authentication, getOneReservation);
-router.get('/getall', authentication, getAllReservations);
-
-// Front-desk: look up any booking by ID or by guest booking reference (admin/org_admin)
-router.get('/lookup/:id', authentication, verifyUserType(['admin', 'org_admin']), lookupReservation);
-router.get('/lookup-ref/:reference', authentication, verifyUserType(['admin', 'org_admin']), lookupByReference);
-
-// Check-in / check-out (front desk only)
-router.put('/checkin/:id', authentication, verifyUserType(['admin', 'org_admin']), checkIn);
-router.put('/checkout/:id', authentication, verifyUserType(['admin', 'org_admin']), checkOut);
-
-router.put('/updatereservation/:id', authentication, updateReservation);
-router.delete('/removereservations', authentication, verifyUserType(['admin', 'org_admin']), removeAllReservations);
-router.delete('/deletereservation/:id', authentication, deleteReservation);
+router.post('/', authentication, validateBody(reservationValidation.create), createReservation);
+router.get('/', authentication, verifyUserType(['admin', 'org_admin']), getAllReservations);
+router.get('/my', authentication, getMyReservations);
+router.get('/:id', authentication, getOneReservation);
+router.put('/:id', authentication, updateReservation);
+router.patch('/:id/cancel', authentication, cancelReservation);
+router.patch('/:id/confirm', authentication, verifyUserType(['admin', 'org_admin']), confirmReservation);
+router.delete('/', authentication, verifyUserType(['admin', 'org_admin']), removeAllReservations);
+router.delete('/:id', authentication, deleteReservation);
 
 export default router;

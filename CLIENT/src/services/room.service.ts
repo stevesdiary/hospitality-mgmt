@@ -20,7 +20,7 @@ class RoomService {
   }
 
   async deleteRoom(id: string) {
-    return apiService.delete(`/deleteroom/${id}`);
+    return apiService.delete(`${this.baseUrl}/${id}`);
   }
 }
 

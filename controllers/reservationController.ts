@@ -4,14 +4,8 @@
 
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { Reservation, Hotel, Room, User, sequelize } from '../models';
-import { parseStay, isRoomAvailable, findAvailableRooms } from '../services/availabilityService';
-
-const GUEST_INCLUDE = [
-  { model: User, as: 'User', attributes: { exclude: ['password'] } },
-  { model: Hotel, as: 'Hotel' },
-  { model: Room, as: 'Room' },
-];
+import { Op } from 'sequelize';
+import { Reservation, Hotel, Room, User } from '../models';
 
 const resolveCompanyScope = (req: Request): string | null => {
   const user = req.user;
@@ -60,45 +54,39 @@ export const createReservation = async (req: Request, res: Response): Promise<an
     const hotel = await Hotel.findByPk(hotelId);
     if (!hotel) return res.status(404).json({ message: 'Hotel not found' });
 
-    // The room must belong to the hotel being booked, so the reservation binds
-    // to a single, consistent tenant.
     const room = await Room.findByPk(roomId);
-    if (!room || (room as any).hotelId !== hotelId) {
-      return res.status(400).json({ message: 'Room does not belong to the specified hotel' });
-    }
+    if (!room) return res.status(404).json({ message: 'Room not found' });
+    if (!room.availability) return res.status(409).json({ message: 'Room is not available' });
+
+    // Check for overlapping reservations
+    const overlap = await Reservation.findOne({
+      where: {
+        roomId,
+        status: { [Op.notIn]: ['cancelled', 'expired'] },
+        [Op.or]: [
+          { dateIn: { [Op.between]: [dateIn, dateOut] } },
+          { dateOut: { [Op.between]: [dateIn, dateOut] } },
+          { dateIn: { [Op.lte]: dateIn }, dateOut: { [Op.gte]: dateOut } },
+        ],
+      },
+    });
+    if (overlap) return res.status(409).json({ message: 'Room is already booked for the selected dates' });
 
     const companyId = (hotel as any).companyId;
+    const id = uuidv4();
 
-    // Lock the room row for the duration, so two concurrent bookings for the
-    // same room can't both pass the availability check.
-    const reservation = await sequelize.transaction(async (t) => {
-      await Room.findByPk(roomId, { transaction: t, lock: t.LOCK.UPDATE });
-
-      const check = await isRoomAvailable(roomId, stay.range!, { transaction: t });
-      if (!check.available) {
-        const conflict: any = new Error(check.reason || 'Room unavailable');
-        conflict.statusCode = 409;
-        throw conflict;
-      }
-
-      return Reservation.create(
-        {
-          // Client-supplied extras first, then authoritative fields override them so
-          // companyId/userId/status can never be spoofed via the request body.
-          ...stripProtectedFields(req.body),
-          id: uuidv4(),
-          userId,
-          hotelId,
-          roomId,
-          companyId,
-          dateIn: stay.range!.dateIn,
-          dateOut: stay.range!.dateOut,
-          guestCount: guestCount || 1,
-          status: 'pending',
-        },
-        { transaction: t }
-      );
+    const reservation = await Reservation.create({
+      id,
+      userId,
+      hotelId,
+      roomId,
+      companyId,
+      dateIn,
+      dateOut,
+      status: 'active',
     });
+
+    await Room.update({ availability: false }, { where: { id: roomId } });
 
     return res.status(201).json({ message: 'Reservation created successfully', reservation });
   } catch (err: any) {
@@ -326,15 +314,23 @@ export const checkOut = async (req: Request, res: Response): Promise<any> => {
 export const getAllReservations = async (req: Request, res: Response): Promise<any> => {
   try {
     const companyId = resolveCompanyScope(req);
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 10));
+    const offset = (page - 1) * limit;
     const where: any = {};
     if (companyId) where.companyId = companyId;
 
     const { count, rows: reservations } = await Reservation.findAndCountAll({
       where,
-      include: GUEST_INCLUDE,
-      order: [['createdAt', 'DESC']],
+      include: [
+        { model: User, as: 'User', attributes: { exclude: ['password'] } },
+        { model: Hotel, as: 'Hotel' },
+        { model: Room, as: 'Room' },
+      ],
+      limit,
+      offset,
     });
-    return res.status(200).json({ message: 'Reservations retrieved', Count: count, Reservations: reservations });
+    return res.status(200).json({ message: 'Reservations retrieved', Count: count, page, limit, Reservations: reservations });
   } catch (err: any) {
     return res.status(500).json({ message: 'Failed to retrieve reservations', error: err.message });
   }
@@ -354,6 +350,53 @@ export const updateReservation = async (req: Request, res: Response): Promise<an
     return res.status(200).json({ message: 'Reservation updated', reservation: updated });
   } catch (err: any) {
     return res.status(500).json({ message: 'Failed to update reservation', error: err.message });
+  }
+};
+
+export const getMyReservations = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+    const { count, rows: reservations } = await Reservation.findAndCountAll({
+      where: { userId },
+      include: [
+        { model: Hotel, as: 'Hotel' },
+        { model: Room, as: 'Room' },
+      ],
+    });
+    return res.status(200).json({ message: 'Reservations retrieved', Count: count, Reservations: reservations });
+  } catch (err: any) {
+    return res.status(500).json({ message: 'Failed to retrieve reservations', error: err.message });
+  }
+};
+
+export const cancelReservation = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { id } = req.params;
+    const userId = req.user?.id;
+    const reservation = await Reservation.findByPk(id);
+    if (!reservation) return res.status(404).json({ message: 'Reservation not found' });
+
+    const isOwner = reservation.userId === userId;
+    const isPrivileged = req.user?.type === 'admin' || req.user?.type === 'org_admin';
+    if (!isOwner && !isPrivileged) return res.status(403).json({ message: 'Forbidden' });
+
+    await Reservation.update({ status: 'cancelled' }, { where: { id } });
+    await Room.update({ availability: true }, { where: { id: reservation.roomId } });
+    return res.status(200).json({ message: 'Reservation cancelled' });
+  } catch (err: any) {
+    return res.status(500).json({ message: 'Failed to cancel reservation', error: err.message });
+  }
+};
+
+export const confirmReservation = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { id } = req.params;
+    const [updated] = await Reservation.update({ status: 'confirmed' }, { where: { id } });
+    if (updated === 0) return res.status(404).json({ message: 'Reservation not found' });
+    return res.status(200).json({ message: 'Reservation confirmed' });
+  } catch (err: any) {
+    return res.status(500).json({ message: 'Failed to confirm reservation', error: err.message });
   }
 };
 

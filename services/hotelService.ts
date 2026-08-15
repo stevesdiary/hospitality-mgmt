@@ -145,9 +145,10 @@ class HotelService {
     return whereConditions;
   }
 
-  async findAllHotels(queryParams: HotelSearchQuery, companyId: string | null = null): Promise<{ count: number; hotels: HotelInstance[] }> {
+  async findAllHotels(queryParams: HotelSearchQuery, companyId: string | null = null, page = 1, limit = 10): Promise<{ count: number; hotels: HotelInstance[] }> {
     try {
       const whereConditions = await this.buildHotelQuery(queryParams, companyId);
+      const offset = (page - 1) * limit;
 
       const { count, rows: hotels } = await Hotel.findAndCountAll({
         distinct: true,
@@ -159,6 +160,8 @@ class HotelService {
           { model: RatingAndReview, as: 'ratingAndReview', attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] } },
           { model: Reservation, as: 'reservation', attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] } },
         ],
+        limit,
+        offset,
       });
 
       return { count, hotels };
@@ -230,30 +233,27 @@ class HotelService {
       const whereConditions: any = {};
       if (companyId) whereConditions.companyId = companyId;
 
+      // Use a subquery approach to avoid GROUP BY issues with all selected columns
       const result = await Hotel.findAndCountAll({
         distinct: true,
         where: whereConditions,
-        attributes: {
-          exclude: ['createdAt', 'updatedAt', 'deletedAt'],
-          include: [
-            [Sequelize.literal('(SELECT COUNT(*) FROM "Hotels" WHERE "Hotels"."city" = "Hotel"."city")'), 'citiesCount'] as any,
-          ],
-        },
+        attributes: [
+          'id', 'name', 'address', 'city', 'state', 'description',
+          'hotelType', 'numberOfRooms', 'contactEmail', 'contactPhone',
+          'termsAndConditions', 'companyId',
+          [Sequelize.literal('(SELECT COUNT(*) FROM "Hotels" h2 WHERE h2.city = "Hotel".city AND h2."deletedAt" IS NULL)'), 'citiesCount'],
+        ],
         include: [
           { model: Room, as: 'rooms', attributes: { exclude: ['id', 'hotelId', 'createdAt', 'updatedAt', 'deletedAt'] } },
           { model: Facility, as: 'facilities', attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] } },
           { model: RatingAndReview, as: 'ratingAndReview', attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] } },
           { model: Reservation, as: 'reservation', attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] } },
         ],
-        group: ['Hotel.city'],
         order: [[Sequelize.literal('citiesCount'), 'DESC']],
         limit: 6,
       });
 
-      const count = Array.isArray(result.count) ? result.count.length : result.count;
-      const hotels = result.rows;
-
-      return { count, hotels };
+      return { count: result.count as number, hotels: result.rows };
     } catch (error: any) {
       throw new Error(`Error getting hotels by city: ${error.message}`);
     }

@@ -18,13 +18,14 @@ export interface ReservationInstance extends Model {
   bookingReference?: string;
   dateIn: Date;
   dateOut: Date;
-  status: 'pending' | 'confirmed' | 'checked-in' | 'checked-out' | 'cancelled' | 'no-show';
-  paymentStatus?: boolean;
-  checkInTime?: Date;
-  checkOutTime?: Date;
+  status: string;
+  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
+  totalPrice?: number;
+  paymentReference?: string;
   readonly createdAt: Date;
   readonly updatedAt: Date;
   readonly deletedAt: Date;
+  Room?: any;
 }
 
 export interface ReservationCreationAttributes extends Optional<
@@ -52,13 +53,14 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): any => {
     bookingReference?: string;
     dateIn!: Date;
     dateOut!: Date;
-    status!: 'pending' | 'confirmed' | 'checked-in' | 'checked-out' | 'cancelled' | 'no-show';
-    paymentStatus?: boolean;
-    checkInTime?: Date;
-    checkOutTime?: Date;
+    status!: string;
+    paymentStatus!: 'pending' | 'paid' | 'failed' | 'refunded';
+    totalPrice?: number;
+    paymentReference?: string;
     readonly createdAt!: Date;
     readonly updatedAt!: Date;
     readonly deletedAt!: Date;
+    Room?: any;
   }
 
   Reservation.init(
@@ -118,18 +120,23 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): any => {
         allowNull: false,
       },
       status: {
-        type: dataTypes.ENUM('pending', 'confirmed', 'checked-in', 'checked-out', 'cancelled', 'no-show'),
+        type: dataTypes.ENUM('active', 'confirmed', 'cancelled', 'checked-out', 'used', 'expired'),
         allowNull: false,
         defaultValue: 'pending',
       },
-      paymentStatus: dataTypes.BOOLEAN,
-      checkInTime: {
-        type: dataTypes.DATE,
+      paymentStatus: {
+        type: dataTypes.ENUM('pending', 'paid', 'failed', 'refunded'),
+        allowNull: false,
+        defaultValue: 'pending',
+      },
+      totalPrice: {
+        type: dataTypes.DECIMAL(10, 2),
         allowNull: true,
       },
-      checkOutTime: {
-        type: dataTypes.DATE,
+      paymentReference: {
+        type: dataTypes.STRING(100),
         allowNull: true,
+        unique: true,
       },
     } as any,
     {

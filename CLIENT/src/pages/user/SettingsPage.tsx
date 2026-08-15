@@ -140,6 +140,21 @@ const SettingsPage: React.FC = () => {
             </Row>
           </Section>
 
+          {/* Security */}
+          <Section title="Security" icon={Shield}>
+            <Row label="Two-Factor Authentication" desc="Add an extra layer of security to your account">
+              <button className="btn-outline text-xs py-1.5 px-3">Enable</button>
+            </Row>
+            <Row label="Active sessions" desc="Manage devices logged in to your account">
+              <button className="text-xs text-primary-600 hover:text-primary-700 font-semibold transition-colors">Manage</button>
+            </Row>
+            <Row label="Download my data" desc="Get a copy of all your account data">
+              <button onClick={() => toast.success("Data export requested. You'll receive an email shortly.")} className="text-xs text-primary-600 hover:text-primary-700 font-semibold transition-colors">
+                Request
+              </button>
+            </Row>
+          </Section>
+
           {/* Danger zone */}
           <motion.div variants={fadeUp} className="bg-white rounded-2xl border border-red-100 overflow-hidden">
             <div className="px-6 py-4 border-b border-red-50 flex items-center gap-3">

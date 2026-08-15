@@ -1,5 +1,5 @@
 import apiService from './api';
-import type { LoginCredentials, RegisterData, User, PasswordResetData } from '@/types';
+import type { LoginCredentials, RegisterData, User } from '@/types';
 
 // The backend returns the user's role as `type`; the client reads `userType`
 // (ProtectedRoute, login redirect). Normalise so both names are present.
@@ -44,12 +44,12 @@ class AuthService {
     return apiService.post('/forgot', { email });
   }
 
-  async resetPassword(data: PasswordResetData) {
-    // Backend takes the token in the URL and the new password in the body.
-    return apiService.post(`/reset/${data.token}`, {
-      newPassword: data.newPassword,
-      confirmPassword: data.newPassword,
-    });
+  async resetPassword(token: string, password: string) {
+    return apiService.post(`${this.baseUrl}/reset-password`, { token, password });
+  }
+
+  async getCurrentUser() {
+    return apiService.get<User>('/users/me');
   }
 
   setAuthToken(token: string) {

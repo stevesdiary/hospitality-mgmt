@@ -2,7 +2,7 @@
   "name": "express",
   "version": "1.0.0",
   "description": "Express server to run description",
-  "main": "dist/app.js",
+  "main": "app.ts",
   "scripts": {
     "start": "node dist/app.js",
     "dev": "nodemon --exec ts-node app.ts",

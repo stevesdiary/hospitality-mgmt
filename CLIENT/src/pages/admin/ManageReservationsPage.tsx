@@ -1,21 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Search, LogIn, LogOut, Trash2, Loader2, ChevronDown } from 'lucide-react';
+import { Search, CheckCircle, X, Clock, ChevronDown, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { reservationService } from '../../services';
-
-interface ReservationRow {
-  id: string;
-  ref: string;
-  guest: string;
-  email: string;
-  hotel: string;
-  room: string;
-  checkIn: string;
-  checkOut: string;
-  total: number;
-  status: string;
-}
+import { reservationService } from '@/services';
+import { transformReservation, transformPaginatedResponse } from '@/utils/apiTransformers';
+import type { Reservation } from '@/types';
 
 const STATUS_TABS = ['All', 'Pending', 'Confirmed', 'Checked-in', 'Checked-out', 'Cancelled'];
 const statusStyle: Record<string, string> = {
@@ -50,45 +39,65 @@ const toRow = (r: any): ReservationRow => {
 };
 
 const ManageReservationsPage: React.FC = () => {
-  const [reservations, setReservations] = useState<ReservationRow[]>([]);
+  const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState('All');
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const fetchReservations = async () => {
     try {
-      const res: any = await reservationService.getAllReservations();
-      const list = res?.Reservations ?? res?.reservations ?? res?.data ?? [];
-      setReservations(list.map(toRow));
+      setLoading(true);
+      const response = await reservationService.getAllReservationsAdmin({ limit: 100 });
+      const data = response as any;
+      const transformed = transformPaginatedResponse(data, 'Reservations', transformReservation);
+      setReservations(transformed.items);
     } catch (err: any) {
-      toast.error(err?.response?.data?.message ?? 'Failed to load reservations.');
+      toast.error(err.message || 'Failed to load reservations');
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { fetchReservations(); }, []);
+
+  const mapStatus = (status: string) => {
+    if (status === 'checked-out' || status === 'checked-in') return 'completed';
+    if (status === 'active') return 'pending';
+    return status;
+  };
 
   const filtered = reservations.filter((r) => {
-    const matchTab = tab === 'All' || r.status === tab.toLowerCase();
-    const q = search.toLowerCase();
-    const matchSearch = r.guest.toLowerCase().includes(q) || r.hotel.toLowerCase().includes(q) || r.ref.toLowerCase().includes(q);
+    const displayStatus = mapStatus(r.status);
+    const matchTab = tab === 'All' || displayStatus === tab.toLowerCase();
+    const matchSearch = r.guestName.toLowerCase().includes(search.toLowerCase()) || 
+      (r.hotel?.name || '').toLowerCase().includes(search.toLowerCase()) || 
+      r.id.toLowerCase().includes(search.toLowerCase());
     return matchTab && matchSearch;
   });
 
-  const doCheckIn = async (id: string) => {
-    try { await reservationService.checkIn(id); toast.success('Guest checked in'); await load(); }
-    catch (err: any) { toast.error(err?.response?.data?.message ?? 'Check-in failed'); }
+  const updateStatus = async (id: string, status: string) => {
+    try {
+      if (status === 'confirmed') {
+        await reservationService.confirmReservation(id);
+      } else if (status === 'cancelled') {
+        await reservationService.cancelReservation(id);
+      } else {
+        await reservationService.updateReservation(id, { status } as any);
+      }
+      toast.success(`Reservation ${status}`);
+      fetchReservations();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update reservation');
+    }
   };
-  const doCheckOut = async (id: string) => {
-    try { await reservationService.checkOut(id); toast.success('Guest checked out'); await load(); }
-    catch (err: any) { toast.error(err?.response?.data?.message ?? 'Check-out failed'); }
-  };
-  const doDelete = async (id: string) => {
-    try { await reservationService.deleteReservation(id); setReservations((p) => p.filter((r) => r.id !== id)); toast.success('Reservation deleted'); }
-    catch (err: any) { toast.error(err?.response?.data?.message ?? 'Delete failed'); }
-  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -126,49 +135,50 @@ const ManageReservationsPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {filtered.map((r) => (
-                  <motion.tr key={r.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-5 py-4 font-medium text-gray-500 whitespace-nowrap">{r.ref}</td>
-                    <td className="px-5 py-4">
-                      <div className="font-medium text-gray-900 whitespace-nowrap">{r.guest}</div>
-                      <div className="text-xs text-gray-400">{r.email}</div>
-                    </td>
-                    <td className="px-5 py-4">
-                      <div className="font-medium text-gray-700 whitespace-nowrap">{r.hotel}</div>
-                      <div className="text-xs text-gray-400">{r.room}</div>
-                    </td>
-                    <td className="px-5 py-4 text-gray-500 whitespace-nowrap">
-                      <div>{r.checkIn}</div>
-                      <div className="text-xs">→ {r.checkOut}</div>
-                    </td>
-                    <td className="px-5 py-4 font-semibold text-primary-700 whitespace-nowrap">{r.total ? `₦${r.total.toLocaleString()}` : '—'}</td>
-                    <td className="px-5 py-4">
-                      <span className={`badge text-xs ${statusStyle[r.status] ?? 'bg-gray-100 text-gray-600'}`}>{r.status.charAt(0).toUpperCase() + r.status.slice(1)}</span>
-                    </td>
-                    <td className="px-5 py-4">
-                      <div className="relative group">
-                        <button className="flex items-center gap-1 text-xs font-medium text-gray-600 hover:text-primary-600 bg-gray-100 hover:bg-primary-50 px-3 py-1.5 rounded-lg transition-all">
-                          Actions <ChevronDown className="h-3 w-3" />
-                        </button>
-                        <div className="absolute right-0 top-full mt-1 w-36 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 hidden group-hover:block z-10">
-                          {r.status !== 'checked-in' && r.status !== 'checked-out' && r.status !== 'cancelled' && (
-                            <button onClick={() => doCheckIn(r.id)} className="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 flex items-center gap-2 transition-colors">
-                              <LogIn className="h-3.5 w-3.5 text-blue-500" /> Check in
-                            </button>
-                          )}
-                          {r.status === 'checked-in' && (
-                            <button onClick={() => doCheckOut(r.id)} className="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 flex items-center gap-2 transition-colors">
-                              <LogOut className="h-3.5 w-3.5 text-gray-500" /> Check out
-                            </button>
-                          )}
-                          <button onClick={() => doDelete(r.id)} className="w-full text-left px-4 py-2 text-xs hover:bg-red-50 text-red-600 flex items-center gap-2 transition-colors">
-                            <Trash2 className="h-3.5 w-3.5" /> Delete
+                {filtered.map((r) => {
+                  const displayStatus = mapStatus(r.status);
+                  return (
+                    <motion.tr key={r.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-5 py-4 font-medium text-gray-500">#{r.id.slice(0, 8)}</td>
+                      <td className="px-5 py-4">
+                        <div className="font-medium text-gray-900 whitespace-nowrap">{r.guestName || 'Guest'}</div>
+                        <div className="text-xs text-gray-400">{r.guestEmail}</div>
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="font-medium text-gray-700 whitespace-nowrap">{r.hotel?.name || 'Hotel'}</div>
+                        <div className="text-xs text-gray-400">{r.room?.category || 'Room'}</div>
+                      </td>
+                      <td className="px-5 py-4 text-gray-500 whitespace-nowrap">
+                        <div>{r.checkInDate}</div>
+                        <div className="text-xs">→ {r.checkOutDate}</div>
+                      </td>
+                      <td className="px-5 py-4 font-semibold text-primary-700 whitespace-nowrap">₦{r.totalPrice.toLocaleString()}</td>
+                      <td className="px-5 py-4">
+                        <span className={`badge text-xs ${statusStyle[displayStatus] || 'bg-gray-100 text-gray-600'}`}>
+                          {displayStatus.charAt(0).toUpperCase() + displayStatus.slice(1)}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="relative group">
+                          <button className="flex items-center gap-1 text-xs font-medium text-gray-600 hover:text-primary-600 bg-gray-100 hover:bg-primary-50 px-3 py-1.5 rounded-lg transition-all">
+                            Update <ChevronDown className="h-3 w-3" />
                           </button>
+                          <div className="absolute right-0 top-full mt-1 w-36 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 hidden group-hover:block z-10">
+                            {['confirmed', 'completed', 'cancelled'].filter((s) => s !== displayStatus).map((s) => (
+                              <button key={s} onClick={() => updateStatus(r.id, s)}
+                                className="w-full text-left px-4 py-2 text-xs hover:bg-gray-50 flex items-center gap-2 transition-colors capitalize">
+                                {s === 'confirmed' && <CheckCircle className="h-3.5 w-3.5 text-emerald-500" />}
+                                {s === 'completed' && <Clock className="h-3.5 w-3.5 text-blue-500" />}
+                                {s === 'cancelled' && <X className="h-3.5 w-3.5 text-red-500" />}
+                                {s}
+                              </button>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                  </motion.tr>
-                ))}
+                      </td>
+                    </motion.tr>
+                  );
+                })}
               </tbody>
             </table>
             {loading && <div className="flex items-center justify-center py-16 text-gray-400"><Loader2 className="h-6 w-6 animate-spin" /></div>}

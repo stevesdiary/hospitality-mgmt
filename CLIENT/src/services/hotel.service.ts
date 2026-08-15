@@ -30,7 +30,32 @@ class HotelService {
   }
 
   async deleteHotel(id: string) {
-    return apiService.delete(`/delete/${id}`);
+    return apiService.delete(`${this.baseUrl}/${id}`);
+  }
+
+  async searchHotels(filters: HotelSearchFilters) {
+    return apiService.get<PaginatedResponse<Hotel>>(`${this.baseUrl}/search`, { params: filters });
+  }
+
+  async getHotelsByCity(city: string) {
+    return apiService.get<PaginatedResponse<Hotel>>(`${this.baseUrl}/by-city`, { params: { city } });
+  }
+
+  // New methods for backend endpoints
+  async getTopDeals(params?: HotelSearchFilters & PaginationParams) {
+    return apiService.get<PaginatedResponse<Hotel>>(`${this.baseUrl}/top-deals`, { params });
+  }
+
+  async getTopHotels(params?: HotelSearchFilters & PaginationParams) {
+    return apiService.get<PaginatedResponse<Hotel>>(`${this.baseUrl}/top-rated`, { params });
+  }
+
+  async getTopDestinations(params?: HotelSearchFilters & PaginationParams) {
+    return apiService.get<PaginatedResponse<Hotel>>(`${this.baseUrl}/top-destinations`, { params });
+  }
+
+  async getHotelsByDate(params?: HotelSearchFilters & PaginationParams) {
+    return apiService.get<PaginatedResponse<Hotel>>(`${this.baseUrl}/by-date`, { params });
   }
 }
 

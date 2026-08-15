@@ -1,30 +1,68 @@
 import apiService from './api';
 
-/**
- * Payments (Paystack). The charge amount is decided by the backend from the
- * reservation — the client never sends an amount.
- */
+interface InitializePaymentResponse {
+  message: string;
+  authorizationUrl: string;
+  accessCode: string;
+  reference: string;
+  amount: number;
+}
+
+interface VerifyPaymentResponse {
+  message: string;
+  status: 'success' | 'failed' | 'abandoned';
+  reservationId: string;
+  amount: number;
+  paidAt: string;
+}
+
+interface PaymentStatusResponse {
+  reservationId: string;
+  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
+  totalPrice: number;
+  paymentReference: string | null;
+}
+
 class PaymentService {
-  /** Start a payment and get Paystack's hosted checkout URL. */
-  async initialize(data: { bookingReference?: string; reservationId?: string; callbackUrl?: string }) {
-    return apiService.post<{
-      authorizationUrl: string;
-      reference: string;
-      amount: number;
-      currency: string;
-    }>('/payments/initialize', data);
-  }
+  private baseUrl = '/payments';
 
-  /** Confirm a transaction after the guest returns from Paystack. */
-  async verify(reference: string) {
-    return apiService.get<{ status: string; reference: string; message: string }>(
-      `/payments/verify/${reference}`
+  /**
+   * Initialize payment for a reservation
+   * Returns Paystack authorization URL to redirect user
+   */
+  async initializePayment(reservationId: string): Promise<InitializePaymentResponse> {
+    const response = await apiService.post<InitializePaymentResponse>(
+      `${this.baseUrl}/initialize`,
+      { reservationId }
     );
+    return response as unknown as InitializePaymentResponse;
   }
 
-  /** Staff: payments for the caller's tenant. */
-  async list() {
-    return apiService.get<{ Count: number; Payments: any[] }>('/payments');
+  /**
+   * Verify payment after Paystack callback
+   */
+  async verifyPayment(reference: string): Promise<VerifyPaymentResponse> {
+    const response = await apiService.get<VerifyPaymentResponse>(
+      `${this.baseUrl}/verify/${reference}`
+    );
+    return response as unknown as VerifyPaymentResponse;
+  }
+
+  /**
+   * Get payment status for a reservation
+   */
+  async getPaymentStatus(reservationId: string): Promise<PaymentStatusResponse> {
+    const response = await apiService.get<PaymentStatusResponse>(
+      `${this.baseUrl}/status/${reservationId}`
+    );
+    return response as unknown as PaymentStatusResponse;
+  }
+
+  /**
+   * Redirect to Paystack checkout
+   */
+  redirectToPaystack(authorizationUrl: string): void {
+    window.location.href = authorizationUrl;
   }
 }
 

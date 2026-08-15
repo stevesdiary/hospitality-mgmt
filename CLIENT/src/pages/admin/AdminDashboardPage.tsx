@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Building2, BedDouble, CalendarCheck, Users, ArrowRight, CheckCircle, Clock, X, LogIn, LogOut, Loader2 } from 'lucide-react';
-import { hotelService, roomService, reservationService, userService } from '../../services';
+import { Building2, BedDouble, CalendarCheck, Users, TrendingUp, ArrowRight, CheckCircle, Clock, X, Loader2 } from 'lucide-react';
+import { hotelService, roomService, reservationService, userService } from '@/services';
+import { transformReservation, transformPaginatedResponse } from '@/utils/apiTransformers';
+import type { Reservation } from '@/types';
 
 const fadeUp = { hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
 const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } };
@@ -23,53 +25,60 @@ const statusStyle: Record<string, string> = {
   cancelled: 'bg-red-100 text-red-600', 'no-show': 'bg-red-100 text-red-600',
 };
 
-interface RecentRow { id: string; guest: string; hotel: string; checkIn: string; status: string; }
-
 const AdminDashboardPage: React.FC = () => {
-  const [counts, setCounts] = useState<{ hotels: number | null; rooms: number | null; reservations: number | null; users: number | null }>(
-    { hotels: null, rooms: null, reservations: null, users: null }
-  );
-  const [recent, setRecent] = useState<RecentRow[]>([]);
+  const [stats, setStats] = useState({ hotels: 0, rooms: 0, reservations: 0, users: 0 });
+  const [recentReservations, setRecentReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let active = true;
-    (async () => {
-      // Fetch independently so one failing endpoint doesn't blank the whole board.
-      const [hotels, rooms, reservations, users] = await Promise.all([
-        hotelService.getAllHotels().catch(() => null),
-        roomService.getAllRooms().catch(() => null),
-        reservationService.getAllReservations().catch(() => null),
-        userService.getAllUsers().catch(() => null),
-      ]) as any[];
-      if (!active) return;
-      setCounts({
-        hotels: hotels?.Count ?? null,
-        rooms: rooms?.Count ?? null,
-        reservations: reservations?.Count ?? null,
-        users: users?.Count ?? null,
-      });
-      const list = reservations?.Reservations ?? [];
-      setRecent(list.slice(0, 5).map((r: any): RecentRow => ({
-        id: r.bookingReference ?? `#${String(r.id).slice(0, 8)}`,
-        guest: r.User ? `${r.User.firstName ?? ''} ${r.User.lastName ?? ''}`.trim() : (r.guestName || 'Guest'),
-        hotel: r.Hotel?.name ?? '—',
-        checkIn: r.dateIn ? String(r.dateIn).slice(0, 10) : '—',
-        status: r.status ?? 'pending',
-      })));
-      setLoading(false);
-    })();
-    return () => { active = false; };
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [hotelsRes, roomsRes, reservationsRes, usersRes] = await Promise.all([
+          hotelService.getAllHotels({ limit: 1 }),
+          roomService.getAllRooms({ limit: 1 }),
+          reservationService.getAllReservationsAdmin({ limit: 5 }),
+          userService.getAllUsers({ limit: 1 }),
+        ]);
+
+        setStats({
+          hotels: (hotelsRes as any).Count || 0,
+          rooms: (roomsRes as any).Count || 0,
+          reservations: (reservationsRes as any).Count || 0,
+          users: (usersRes as any).Count || 0,
+        });
+
+        const transformed = transformPaginatedResponse((reservationsRes as any), 'Reservations', transformReservation);
+        setRecentReservations(transformed.items);
+      } catch (err) {
+        console.error('Failed to load dashboard data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, []);
 
-  const fmt = (n: number | null) => (n == null ? '—' : n.toLocaleString());
-
   const STATS = [
-    { label: 'Total Hotels', value: fmt(counts.hotels), icon: Building2, color: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: 'Total Rooms', value: fmt(counts.rooms), icon: BedDouble, color: 'text-violet-600', bg: 'bg-violet-50' },
-    { label: 'Reservations', value: fmt(counts.reservations), icon: CalendarCheck, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-    { label: 'Registered Users', value: fmt(counts.users), icon: Users, color: 'text-accent-600', bg: 'bg-accent-50' },
+    { label: 'Total Hotels', value: String(stats.hotels), icon: Building2, color: 'text-blue-600', bg: 'bg-blue-50', grad: 'from-blue-500 to-indigo-600' },
+    { label: 'Total Rooms', value: String(stats.rooms), icon: BedDouble, color: 'text-violet-600', bg: 'bg-violet-50', grad: 'from-violet-500 to-purple-600' },
+    { label: 'Reservations', value: String(stats.reservations), icon: CalendarCheck, color: 'text-emerald-600', bg: 'bg-emerald-50', grad: 'from-emerald-500 to-teal-600' },
+    { label: 'Registered Users', value: String(stats.users), icon: Users, color: 'text-accent-600', bg: 'bg-accent-50', grad: 'from-orange-400 to-red-500' },
   ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
+      </div>
+    );
+  }
+
+  const mapStatus = (status: string) => {
+    if (status === 'checked-out' || status === 'checked-in') return 'completed';
+    if (status === 'active') return 'pending';
+    return status;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -84,13 +93,16 @@ const AdminDashboardPage: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         <motion.div variants={stagger} initial="hidden" animate="visible" className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {STATS.map(({ label, value, icon: Icon, bg, color }) => (
+          {STATS.map(({ label, value, icon: Icon, bg, color, grad }) => (
             <motion.div key={label} variants={fadeUp} whileHover={{ y: -3 }} transition={{ type: 'spring', stiffness: 300 }}
               className="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-md transition-shadow">
               <div className="flex items-start justify-between mb-4">
                 <div className={`p-2.5 rounded-xl ${bg}`}>
                   <Icon className={`h-5 w-5 ${color}`} />
                 </div>
+                <span className={`text-xs font-medium bg-gradient-to-r ${grad} bg-clip-text text-transparent`}>
+                  <TrendingUp className="h-3 w-3 inline mr-0.5" />+{value}
+                </span>
               </div>
               <div className="text-2xl font-display font-bold text-gray-900">{value}</div>
               <div className="text-gray-500 text-sm mt-1">{label}</div>
@@ -108,30 +120,28 @@ const AdminDashboardPage: React.FC = () => {
                 </Link>
               </div>
               <div className="divide-y divide-gray-50">
-                {loading && (
-                  <div className="flex items-center justify-center py-12 text-gray-400"><Loader2 className="h-6 w-6 animate-spin" /></div>
-                )}
-                {!loading && recent.length === 0 && (
-                  <div className="text-center py-12 text-gray-400 text-sm">No reservations yet</div>
-                )}
-                {recent.map((r) => {
-                  const StatusIcon = statusIcon[r.status] ?? Clock;
+                {recentReservations.map((r) => {
+                  const displayStatus = mapStatus(r.status);
+                  const StatusIcon = statusIcon[displayStatus] || Clock;
                   return (
                     <motion.div key={r.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
-                          <span className="font-medium text-sm text-gray-900">{r.guest}</span>
-                          <span className="text-xs text-gray-400">{r.id}</span>
+                          <span className="font-medium text-sm text-gray-900">{r.guestName || 'Guest'}</span>
+                          <span className="text-xs text-gray-400">#{r.id.slice(0, 8)}</span>
                         </div>
-                        <p className="text-xs text-gray-400 truncate">{r.hotel} · {r.checkIn}</p>
+                        <p className="text-xs text-gray-400 truncate">{r.hotel?.name || 'Hotel'} · {r.checkInDate}</p>
                       </div>
-                      <span className={`badge text-xs flex items-center gap-1 ml-4 ${statusStyle[r.status] ?? 'bg-gray-100 text-gray-600'}`}>
+                      <span className={`badge text-xs flex items-center gap-1 ml-4 ${statusStyle[displayStatus] || 'bg-gray-100 text-gray-600'}`}>
                         <StatusIcon className="h-3 w-3" />
-                        {r.status.charAt(0).toUpperCase() + r.status.slice(1)}
+                        {displayStatus.charAt(0).toUpperCase() + displayStatus.slice(1)}
                       </span>
                     </motion.div>
                   );
                 })}
+                {recentReservations.length === 0 && (
+                  <div className="text-center py-8 text-gray-400 text-sm">No recent reservations</div>
+                )}
               </div>
             </div>
           </div>

@@ -1,59 +1,35 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Edit2, Trash2, X, Shield, Loader2 } from 'lucide-react';
+import { Search, Edit2, Trash2, X, UserCheck, UserX, Shield, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { userService } from '../../services';
+import { userService } from '@/services';
+import { transformUser, transformPaginatedResponse } from '@/utils/apiTransformers';
+import type { User } from '@/types';
 
-interface UserRow {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  userType: string;
-  joined: string;
-}
-
-const typeStyle: Record<string, string> = {
-  admin: 'bg-violet-100 text-violet-700',
-  org_admin: 'bg-blue-100 text-blue-700',
-  guest: 'bg-gray-100 text-gray-600',
-  regular: 'bg-gray-100 text-gray-600',
-  premium: 'bg-amber-100 text-amber-700',
-};
-
-interface EditForm { firstName: string; lastName: string; phone: string; }
+const typeStyle: Record<string, string> = { admin: 'bg-violet-100 text-violet-700', guest: 'bg-gray-100 text-gray-600', org_admin: 'bg-blue-100 text-blue-700', regular: 'bg-gray-100 text-gray-600', premium: 'bg-amber-100 text-amber-700' };
+const statusStyle: Record<string, string> = { active: 'bg-emerald-100 text-emerald-700', suspended: 'bg-red-100 text-red-600' };
 
 const ManageUsersPage: React.FC = () => {
-  const [users, setUsers] = useState<UserRow[]>([]);
+  const [users, setUsers] = useState<(User & { status: 'active' | 'suspended' })[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [editUser, setEditUser] = useState<UserRow | null>(null);
-  const [form, setForm] = useState<EditForm>({ firstName: '', lastName: '', phone: '' });
-  const [saving, setSaving] = useState(false);
+  const [editUser, setEditUser] = useState<User | null>(null);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const fetchUsers = async () => {
     try {
-      const res: any = await userService.getAllUsers();
-      const list = res?.Users ?? res?.users ?? res?.data ?? [];
-      setUsers(list.map((u: any): UserRow => ({
-        id: u.id,
-        firstName: u.firstName ?? '',
-        lastName: u.lastName ?? '',
-        email: u.email ?? '—',
-        phone: u.phoneNumber != null ? String(u.phoneNumber) : '—',
-        userType: u.type ?? u.userType ?? 'regular',
-        joined: u.createdAt ? String(u.createdAt).slice(0, 10) : '—',
-      })));
+      setLoading(true);
+      const response = await userService.getAllUsers({ limit: 100 });
+      const data = response as any;
+      const transformed = transformPaginatedResponse(data, 'Users', transformUser);
+      setUsers(transformed.items.map(u => ({ ...u, status: 'active' as const })));
     } catch (err: any) {
-      toast.error(err?.response?.data?.message ?? 'Failed to load users.');
+      toast.error(err.message || 'Failed to load users');
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { fetchUsers(); }, []);
 
   const filtered = users.filter((u) =>
     `${u.firstName} ${u.lastName}`.toLowerCase().includes(search.toLowerCase()) ||
@@ -82,14 +58,35 @@ const ManageUsersPage: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this user?')) return;
     try {
       await userService.deleteUser(id);
-      setUsers((p) => p.filter((u) => u.id !== id));
       toast.success('User removed.');
+      fetchUsers();
     } catch (err: any) {
-      toast.error(err?.response?.data?.message ?? 'Failed to remove user.');
+      toast.error(err.message || 'Failed to delete user');
     }
   };
+
+  const handleSaveRole = async (role: string) => {
+    if (!editUser) return;
+    try {
+      await userService.updateUser(editUser.id, { userType: role } as any);
+      toast.success('Role updated!');
+      setEditUser(null);
+      fetchUsers();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update role');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -110,7 +107,7 @@ const ManageUsersPage: React.FC = () => {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100">
-                  {['User', 'Email', 'Phone', 'Role', 'Joined', 'Actions'].map((h) => (
+                  {['User', 'Email', 'Phone', 'Role', 'Status', 'Joined', 'Actions'].map((h) => (
                     <th key={h} className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
@@ -134,7 +131,10 @@ const ManageUsersPage: React.FC = () => {
                         {user.userType}
                       </span>
                     </td>
-                    <td className="px-5 py-4 text-gray-400 text-xs whitespace-nowrap">{user.joined}</td>
+                    <td className="px-5 py-4">
+                      <span className={`badge text-xs ${statusStyle[user.status]}`}>{user.status}</span>
+                    </td>
+                    <td className="px-5 py-4 text-gray-400 text-xs whitespace-nowrap">{user.createdAt?.split('T')[0]}</td>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-1.5">
                         <button onClick={() => openEdit(user)} title="Edit" className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all">
@@ -155,7 +155,6 @@ const ManageUsersPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Edit modal — role changes go through a controlled flow, not here. */}
       <AnimatePresence>
         {editUser && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -166,25 +165,17 @@ const ManageUsersPage: React.FC = () => {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">First name</label>
-                    <input value={form.firstName} onChange={(e) => setForm((p) => ({ ...p, firstName: e.target.value }))} className="input-field" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Last name</label>
-                    <input value={form.lastName} onChange={(e) => setForm((p) => ({ ...p, lastName: e.target.value }))} className="input-field" />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Phone</label>
-                  <input value={form.phone} onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))} className="input-field" />
-                </div>
-              </div>
-              <div className="flex gap-3 mt-6">
-                <button onClick={() => setEditUser(null)} className="btn-secondary flex-1">Cancel</button>
-                <button onClick={handleSave} disabled={saving} className="btn-accent flex-1 disabled:opacity-60">{saving ? 'Saving…' : 'Save Changes'}</button>
+              <p className="text-sm text-gray-500 mb-5">Changing role for <span className="font-semibold text-gray-900">{editUser.firstName} {editUser.lastName}</span></p>
+              <div className="space-y-2">
+                {['guest', 'regular', 'premium', 'admin', 'org_admin'].map((role) => (
+                  <button key={role} onClick={() => handleSaveRole(role)}
+                    className={`w-full text-left px-4 py-3 rounded-xl border-2 text-sm font-semibold transition-all ${editUser.userType === role ? 'border-primary-500 bg-primary-50 text-primary-700' : 'border-gray-100 text-gray-600 hover:border-gray-200 hover:bg-gray-50'}`}>
+                    <span className="flex items-center gap-2">
+                      {role === 'admin' && <Shield className="h-4 w-4 text-violet-500" />}
+                      {role} {editUser.userType === role && '(current)'}
+                    </span>
+                  </button>
+                ))}
               </div>
             </motion.div>
           </motion.div>

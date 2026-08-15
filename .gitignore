@@ -5,3 +5,5 @@ uploads
 config.json
 /config/config.json
 .qoder
+/build
+/dist

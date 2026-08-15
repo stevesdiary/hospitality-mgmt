@@ -2,26 +2,23 @@ import { Router } from 'express';
 import {
   initializePayment,
   verifyPayment,
-  paystackWebhook,
-  listPayments,
-  getPayment,
+  handleWebhook,
+  getPaymentStatus,
 } from '../controllers/paymentController';
 import { authentication } from '../middleware/authentication';
-import verifyUserType from '../middleware/verifyUserType';
 
 const router = Router();
 
-// ── Public (guest checkout has no account) ─────────────────────────────────
-// The booking reference / payment reference act as the capability here; the
-// charge amount is always computed server-side from the reservation.
-router.post('/payments/initialize', initializePayment);
-router.get('/payments/verify/:reference', verifyPayment);
+// Initialize payment (requires auth)
+router.post('/initialize', authentication, initializePayment);
 
-// Paystack webhook — authenticated by HMAC signature, not by a session.
-router.post('/payments/webhook', paystackWebhook);
+// Verify payment after callback (requires auth)
+router.get('/verify/:reference', authentication, verifyPayment);
 
-// ── Staff ──────────────────────────────────────────────────────────────────
-router.get('/payments', authentication, verifyUserType(['admin', 'org_admin']), listPayments);
-router.get('/payments/:id', authentication, verifyUserType(['admin', 'org_admin']), getPayment);
+// Get payment status (requires auth)
+router.get('/status/:reservationId', authentication, getPaymentStatus);
+
+// Webhook (no auth — Paystack calls this directly, verified by signature)
+router.post('/webhook', handleWebhook);
 
 export default router;

@@ -11,7 +11,15 @@ class ReservationService {
   }
 
   async getReservationById(id: string) {
-    return apiService.get<{ reservation: Reservation }>(`/getone/${id}`);
+    return apiService.get<Reservation>(`${this.baseUrl}/${id}`);
+  }
+
+  async getUserReservations(userId: string, params?: PaginationParams) {
+    return apiService.get<PaginatedResponse<Reservation>>(`${this.baseUrl}/user/${userId}`, { params });
+  }
+
+  async getCurrentUserReservations(params?: PaginationParams) {
+    return apiService.get<PaginatedResponse<Reservation>>(`${this.baseUrl}/my`, { params });
   }
 
   async createReservation(reservationData: CreateReservationRequest) {
@@ -60,22 +68,19 @@ class ReservationService {
     return apiService.delete(`/deletereservation/${id}`);
   }
 
-  /** Front-desk: look up a booking by reservation ID. */
-  async lookupReservation(id: string) {
-    return apiService.get<{ reservation: Reservation }>(`/lookup/${id}`);
+  // Admin endpoints
+  async getAllReservationsAdmin(params?: PaginationParams) {
+    return apiService.get<PaginatedResponse<Reservation>>(this.baseUrl, { params });
   }
 
-  /** Front-desk: look up a guest booking by its booking reference. */
-  async lookupByReference(reference: string) {
-    return apiService.get<{ reservation: Reservation }>(`/lookup-ref/${reference}`);
+  async removeAllReservations() {
+    return apiService.delete(this.baseUrl);
   }
 
-  async checkIn(id: string) {
-    return apiService.put<{ reservation: Reservation }>(`/checkin/${id}`, {});
-  }
-
-  async checkOut(id: string) {
-    return apiService.put<{ reservation: Reservation }>(`/checkout/${id}`, {});
+  async checkAvailability(roomId: string, checkIn: string, checkOut: string) {
+    return apiService.get<boolean>(`${this.baseUrl}/check-availability`, {
+      params: { roomId, checkIn, checkOut },
+    });
   }
 }
 
