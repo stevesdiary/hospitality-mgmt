@@ -7,26 +7,28 @@ import type { Hotel, HotelSearchFilters, PaginatedResponse, PaginationParams } f
  * by-slug and findone routes are the public, single-hotel surfaces.
  */
 class HotelService {
+  private baseUrl = '/hotels';
+
   /** Staff-only: list hotels scoped to the caller's company (platform admin: all). */
   async getAllHotels(params?: HotelSearchFilters & PaginationParams) {
-    return apiService.get<PaginatedResponse<Hotel>>('/findall', { params });
+    return apiService.get<PaginatedResponse<Hotel>>(`${this.baseUrl}`, { params });
   }
 
   async getHotelById(id: string) {
-    return apiService.get<{ hotel: Hotel }>(`/findone/${id}`);
+    return apiService.get<{ hotel: Hotel }>(`${this.baseUrl}/${id}`);
   }
 
-  /** Public per-hotel landing page — resolves a single hotel by its slug. */
+  /** Public per-hotel landing page — resolves a single hotel by its slug with branding. */
   async getHotelBySlug(slug: string) {
-    return apiService.get<{ hotel: Hotel }>(`/hotels/by-slug/${slug}`);
+    return apiService.get<{ hotel: Hotel }>(`${this.baseUrl}/slug/${slug}`);
   }
 
   async createHotel(hotelData: Partial<Hotel>) {
-    return apiService.post<{ hotel: Hotel }>('/createhotel', hotelData);
+    return apiService.post<{ hotel: Hotel }>(`${this.baseUrl}`, hotelData);
   }
 
   async updateHotel(id: string, hotelData: Partial<Hotel>) {
-    return apiService.put<{ hotel: Hotel }>(`/update/${id}`, hotelData);
+    return apiService.put<{ hotel: Hotel }>(`${this.baseUrl}/${id}`, hotelData);
   }
 
   async deleteHotel(id: string) {

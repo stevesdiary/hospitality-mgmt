@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from 'react-hot-toast';
 import { Provider } from 'react-redux';
 import { store } from './store';
+import { BrandingProvider } from './contexts/BrandingContext';
 
 // Layouts
 import MainLayout from './components/layout/MainLayout';
@@ -39,6 +40,7 @@ import ManageRoomsPage from './pages/admin/ManageRoomsPage';
 import ManageReservationsPage from './pages/admin/ManageReservationsPage';
 import ManageUsersPage from './pages/admin/ManageUsersPage';
 import FrontDeskPage from './pages/admin/FrontDeskPage';
+import BrandingPage from './pages/admin/BrandingPage';
 
 // Pages - Bookings
 import BookingConfirmationPage from './pages/bookings/BookingConfirmationPage';
@@ -72,7 +74,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin 
 const App: React.FC = () => {
   return (
     <Provider store={store}>
-      <Router>
+      <BrandingProvider>
+        <Router>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<MainLayout><HomePage /></MainLayout>} />
@@ -184,12 +187,21 @@ const App: React.FC = () => {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/admin/branding"
+            element={
+              <ProtectedRoute requireAdmin>
+                <MainLayout><BrandingPage /></MainLayout>
+              </ProtectedRoute>
+            }
+          />
           
           {/* 404 Route */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         <Toaster position="top-right" />
-      </Router>
+        </Router>
+      </BrandingProvider>
     </Provider>
   );
 };
