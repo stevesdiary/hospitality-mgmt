@@ -27,6 +27,7 @@ router.get('/top-rated', getTopHotels);
 router.get('/by-city', getHotelsByCity);
 router.get('/top-destinations', getTopDestinations);
 router.get('/by-date', getHotelsByDate);
+router.get('/slug/:slug', getHotelBySlug);
 router.get('/:id', getOneHotel);
 router.put('/:id', authentication, verifyUserType(['admin', 'org_admin']), validateBody(hotelValidation.update), updateHotel);
 router.delete('/:id', authentication, verifyUserType(['admin', 'org_admin']), deleteHotel);

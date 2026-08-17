@@ -33,7 +33,6 @@ import paymentRoute from './routes/payment';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import companyRoute from './routes/company';
-import paymentRoute from './routes/payment';
 
 import errorHandler from './middleware/errorHandler';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -119,15 +118,15 @@ const upload = multer({
 });
 
 // ── Routes ─────────────────────────────────────────────────────────────────────
-app.use('/auth', authLimiter, authRoute);
-app.use('/users', userRoute);
-app.use('/hotels', hotelRoute);
-app.use('/rooms', roomRoute);
-app.use('/facilities', facilityRoute);
-app.use('/reviews', ratingsRoute);
-app.use('/reservations', reservationRoute);
-app.use('/payments', paymentRoute);
-app.use('/companies', companyRoute);
+app.use('/api/auth', authLimiter, authRoute);
+app.use('/api/users', userRoute);
+app.use('/api/hotels', hotelRoute);
+app.use('/api/rooms', roomRoute);
+app.use('/api/facilities', facilityRoute);
+app.use('/api/reviews', ratingsRoute);
+app.use('/api/reservations', reservationRoute);
+app.use('/api/payments', paymentRoute);
+app.use('/api/companies', companyRoute);
 
 // Health check (no auth, no rate limit — for load-balancer probes)
 app.get('/health', (_req, res) => {

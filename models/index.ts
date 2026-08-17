@@ -31,12 +31,8 @@ import RatingAndReviewFactory from './ratingAndReview';
 import MediaFileFactory from './mediaFile';
 import ReservationFactory from './reservation';
 import PaymentFactory from './payment';
-
-// JS models (company and auditLog are still .js)
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const CompanyFactory = require('./company');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const AuditLogFactory = require('./auditLog');
+import CompanyFactory from './company';
+import AuditLogFactory from './auditLog';
 
 export const User = UserFactory(sequelize, DataTypes);
 export const Hotel = HotelFactory(sequelize, DataTypes);
