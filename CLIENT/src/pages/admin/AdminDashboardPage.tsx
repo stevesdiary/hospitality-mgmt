@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Building2, BedDouble, CalendarCheck, Users, TrendingUp, ArrowRight, CheckCircle, Clock, X, Loader2 } from 'lucide-react';
+import { Building2, BedDouble, CalendarCheck, Users, TrendingUp, ArrowRight, CheckCircle, Clock, X, Loader2, Palette } from 'lucide-react';
 import { hotelService, roomService, reservationService, userService } from '@/services';
 import { transformReservation, transformPaginatedResponse } from '@/utils/apiTransformers';
 import type { Reservation } from '@/types';
@@ -14,6 +14,7 @@ const QUICK_LINKS = [
   { to: '/admin/rooms', label: 'Manage Rooms', icon: BedDouble, desc: 'Configure room types and pricing', grad: 'from-violet-500 to-purple-600' },
   { to: '/admin/reservations', label: 'Reservations', icon: CalendarCheck, desc: 'Review and process bookings', grad: 'from-emerald-500 to-teal-600' },
   { to: '/admin/users', label: 'Manage Users', icon: Users, desc: 'View and manage user accounts', grad: 'from-orange-400 to-red-500' },
+  { to: '/admin/branding', label: 'Branding', icon: Palette, desc: 'Customise logo and colours', grad: 'from-pink-500 to-rose-600' },
 ];
 
 const statusIcon: Record<string, React.ElementType> = {

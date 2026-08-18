@@ -33,6 +33,7 @@ export default (sequelize: Sequelize, dataTypes: typeof DataTypes): ModelCtor<Ho
       Hotel.hasMany(models.Facility, { foreignKey: 'hotelId', as: 'facilities' });
       Hotel.hasMany(models.RatingAndReview, { foreignKey: 'hotelId', as: 'ratingAndReview' });
       Hotel.hasMany(models.Reservation, { foreignKey: 'hotelId', as: 'reservation' });
+      Hotel.belongsTo(models.Company, { foreignKey: 'companyId', as: 'company' });
     }
 
     id!: string;

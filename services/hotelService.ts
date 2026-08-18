@@ -3,7 +3,7 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import { Hotel, Room, Facility, RatingAndReview, Reservation, Sequelize } from '../models';
+import { Hotel, Room, Facility, RatingAndReview, Reservation, Company, Sequelize } from '../models';
 import { HotelInstance } from '../models/hotel';
 import { HotelSearchQuery } from '../types';
 import { Op } from 'sequelize';
@@ -53,6 +53,7 @@ class HotelService {
           { model: Room, as: 'rooms', attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] } },
           { model: Facility, as: 'facilities', attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] } },
           { model: RatingAndReview, as: 'ratingAndReview', attributes: { exclude: ['createdAt', 'updatedAt', 'deletedAt'] } },
+          { model: Company, as: 'company', attributes: ['id', 'name', 'logoUrl', 'primaryColor', 'secondaryColor', 'accentColor'] },
         ],
       });
 
